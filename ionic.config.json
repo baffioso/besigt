@@ -1,0 +1,7 @@
+{
+  "name": "besigt",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
