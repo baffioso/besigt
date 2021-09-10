@@ -1,0 +1,22 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Projekter
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-list>
+    <ion-item *ngFor="let project of projects$ | async" detail>
+      <!-- <ion-avatar slot="start">
+        <img src="./assets/icon/favicon.png">
+      </ion-avatar> -->
+      <ion-label>
+        <h2>{{project.title}}</h2>
+        <h3>{{project.date}}</h3>
+        <p>{{project.description}}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

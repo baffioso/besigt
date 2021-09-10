@@ -5,6 +5,10 @@ const routes: Routes = [
   {
     path: '',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+  },
+  {
+    path: 'map-layers-control-modal',
+    loadChildren: () => import('./components/map-layers-control-modal/map-layers-control-modal.module').then( m => m.MapLayersControlModalPageModule)
   }
 ];
 @NgModule({
