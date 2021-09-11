@@ -5,10 +5,16 @@
 </ion-header>
 
 <ion-content fullscreen>
-  <ion-list>
-    <ion-item *ngFor="let layer of layers$ | async">
-      <ion-label>{{layer}}</ion-label>
-      <ion-toggle (ionChange)="onLayerToggle($event, layer)" slot="end" name="{{layer}}">
+  <ion-list *ngFor="let source of layersSources$ | async">
+    <ion-list-header>
+      <ion-label role="heading" aria-level="2">
+        {{source.name}}
+      </ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let layer of source.layers">
+      <ion-label>{{layer.label}}</ion-label>
+      <ion-toggle (ionChange)="onLayerToggle($event, source, layer)" slot="end" [name]="layer.name"
+        [checked]="layer.addedToMap">
       </ion-toggle>
     </ion-item>
   </ion-list>

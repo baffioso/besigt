@@ -26,6 +26,7 @@
     "@capacitor/status-bar": "1.0.3",
     "@ionic/angular": "^5.5.2",
     "mapbox-gl": "^1.13.1",
+    "ol": "^6.7.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.2.0",
     "zone.js": "~0.11.4"
@@ -46,6 +47,7 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/mapbox-gl": "^1.13.1",
     "@types/node": "^12.11.1",
+    "@types/ol": "^6.5.3",
     "@typescript-eslint/eslint-plugin": "4.16.1",
     "@typescript-eslint/parser": "4.16.1",
     "eslint": "^7.6.0",

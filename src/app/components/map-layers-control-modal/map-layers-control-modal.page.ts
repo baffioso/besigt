@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { SegmentChangeEventDetail } from '@ionic/core/dist/types/interface';
+import { Layer, MapLayerSource } from 'src/app/interfaces/map-layer-source';
 import { MapLayersService } from 'src/app/services/map-layers.service';
+import { MapService } from 'src/app/services/map.service';
 
 @Component({
   selector: 'app-map-layers-control-modal',
@@ -10,15 +12,23 @@ import { MapLayersService } from 'src/app/services/map-layers.service';
 })
 export class MapLayersControlModalPage implements OnInit {
 
-  layers$ = this.mapLayersService.mapLayers;
+  layersSources$ = this.mapLayersService.layers$;
 
-  constructor(public modalController: ModalController, private mapLayersService: MapLayersService) { }
+  constructor(public modalController: ModalController, private mapLayersService: MapLayersService, private mapService: MapService) { }
 
   ngOnInit() {
   }
 
-  onLayerToggle(event: any, layerId: string) {
-    console.log(event.detail.checked, layerId);
+  onLayerToggle(event: any, source: MapLayerSource, layer: Layer) {
+
+    this.mapLayersService.changeAddedToMapState(source.name, layer.name, event.detail.checked);
+
+    if (event.detail.checked) {
+      this.mapService.addLayer(source.url, layer);
+    } else {
+      this.mapService.removeLayer(layer.name);
+    }
+
   }
 
   dismiss() {

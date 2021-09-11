@@ -12,6 +12,10 @@ export class MapComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.mapService.createMap();
+
+    setTimeout(() => {
+      this.mapService.resize();
+    }, 500);
   }
 
 }
