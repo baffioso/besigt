@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Tab2Page } from './tab2.page';
 
 import { Tab2PageRoutingModule } from './tab2-routing.module';
-import { ProjectListComponent } from '../components/project-list/project-list.component';
+import { ProjectListComponent } from '../../components/project-list/project-list.component';
 
 @NgModule({
   imports: [

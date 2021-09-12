@@ -6,12 +6,16 @@ import ImageWMS from 'ol/source/ImageWMS';
 import { Image as ImageLayer, Tile as TileLayer } from 'ol/layer';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-import MapboxVector from 'ol/layer/MapboxVector';
+// import MapboxVector from 'ol/layer/MapboxVector';
 import Feature from 'ol/Feature';
 import Geolocation from 'ol/Geolocation';
 import Point from 'ol/geom/Point';
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 import { ScaleLine } from 'ol/control';
+import { transform } from 'ol/proj';
+import TileWMS from 'ol/source/TileWMS';
+import { register } from 'ol/proj/proj4';
+import proj4 from 'proj4';
 
 import { Layer } from '../interfaces/map-layer-source';
 import { MapStoreService } from '../stores/map-store.service';
@@ -21,12 +25,19 @@ import { MapStoreService } from '../stores/map-store.service';
   providedIn: 'root'
 })
 export class MapService {
+
+  viewProjection = 'EPSG:3857';
+
   private olmap: Map;
   private geolocation: Geolocation;
+
 
   constructor(private mapStoreService: MapStoreService) { }
 
   createMap(): void {
+
+    proj4.defs('EPSG:25832', "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs");
+    register(proj4);
 
     this.olmap = new Map({
       controls: [
@@ -35,24 +46,42 @@ export class MapService {
         }),
       ],
       layers: [
-        new MapboxVector({
-          styleUrl: 'mapbox://styles/mapbox/bright-v9',
-          accessToken: 'pk.eyJ1IjoiYmFmZmlvc28iLCJhIjoiY2tyYjFrZDlsMTF6ZzJ6cDhkdDg2bW15cSJ9.afJAXgWRc8yRd50I5WFhAQ'
+        new TileLayer({
+          source: new TileWMS({
+            projection: 'EPSG:25832',
+            url: "https://services.kortforsyningen.dk/orto_foraar?token=44af18dc4d55df1d85ef32b8961ba0de",
+            params: {
+              layers: 'orto_foraar',
+              'VERSION': '1.1.1',
+              'TRANSPARENT': 'false',
+              'FORMAT': "image/jpeg",
+            }
+          })
         }),
+        // new MapboxVector({
+        //   styleUrl: 'mapbox://styles/mapbox/bright-v9',
+        //   accessToken: 'pk.eyJ1IjoiYmFmZmlvc28iLCJhIjoiY2tyYjFrZDlsMTF6ZzJ6cDhkdDg2bW15cSJ9.afJAXgWRc8yRd50I5WFhAQ'
+        // }),
+
       ],
       target: 'ol-map',
       view: new View({
         center: [1360103, 7491908],
-        projection: 'EPSG:3857',
+        projection: this.viewProjection,
         zoom: 13,
       }),
     });
 
-    // this.olmap.getControls().forEach(control => {
-    //   this.olmap.removeControl(control);
-    // });
-
   }
+
+  flyTo(coordinates: [number, number]): void {
+    this.olmap.getView().animate({
+      center: transform(coordinates, 'EPSG:4326', this.viewProjection),
+      zoom: 18,
+      duration: 1000
+    });
+  }
+
 
   resize() {
     this.olmap.updateSize();
@@ -68,7 +97,6 @@ export class MapService {
         projection: 'EPSG:25832',
         params: {
           layers: layer.name,
-          CRS: 'EPSG:25832'
         },
         ratio: 1
       }),
@@ -82,6 +110,11 @@ export class MapService {
       .filter(layer => layer.get('name') === layerName)
       .forEach(layer => this.olmap.removeLayer(layer));
   }
+
+
+  //--------------------------------
+  // GPS TRACKING
+  //--------------------------------
 
   startTracking(): void {
     this.mapStoreService.updateMapState('locating', true);

@@ -1,0 +1,12 @@
+<ion-content>
+  <div class="autocomplete-container">
+    <input #input placeholder="Søg adresse" type="search" id="dawa-autocomplete-input">
+    <!-- Suggestions will appear here -->
+  </div>
+</ion-content>
+
+<ion-fab vertical="bottom" horizontal="center" slot="fixed">
+  <ion-fab-button size="small" color="primary" (click)="dismiss()">
+    <ion-icon name="checkmark"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

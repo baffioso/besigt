@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { MapLayersControlModalPage } from '../map-layers-control-modal/map-layers-control-modal.page';
+import { MapLayersControlModalPage } from '../../pages/map-layers-control-modal/map-layers-control-modal.page';
 
 @Component({
   selector: 'app-map-layers-control',

@@ -9,15 +9,15 @@ const routes: Routes = [
     children: [
       {
         path: 'kort',
-        loadChildren: () => import('../tap-map/map.module').then(m => m.MapPageModule)
+        loadChildren: () => import('../tabs-map/map.module').then(m => m.MapPageModule)
       },
       {
         path: 'tab2',
-        loadChildren: () => import('../tab-projects/tab2.module').then(m => m.Tab2PageModule)
+        loadChildren: () => import('../tabs-projects/tab2.module').then(m => m.Tab2PageModule)
       },
       {
         path: 'tab3',
-        loadChildren: () => import('../tab-settings/tab3.module').then(m => m.Tab3PageModule)
+        loadChildren: () => import('../tabs-settings/tab3.module').then(m => m.Tab3PageModule)
       },
       {
         path: '',

@@ -4,11 +4,15 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+    loadChildren: () => import('./pages/tabs/tabs.module').then(m => m.TabsPageModule)
   },
   {
     path: 'map-layers-control-modal',
-    loadChildren: () => import('./components/map-layers-control-modal/map-layers-control-modal.module').then( m => m.MapLayersControlModalPageModule)
+    loadChildren: () => import('./pages/map-layers-control-modal/map-layers-control-modal.module').then(m => m.MapLayersControlModalPageModule)
+  },
+  {
+    path: 'map-geosearch-modal',
+    loadChildren: () => import('./pages/map-geosearch-modal/map-geosearch-modal.module').then( m => m.MapGeosearchModalPageModule)
   }
 ];
 @NgModule({
@@ -17,4 +21,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

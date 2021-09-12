@@ -1,10 +1,10 @@
 <ion-header>
   <ion-toolbar class="ion-text-center" color="primary">
-    <ion-title>Tilføj lag</ion-title>
+    <ion-title>Lag</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen>
+<ion-content>
   <ion-list *ngFor="let source of layersSources$ | async; trackBy:trackItems">
     <ion-list-header color="light">
       <ion-label role="heading" aria-level="2">
@@ -19,8 +19,9 @@
     </ion-item>
   </ion-list>
 </ion-content>
+
 <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-  <ion-fab-button color="primary" (click)="dismiss()">
+  <ion-fab-button size="small" color="primary" (click)="dismiss()">
     <ion-icon name="checkmark"></ion-icon>
   </ion-fab-button>
 </ion-fab>
