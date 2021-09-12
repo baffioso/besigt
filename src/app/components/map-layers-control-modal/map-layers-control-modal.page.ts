@@ -35,4 +35,8 @@ export class MapLayersControlModalPage implements OnInit {
     this.modalController.dismiss();
   }
 
+  trackItems(index: number, item: any) {
+    return item.name;
+  }
+
 }
