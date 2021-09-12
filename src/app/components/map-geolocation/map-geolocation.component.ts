@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MapService } from 'src/app/services/map.service';
+import { MapStoreService } from 'src/app/stores/map-store.service';
+import { pluck } from 'rxjs/operators';
 
 @Component({
   selector: 'app-map-geolocation',
@@ -8,12 +10,30 @@ import { MapService } from 'src/app/services/map.service';
 })
 export class MapGeolocationComponent implements OnInit {
 
-  constructor(private mapService: MapService) { }
+  tracking$ = this.mapStoreService.mapstate$.pipe(
+    pluck('tracking')
+  );
+  locating$ = this.mapStoreService.mapstate$.pipe(
+    pluck('locating')
+  );
 
-  ngOnInit() { }
+  tracking = false;
+
+
+  constructor(private mapService: MapService, private mapStoreService: MapStoreService) { }
+
+  ngOnInit() {
+  }
 
   onToggleGeolocate(): void {
-    this.mapService.startGeolocate();
+    if (!this.tracking) {
+      this.tracking = true;
+      this.mapService.startTracking();
+    } else {
+      this.tracking = false;
+      this.mapService.stopTracking();
+    }
+
   }
 
 }

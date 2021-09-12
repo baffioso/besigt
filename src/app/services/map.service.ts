@@ -13,6 +13,7 @@ import Point from 'ol/geom/Point';
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 
 import { Layer } from '../interfaces/map-layer-source';
+import { MapStoreService } from '../stores/map-store.service';
 
 
 @Injectable({
@@ -22,7 +23,7 @@ export class MapService {
   private olmap: Map;
   private geolocation: Geolocation;
 
-  constructor() { }
+  constructor(private mapStoreService: MapStoreService) { }
 
   createMap(): void {
 
@@ -73,7 +74,8 @@ export class MapService {
       .forEach(layer => this.olmap.removeLayer(layer));
   }
 
-  startGeolocate(): void {
+  startTracking(): void {
+    this.mapStoreService.updateMapState('locating', true);
 
     this.geolocation = new Geolocation({
       // enableHighAccuracy must be set to true to have the heading value.
@@ -106,6 +108,8 @@ export class MapService {
     );
 
     this.geolocation.on('change:position', () => {
+      this.mapStoreService.updateMapState('locating', false);
+
       const coordinates = this.geolocation.getPosition();
       positionFeature.setGeometry(coordinates ? new Point(coordinates) : null);
       this.olmap.getView().animate({
@@ -125,12 +129,13 @@ export class MapService {
     this.olmap.addLayer(vl);
 
     this.geolocation.setTracking(true);
-
+    this.mapStoreService.updateMapState('tracking', true);
   }
 
-  stopGeolocate(): void {
-    this.geolocation.setTracking(false);
+  stopTracking(): void {
     this.removeLayer('geolocation');
+    this.geolocation.setTracking(false);
+    this.mapStoreService.updateMapState('tracking', false);
   }
 
 
