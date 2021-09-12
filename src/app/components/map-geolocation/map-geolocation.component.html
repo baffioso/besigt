@@ -1,6 +1,6 @@
 <ion-fab horizontal="end" vertical="bottom" slot="fixed">
   <ion-fab-button [color]="tracking ? 'warning': 'primary'" (click)="onToggleGeolocate()">
     <ion-icon name="navigate-outline"></ion-icon>
-    <!-- <ion-spinner *ngIf="locating$ | async"></ion-spinner> -->
+    <ion-spinner *ngIf="locating$ | async" color="medium"></ion-spinner>
   </ion-fab-button>
 </ion-fab>

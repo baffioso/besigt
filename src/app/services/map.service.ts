@@ -11,6 +11,7 @@ import Feature from 'ol/Feature';
 import Geolocation from 'ol/Geolocation';
 import Point from 'ol/geom/Point';
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
+import { ScaleLine } from 'ol/control';
 
 import { Layer } from '../interfaces/map-layer-source';
 import { MapStoreService } from '../stores/map-store.service';
@@ -28,7 +29,11 @@ export class MapService {
   createMap(): void {
 
     this.olmap = new Map({
-      controls: null,
+      controls: [
+        new ScaleLine({
+          units: 'metric',
+        }),
+      ],
       layers: [
         new MapboxVector({
           styleUrl: 'mapbox://styles/mapbox/bright-v9',
@@ -37,15 +42,15 @@ export class MapService {
       ],
       target: 'ol-map',
       view: new View({
-        center: [1280011, 7431990],
+        center: [1360103, 7491908],
         projection: 'EPSG:3857',
-        zoom: 15,
+        zoom: 13,
       }),
     });
 
-    this.olmap.getControls().forEach(control => {
-      this.olmap.removeControl(control);
-    });
+    // this.olmap.getControls().forEach(control => {
+    //   this.olmap.removeControl(control);
+    // });
 
   }
 
@@ -60,7 +65,11 @@ export class MapService {
       opacity: layer.opacity,
       source: new ImageWMS({
         url,
-        params: { layers: layer.name },
+        projection: 'EPSG:25832',
+        params: {
+          layers: layer.name,
+          CRS: 'EPSG:25832'
+        },
         ratio: 1
       }),
     });

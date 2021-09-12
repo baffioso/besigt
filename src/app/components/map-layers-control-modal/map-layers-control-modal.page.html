@@ -1,12 +1,12 @@
 <ion-header>
-  <ion-toolbar class="ion-text-center">
+  <ion-toolbar class="ion-text-center" color="primary">
     <ion-title>Tilføj lag</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content fullscreen>
   <ion-list *ngFor="let source of layersSources$ | async; trackBy:trackItems">
-    <ion-list-header>
+    <ion-list-header color="light">
       <ion-label role="heading" aria-level="2">
         {{source.name}}
       </ion-label>
