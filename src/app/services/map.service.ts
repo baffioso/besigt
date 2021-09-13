@@ -3,8 +3,7 @@ import { Injectable } from '@angular/core';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import ImageWMS from 'ol/source/ImageWMS';
-import { Image as ImageLayer, Tile as TileLayer } from 'ol/layer';
-import VectorLayer from 'ol/layer/Vector';
+import { Image as ImageLayer, Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
 // import MapboxVector from 'ol/layer/MapboxVector';
 import Feature from 'ol/Feature';
@@ -36,7 +35,7 @@ export class MapService {
 
   createMap(): void {
 
-    proj4.defs('EPSG:25832', "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs");
+    proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs');
     register(proj4);
 
     this.olmap = new Map({
@@ -49,12 +48,12 @@ export class MapService {
         new TileLayer({
           source: new TileWMS({
             projection: 'EPSG:25832',
-            url: "https://services.kortforsyningen.dk/orto_foraar?token=44af18dc4d55df1d85ef32b8961ba0de",
+            url: 'https://services.kortforsyningen.dk/orto_foraar?token=44af18dc4d55df1d85ef32b8961ba0de',
             params: {
               layers: 'orto_foraar',
               'VERSION': '1.1.1',
               'TRANSPARENT': 'false',
-              'FORMAT': "image/jpeg",
+              'FORMAT': 'image/jpeg',
             }
           })
         }),
@@ -109,6 +108,32 @@ export class MapService {
     this.olmap.getLayers().getArray()
       .filter(layer => layer.get('name') === layerName)
       .forEach(layer => this.olmap.removeLayer(layer));
+  }
+
+  addMarker(coordinates: [number, number]): void {
+    const marker = new Feature({
+      geometry: new Point(transform(coordinates, 'EPSG:4326', 'EPSG:3857'))
+    });
+
+    marker.setStyle(
+      new Style({
+        image: new CircleStyle({
+          radius: 6,
+          fill: new Fill({
+            color: '#e76f51',
+          }),
+          stroke: new Stroke({
+            color: '#fff',
+            width: 1,
+          }),
+        }),
+      })
+    );
+
+    const source = new VectorSource({ features: [marker] });
+
+    this.olmap.addLayer(new VectorLayer({ source, properties: { name: 'geosearch' } }));
+
   }
 
 

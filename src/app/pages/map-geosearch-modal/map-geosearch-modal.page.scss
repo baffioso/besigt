@@ -3,10 +3,13 @@
     width: 100%;
     max-width: 30em;
     padding: 10px;
+    margin: auto;
 
     input {
         width: 100%;
         padding: 10px;
         box-sizing: border-box;
+        border-radius: 5px;
+        border: 0.01px solid var(--ion-color-medium);
     }
 }

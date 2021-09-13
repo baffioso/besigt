@@ -16,8 +16,10 @@ export class MapGeosearchModalPage implements AfterViewInit {
   ngAfterViewInit(): void {
     dawa.dawaAutocomplete(this.input.nativeElement, {
       select: (res: any) => {
-        console.log(res);
-        this.mapService.flyTo([res.data.x, res.data.y]);
+        const coordinates: [number, number] = [res.data.x, res.data.y];
+        this.mapService.removeLayer('geosearch');
+        this.mapService.addMarker(coordinates);
+        this.mapService.flyTo(coordinates);
         this.modalController.dismiss();
       },
       adgangsadresserOnly: true
