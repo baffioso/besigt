@@ -2,22 +2,47 @@
   <ion-toolbar class="ion-text-center" color="primary">
     <ion-title>Lag</ion-title>
   </ion-toolbar>
+  <ion-segment color="secondary" mode='md' [(ngModel)]="segment">
+    <ion-segment-button value="overlays">
+      <ion-label>Lag</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="baselayers">
+      <ion-label>Baggrundskort</ion-label>
+    </ion-segment-button>
+  </ion-segment>
 </ion-header>
 
 <ion-content>
-  <ion-list *ngFor="let source of layersSources$ | async; trackBy:trackItems">
-    <ion-list-header color="light">
-      <ion-label role="heading" aria-level="2">
-        {{source.name}}
-      </ion-label>
-    </ion-list-header>
-    <ion-item *ngFor="let layer of source.layers; trackBy:trackItems">
-      <ion-label>{{layer.label}}</ion-label>
-      <ion-toggle (ionChange)="onLayerToggle($event, source, layer)" slot="end" [name]="layer.name"
-        [checked]="layer.addedToMap">
-      </ion-toggle>
-    </ion-item>
-  </ion-list>
+
+  <ng-container *ngIf="segment === 'overlays'">
+    <ion-list *ngFor="let overlay of overlays$ | async; trackBy:trackItems">
+      <ion-list-header color="light">
+        <ion-label role="heading" aria-level="2">
+          {{overlay.name}}
+        </ion-label>
+      </ion-list-header>
+      <ion-item *ngFor="let layer of overlay.layers; trackBy:trackItems">
+        <ion-label>{{layer.label}}</ion-label>
+        <ion-toggle (ionChange)="onOverlayToggle($event, overlay, layer)" slot="end" [name]="layer.name"
+          [checked]="layer.addedToMap">
+        </ion-toggle>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+
+  <ng-container *ngIf="segment === 'baselayers'">
+    <ion-list>
+      <ion-radio-group [value]="selectedBaseMap$ | async" (ionChange)="onBaseLayerSelect($event)">
+
+        <ion-item *ngFor="let baseMap of baseMaps$ | async">
+          <ion-label>{{baseMap.name}}</ion-label>
+          <ion-radio slot="start" [value]="baseMap.id"></ion-radio>
+        </ion-item>
+
+      </ion-radio-group>
+    </ion-list>
+  </ng-container>
+
 </ion-content>
 
 <ion-fab vertical="bottom" horizontal="center" slot="fixed">

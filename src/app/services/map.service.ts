@@ -18,6 +18,8 @@ import proj4 from 'proj4';
 
 import { Layer } from '../interfaces/map-layer-source';
 import { MapStoreService } from '../stores/map-store.service';
+import { MapLayersService } from './map-layers.service';
+import BaseLayer from 'ol/layer/Base';
 
 
 @Injectable({
@@ -31,7 +33,7 @@ export class MapService {
   private geolocation: Geolocation;
 
 
-  constructor(private mapStoreService: MapStoreService) { }
+  constructor(private mapStoreService: MapStoreService, private mapLayersService: MapLayersService) { }
 
   createMap(): void {
 
@@ -45,23 +47,7 @@ export class MapService {
         }),
       ],
       layers: [
-        new TileLayer({
-          source: new TileWMS({
-            projection: 'EPSG:25832',
-            url: 'https://services.kortforsyningen.dk/orto_foraar?token=44af18dc4d55df1d85ef32b8961ba0de',
-            params: {
-              layers: 'orto_foraar',
-              'VERSION': '1.1.1',
-              'TRANSPARENT': 'false',
-              'FORMAT': 'image/jpeg',
-            }
-          })
-        }),
-        // new MapboxVector({
-        //   styleUrl: 'mapbox://styles/mapbox/bright-v9',
-        //   accessToken: 'pk.eyJ1IjoiYmFmZmlvc28iLCJhIjoiY2tyYjFrZDlsMTF6ZzJ6cDhkdDg2bW15cSJ9.afJAXgWRc8yRd50I5WFhAQ'
-        // }),
-
+        this.mapLayersService.getBaseMapById('aerial').map
       ],
       target: 'ol-map',
       view: new View({
@@ -71,6 +57,12 @@ export class MapService {
       }),
     });
 
+  }
+
+  changeBaseMap(layerName: 'aerial' | 'streets' | 'hillshade') {
+    const layers = this.olmap.getLayers().getArray();
+    this.olmap.removeLayer(layers[0]);
+    this.olmap.getLayers().insertAt(0, this.mapLayersService.getBaseMapById(layerName).map);
   }
 
   flyTo(coordinates: [number, number]): void {
@@ -87,21 +79,24 @@ export class MapService {
   }
 
   addLayer(url: string, layer: Layer): void {
-    const l = new ImageLayer({
+
+    const wmsLayer = new TileLayer({
       properties: { name: layer.name },
       minZoom: layer.minZoom || 12,
       opacity: layer.opacity,
-      source: new ImageWMS({
-        url,
+      source: new TileWMS({
         projection: 'EPSG:25832',
+        url,
         params: {
           layers: layer.name,
-        },
-        ratio: 1
-      }),
+          'VERSION': '1.1.1',
+          'TRANSPARENT': 'TRUE',
+          'FORMAT': 'image/png',
+        }
+      })
     });
 
-    this.olmap.addLayer(l);
+    this.olmap.addLayer(wmsLayer);
   }
 
   removeLayer(layerName: string): void {
