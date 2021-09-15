@@ -19,7 +19,7 @@ import proj4 from 'proj4';
 import { Layer } from '../interfaces/map-layer-source';
 import { MapStoreService } from '../stores/map-store.service';
 import { MapLayersService } from './map-layers.service';
-import BaseLayer from 'ol/layer/Base';
+import { ViewState } from '../interfaces/map-state';
 
 
 @Injectable({
@@ -57,6 +57,10 @@ export class MapService {
       }),
     });
 
+    this.olmap.on('moveend', () => {
+      this.moveend();
+    });
+
   }
 
   changeBaseMap(layerName: 'aerial' | 'streets' | 'hillshade') {
@@ -72,7 +76,6 @@ export class MapService {
       duration: 1000
     });
   }
-
 
   resize() {
     this.olmap.updateSize();
@@ -198,6 +201,34 @@ export class MapService {
     this.removeLayer('geolocation');
     this.geolocation.setTracking(false);
     this.mapStoreService.updateMapState('tracking', false);
+  }
+
+  setView(view: ViewState) {
+    this.olmap.
+
+      setView(
+        new View({
+          center: transform(view.center, 'EPSG:4326', this.viewProjection),
+          projection: this.viewProjection,
+          rotation: view.rotation,
+          zoom: view.zoom,
+        }),
+      );
+  }
+
+  private moveend() {
+    this.getViewParams();
+  }
+
+  private getViewParams() {
+    const view = this.olmap.getView();
+    const zoom = Math.round(view.getZoom() * 100) / 100;
+    const center = transform(view.getCenter(), this.viewProjection, 'EPSG:4326').map(coor => Math.round(coor * 1000) / 1000);
+    const rotation = view.getRotation();
+
+    this.mapStoreService.updateMapState('view', { center, zoom, rotation });
+
+
   }
 
 

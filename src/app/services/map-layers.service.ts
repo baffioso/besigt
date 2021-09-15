@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { MapboxVector } from 'ol/layer';
 import TileLayer from 'ol/layer/Tile';
 import TileWMS from 'ol/source/TileWMS';
+import WMTS from 'ol/source/WMTS';
+import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import { BehaviorSubject } from 'rxjs';
 import { BaseMap, LayersConfig, MapOverlays } from '../interfaces/map-layer-source';
 

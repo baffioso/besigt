@@ -12,7 +12,7 @@ export class MapStoreService {
 
   constructor() { }
 
-  updateMapState(prop: keyof MapState, value: boolean) {
+  updateMapState(prop: keyof MapState, value: any) {
     const updated = {
       ...this._mapstate$.value,
       [prop]: value
