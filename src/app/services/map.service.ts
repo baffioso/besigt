@@ -30,6 +30,12 @@ export class MapService {
   viewProjection = 'EPSG:3857';
 
   private olmap: Map;
+  private view = new View({
+    center: [1360103, 7491908],
+    projection: this.viewProjection,
+    zoom: 13,
+    enableRotation: false
+  });
   private geolocation: Geolocation;
 
 
@@ -50,11 +56,7 @@ export class MapService {
         this.mapLayersService.getBaseMapById('aerial').map
       ],
       target: 'ol-map',
-      view: new View({
-        center: [1360103, 7491908],
-        projection: this.viewProjection,
-        zoom: 13,
-      }),
+      view: this.view,
     });
 
     this.olmap.on('moveend', () => {
@@ -70,7 +72,7 @@ export class MapService {
   }
 
   flyTo(coordinates: [number, number]): void {
-    this.olmap.getView().animate({
+    this.view.animate({
       center: transform(coordinates, 'EPSG:4326', this.viewProjection),
       zoom: 18,
       duration: 1000
@@ -147,7 +149,7 @@ export class MapService {
       trackingOptions: {
         enableHighAccuracy: true,
       },
-      projection: this.olmap.getView().getProjection(),
+      projection: this.view.getProjection(),
     });
 
     const accuracyFeature = new Feature();
@@ -177,7 +179,7 @@ export class MapService {
 
       const coordinates = this.geolocation.getPosition();
       positionFeature.setGeometry(coordinates ? new Point(coordinates) : null);
-      this.olmap.getView().animate({
+      this.view.animate({
         center: coordinates,
         zoom: 18,
         duration: 1000
@@ -204,16 +206,8 @@ export class MapService {
   }
 
   setView(view: ViewState) {
-    this.olmap.
-
-      setView(
-        new View({
-          center: transform(view.center, 'EPSG:4326', this.viewProjection),
-          projection: this.viewProjection,
-          rotation: view.rotation,
-          zoom: view.zoom,
-        }),
-      );
+    const center = transform(view.center, 'EPSG:4326', this.viewProjection);
+    this.view.animate({ ...view, center });
   }
 
   private moveend() {
@@ -221,10 +215,9 @@ export class MapService {
   }
 
   private getViewParams() {
-    const view = this.olmap.getView();
-    const zoom = Math.round(view.getZoom() * 100) / 100;
-    const center = transform(view.getCenter(), this.viewProjection, 'EPSG:4326').map(coor => Math.round(coor * 1000) / 1000);
-    const rotation = view.getRotation();
+    const zoom = Math.round(this.view.getZoom() * 100) / 100;
+    const center = transform(this.view.getCenter(), this.viewProjection, 'EPSG:4326').map(coor => Math.round(coor * 1000) / 1000);
+    const rotation = this.view.getRotation();
 
     this.mapStoreService.updateMapState('view', { center, zoom, rotation });
 
