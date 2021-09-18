@@ -1,7 +1,7 @@
 export interface ViewState {
     center: number[];
     zoom: number;
-    rotation: number;
+    rotation?: number;
 }
 
 export interface MapState {

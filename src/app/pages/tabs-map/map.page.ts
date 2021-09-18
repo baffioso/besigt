@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { pluck, take, tap } from 'rxjs/operators';
+import { map, mergeMap, pluck, take, tap } from 'rxjs/operators';
 import { ViewState } from 'src/app/interfaces/map-state';
+import { MapLayersService } from 'src/app/services/map-layers.service';
 import { MapService } from 'src/app/services/map.service';
 import { MapStoreService } from 'src/app/stores/map-store.service';
 
@@ -12,27 +13,42 @@ import { MapStoreService } from 'src/app/stores/map-store.service';
 })
 export class TapMapPage implements OnInit {
 
-  constructor(private mapState: MapStoreService, private rounter: Router, private route: ActivatedRoute, private mapSerice: MapService) { }
+  constructor(
+    private mapState: MapStoreService,
+    private rounter: Router,
+    private route: ActivatedRoute,
+    private mapSerice: MapService,
+    private mapLayersService: MapLayersService
+  ) { }
 
   ngOnInit(): void {
 
     this.route.queryParams.pipe(
       take(1),
       tap(params => {
-        const center = params.center?.map((i) => Number(i));
+        const center = [Number(params.x), Number(params.y)];
         const zoom = Number(params.zoom);
-        const rotation = Number(params.rotation);
 
-        if (center[0] !== 0) {
+        if (center[0]) {
           setTimeout(() => {
-            this.mapSerice.setView({ center, zoom, rotation });
+            this.mapSerice.setView({ center, zoom });
           }, 2000);
         }
       })
     ).subscribe();
 
-    this.mapState.mapstate$.pipe(
+    const mapNavigationParams$ = this.mapState.mapstate$.pipe(
       pluck('view'),
+      map(v => ({ x: v?.center[0], y: v?.center[1], zoom: v?.zoom }))
+    );
+
+    const addedOverlaysParams$ = this.mapLayersService.overlays$.pipe(
+      take(1),
+      map(overlays => overlays.map(o => o.layers.filter(l => l.addedToMap))),
+      tap(console.log)
+    ).subscribe();
+
+    mapNavigationParams$.pipe(
       tap(view => {
         this.rounter.navigate([], {
           relativeTo: this.route,
@@ -41,14 +57,5 @@ export class TapMapPage implements OnInit {
       })
     ).subscribe();
   }
-
-  // addMapViewStateToUrl(queryParams: ViewState) {
-  //   // console.log(queryParams);
-  //   // this.rounter.navigate([], {
-  //   //   relativeTo: this.activatedRoute,
-  //   //   queryParams: { hello: 'world' },
-  //   //   queryParamsHandling: 'merge',
-  //   // });
-  // }
 
 }

@@ -27,21 +27,22 @@ import { ViewState } from '../interfaces/map-state';
 })
 export class MapService {
 
-  viewProjection = 'EPSG:3857';
-
+  private viewProjection = 'EPSG:3857';
   private olmap: Map;
-  private view = new View({
-    center: [1360103, 7491908],
-    projection: this.viewProjection,
-    zoom: 13,
-    enableRotation: false
-  });
+  private view: View;
   private geolocation: Geolocation;
 
 
   constructor(private mapStoreService: MapStoreService, private mapLayersService: MapLayersService) { }
 
-  createMap(): void {
+  createMap(center: [number, number], zoom: number): void {
+
+    this.view = new View({
+      center,
+      projection: this.viewProjection,
+      zoom,
+      enableRotation: false
+    });
 
     proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs');
     register(proj4);

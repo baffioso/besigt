@@ -8,10 +8,13 @@ import { MapService } from 'src/app/services/map.service';
 })
 export class MapComponent implements AfterViewInit {
 
+  private center: [number, number] = [1360103, 7491908];
+  private zoom = 13;
+
   constructor(private mapService: MapService) { }
 
   ngAfterViewInit() {
-    this.mapService.createMap();
+    this.mapService.createMap(this.center, this.zoom);
 
     setTimeout(() => {
       this.mapService.resize();
