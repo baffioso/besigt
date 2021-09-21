@@ -2,9 +2,9 @@ import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Tab2Page } from './tab2.page';
+import { ProjectsPage } from './projects.page';
 
-import { Tab2PageRoutingModule } from './tab2-routing.module';
+import { ProjectsPageRoutingModule } from './projects-routing.module';
 import { ProjectListComponent } from '../../components/project-list/project-list.component';
 
 @NgModule({
@@ -12,8 +12,8 @@ import { ProjectListComponent } from '../../components/project-list/project-list
     IonicModule,
     CommonModule,
     FormsModule,
-    Tab2PageRoutingModule
+    ProjectsPageRoutingModule
   ],
-  declarations: [Tab2Page, ProjectListComponent]
+  declarations: [ProjectsPage, ProjectListComponent]
 })
-export class Tab2PageModule { }
+export class ProjectsPageModule { }

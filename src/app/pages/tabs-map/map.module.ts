@@ -10,6 +10,8 @@ import { MapLayersControlComponent } from '../../components/map-layers-control/m
 import { MapToolsComponent } from '../../components/map-tools/map-tools.component';
 import { MapGeolocationComponent } from '../../components/map-geolocation-fab/map-geolocation.component';
 import { MapGeosearchComponent } from 'src/app/components/map-geosearch-fab/map-geosearch.component';
+import { MapLayersControlModalPage } from '../map-layers-control-modal/map-layers-control-modal.page';
+import { MapGeosearchModalPage } from '../map-geosearch-modal/map-geosearch-modal.page';
 
 @NgModule({
   imports: [
@@ -18,6 +20,15 @@ import { MapGeosearchComponent } from 'src/app/components/map-geosearch-fab/map-
     FormsModule,
     MapPageRoutingModule
   ],
-  declarations: [TapMapPage, MapComponent, MapLayersControlComponent, MapToolsComponent, MapGeolocationComponent, MapGeosearchComponent]
+  declarations: [
+    TapMapPage,
+    MapComponent,
+    MapLayersControlComponent,
+    MapToolsComponent,
+    MapGeolocationComponent,
+    MapGeosearchComponent,
+    MapLayersControlModalPage,
+    MapGeosearchModalPage
+  ]
 })
 export class MapPageModule { }

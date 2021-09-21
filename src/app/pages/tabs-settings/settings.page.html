@@ -8,7 +8,7 @@
 
 <ion-content>
   <ion-list>
-    <ion-item *ngIf="(signedIn$ | async) === true" (click)="signOut()" [routerLink]="['/app/kort']">
+    <ion-item *ngIf="(signedIn$ | async) === true" (click)="signOut()" [routerLink]="['/app/map']">
       <ion-icon name="log-out-outline" aria-hidden="true" slot="start"></ion-icon>
       <ion-label>Log ud</ion-label>
     </ion-item>

@@ -9,12 +9,12 @@ const routes: Routes = [
     component: TabsPage,
     children: [
       {
-        path: 'kort',
+        path: 'map',
         loadChildren: () => import('../tabs-map/map.module').then(m => m.MapPageModule)
       },
       {
         path: 'projects',
-        loadChildren: () => import('../tabs-projects/tab2.module').then(m => m.Tab2PageModule),
+        loadChildren: () => import('../tabs-projects/projects.module').then(m => m.ProjectsPageModule),
         canLoad: [AuthGuard],
         // children: [
         //   {
@@ -28,19 +28,19 @@ const routes: Routes = [
         // ]
       },
       {
-        path: 'tab3',
-        loadChildren: () => import('../tabs-settings/tab3.module').then(m => m.Tab3PageModule)
+        path: 'settings',
+        loadChildren: () => import('../tabs-settings/settings.module').then(m => m.SettingsPageModule)
       },
       {
         path: '',
-        redirectTo: '/app/kort',
+        redirectTo: '/app/map',
         pathMatch: 'full'
       }
     ]
   },
   {
     path: '',
-    redirectTo: '/app/kort',
+    redirectTo: '/app/map',
     pathMatch: 'full'
   }
 ];

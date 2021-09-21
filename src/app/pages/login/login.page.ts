@@ -33,7 +33,7 @@ export class LoginPage implements OnInit {
 
     this.supabase.signIn(this.credentials.value).then(async () => {
       await loading.dismiss();
-      this.router.navigateByUrl('/app/kort', { replaceUrl: true });
+      this.router.navigateByUrl('/app/map', { replaceUrl: true });
     }, async err => {
       await loading.dismiss();
       this.showError('Login failed', err.message);

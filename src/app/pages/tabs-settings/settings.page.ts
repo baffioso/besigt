@@ -3,11 +3,11 @@ import { map } from 'rxjs/operators';
 import { SupabaseService } from 'src/app/services/supabase.service';
 
 @Component({
-  selector: 'app-tab3',
-  templateUrl: 'tab3.page.html',
-  styleUrls: ['tab3.page.scss']
+  selector: 'app-settings',
+  templateUrl: 'settings.page.html',
+  styleUrls: ['settings.page.scss']
 })
-export class Tab3Page {
+export class SettingsPage {
   signedIn$ = this.supabase.session$.pipe(
     map(session => session === null ? true : false)
   );
