@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-back-button defaultHref="app/kort" icon="map-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-title>login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+  <form (ngSubmit)="login()" [formGroup]="credentials">
+    <div class="input-group">
+      <ion-item>
+        <ion-input placeholder="Email" formControlName="email"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input type="password" placeholder="password" formControlName="password"></ion-input>
+      </ion-item>
+    </div>
+
+    <ion-button type="submit" expand="block" [disabled]="!credentials.valid" color="primary">Log in</ion-button>
+    <ion-button type="button" expand="block" (click)="signUp()" color="secondary">Sign up!
+    </ion-button>
+  </form>
+  <!-- <ion-item>
+    <ion-input #input type="email" placeholder="Email"></ion-input>
+  </ion-item>
+  <ion-button (click)="handleLogin(input.value.toString())">LOGIN</ion-button> -->
+
+  <!-- <ion-button type="button" expand="block" color="light" fill="clear">Not yet a member? Sign up!
+    </ion-button> -->
+
+  <!-- <ion-button type="button" expand="block" color="tertiary">
+      <ion-icon name="logo-google" slot="start"></ion-icon>
+      Log ind med Google
+    </ion-button>
+    <ion-button type="button" expand="block" color="tertiary">
+      <ion-icon name="logo-facebook" slot="start"></ion-icon>
+      Log ind med Facebok
+    </ion-button> -->
+</ion-content>

@@ -1,16 +1,22 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
     <ion-title>
-      Tab 3
+      Indstillinger
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <ion-list>
+    <ion-item *ngIf="(signedIn$ | async) === true" (click)="signOut()" [routerLink]="['/app/kort']">
+      <ion-icon name="log-out-outline" aria-hidden="true" slot="start"></ion-icon>
+      <ion-label>Log ud</ion-label>
+    </ion-item>
+
+    <ion-item *ngIf="(signedIn$ | async) === false" [routerLink]="['/login']">
+      <ion-icon name="log-in-outline" aria-hidden="true" slot="start"></ion-icon>
+      <ion-label>Log ind</ion-label>
+    </ion-item>
+  </ion-list>
 
 </ion-content>

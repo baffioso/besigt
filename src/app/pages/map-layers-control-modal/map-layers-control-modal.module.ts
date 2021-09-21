@@ -17,4 +17,4 @@ import { MapLayersControlModalPage } from './map-layers-control-modal.page';
   ],
   declarations: [MapLayersControlModalPage]
 })
-export class MapLayersControlModalPageModule {}
+export class MapLayersControlModalPageModule { }

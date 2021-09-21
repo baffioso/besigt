@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from 'src/app/guards/auth.guard';
 import { TabsPage } from './tabs.page';
 
 const routes: Routes = [
@@ -12,8 +13,19 @@ const routes: Routes = [
         loadChildren: () => import('../tabs-map/map.module').then(m => m.MapPageModule)
       },
       {
-        path: 'tab2',
-        loadChildren: () => import('../tabs-projects/tab2.module').then(m => m.Tab2PageModule)
+        path: 'projects',
+        loadChildren: () => import('../tabs-projects/tab2.module').then(m => m.Tab2PageModule),
+        canLoad: [AuthGuard],
+        // children: [
+        //   {
+        //     path: 'projects/create',
+        //     loadChildren: () => import('../project-create/project-create.module').then(m => m.ProjectCreatePageModule)
+        //   },
+        //   {
+        //     path: 'projects/detail',
+        //     loadChildren: () => import('../project-detail/project-detail.module').then(m => m.ProjectDetailPageModule)
+        //   }
+        // ]
       },
       {
         path: 'tab3',

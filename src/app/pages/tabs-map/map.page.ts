@@ -42,11 +42,11 @@ export class TapMapPage implements OnInit {
       map(v => ({ x: v?.center[0], y: v?.center[1], zoom: v?.zoom }))
     );
 
-    const addedOverlaysParams$ = this.mapLayersService.overlays$.pipe(
-      take(1),
-      map(overlays => overlays.map(o => o.layers.filter(l => l.addedToMap))),
-      tap(console.log)
-    ).subscribe();
+    // const addedOverlaysParams$ = this.mapLayersService.overlays$.pipe(
+    //   take(1),
+    //   map(overlays => overlays.map(o => o.layers.filter(l => l.addedToMap))),
+    //   // tap(console.log)
+    // ).subscribe();
 
     mapNavigationParams$.pipe(
       tap(view => {
