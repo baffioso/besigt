@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
+import { Session } from '@supabase/supabase-js';
 import { map, tap } from 'rxjs/operators';
 import { SupabaseService } from 'src/app/services/supabase.service';
+import { ProjectStoreService } from 'src/app/stores/project-store.service';
 
 @Component({
   selector: 'app-settings',
@@ -8,15 +10,16 @@ import { SupabaseService } from 'src/app/services/supabase.service';
   styleUrls: ['settings.page.scss']
 })
 export class SettingsPage {
-  signedIn$ = this.supabase.session$.pipe(
-    map(session => session === undefined || null ? true : false),
-    tap(console.log)
-  );
+  authenticated$ = this.supabase.authenticated$;
 
-  constructor(private supabase: SupabaseService) { }
+  constructor(
+    private supabase: SupabaseService,
+    private projectStore: ProjectStoreService
+  ) { }
 
   signOut() {
     this.supabase.signOut();
+    this.projectStore.clearProjectState();
   }
 
 }

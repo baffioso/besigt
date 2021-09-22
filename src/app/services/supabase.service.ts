@@ -1,10 +1,10 @@
 import { Injectable, Query } from '@angular/core';
 import { SupabaseClient, createClient, User, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Credentials } from '../interfaces/credentials';
 import { CreateProject, Project } from '../interfaces/project';
-import { ProjectStoreService } from '../stores/project-store.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,18 +13,32 @@ export class SupabaseService {
   private supabase: SupabaseClient;
   private _session$: BehaviorSubject<Session> = new BehaviorSubject(null);
   session$ = this._session$.asObservable();
+  authenticated$ = this.session$.pipe(
+    map((session: Session) => session?.user.aud === 'authenticated' ? true : false)
+  );
 
   constructor() {
-    this.supabase = createClient(environment.supabaseUrl, environment.supbaseKey);
+    this.supabase = createClient(
+      environment.supabaseUrl,
+      environment.supbaseKey,
+      {
+        autoRefreshToken: true
+      }
+    );
+
+    this.loadSession();
   }
 
-  get user() {
-    return this.supabase.auth.user();
+  loadSession() {
+    const session = this.supabase.auth.session();
+
+    if (session) {
+      this._session$.next(session);
+    } else {
+      this._session$.next(null);
+    }
   }
 
-  get session() {
-    return this.supabase.auth.session();
-  }
 
   async signIn(credentials: Credentials) {
     const { user, error, session } = await this.supabase.auth.signIn(credentials);
@@ -51,11 +65,6 @@ export class SupabaseService {
       return this.supabase.auth.signOut();
     });
   }
-
-  // signOut() {
-  //   this._session$.next(null);
-  //   return this.supabase.auth.signOut();
-  // }
 
   async signUp(credentials: Credentials) {
     const { user, error, session } = await this.supabase.auth.signUp(credentials);
