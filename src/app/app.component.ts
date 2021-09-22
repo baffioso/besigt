@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { StoreService } from './services/store.service';
+import { ProjectStoreService } from './stores/project-store.service';
 import { SupabaseService } from './services/supabase.service';
 
 @Component({
@@ -9,13 +9,13 @@ import { SupabaseService } from './services/supabase.service';
 })
 export class AppComponent implements OnInit {
 
-  constructor(private readonly supabase: SupabaseService, private storeService: StoreService) { }
+  constructor(private readonly supabase: SupabaseService, private projectStoreService: ProjectStoreService) { }
 
   ngOnInit(): void {
     this.supabase.authChanges((event, session) => {
       console.log(event, session);
       if (event === 'SIGNED_IN') {
-        this.storeService.loadProjects();
+        this.projectStoreService.loadProjects();
       }
     });
   }

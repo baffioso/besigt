@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ModalController } from '@ionic/angular';
+import { Router } from '@angular/router';
 import { SupabaseService } from 'src/app/services/supabase.service';
+import { ProjectStoreService } from 'src/app/stores/project-store.service';
 
 @Component({
   selector: 'app-project-create',
@@ -13,7 +14,8 @@ export class ProjectCreatePage implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private supabase: SupabaseService,
+    private projectStore: ProjectStoreService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -24,7 +26,9 @@ export class ProjectCreatePage implements OnInit {
   }
 
   onCreateProject() {
-    this.supabase.addProject(this.project.value);
+    this.projectStore.addProject(this.project.value)
+      .then(() => this.router.navigateByUrl('/app/projects'));
+
   }
 
 }

@@ -23,6 +23,7 @@
       "rules": {
         "no-underscore-dangle": "off",
         "@typescript-eslint/member-ordering": "off",
+        "@typescript-eslint/naming-convention": "off",
         "@angular-eslint/component-class-suffix": [
           "error",
           {

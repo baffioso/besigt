@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { of } from 'rxjs';
-import { StoreService } from 'src/app/services/store.service';
+import { ProjectStoreService } from 'src/app/stores/project-store.service';
 
 @Component({
   selector: 'app-projects',
@@ -8,8 +8,8 @@ import { StoreService } from 'src/app/services/store.service';
   styleUrls: ['projects.page.scss']
 })
 export class ProjectsPage {
-  projects$ = this.storeService.projects$;
+  projects$ = this.projectStoreService.projects$;
 
-  constructor(private storeService: StoreService) { }
+  constructor(private projectStoreService: ProjectStoreService) { }
 
 }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { SupabaseService } from 'src/app/services/supabase.service';
 
 @Component({
@@ -9,7 +9,8 @@ import { SupabaseService } from 'src/app/services/supabase.service';
 })
 export class SettingsPage {
   signedIn$ = this.supabase.session$.pipe(
-    map(session => session === null ? true : false)
+    map(session => session === undefined || null ? true : false),
+    tap(console.log)
   );
 
   constructor(private supabase: SupabaseService) { }

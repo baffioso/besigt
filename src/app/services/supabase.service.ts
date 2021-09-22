@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Query } from '@angular/core';
 import { SupabaseClient, createClient, User, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Credentials } from '../interfaces/credentials';
 import { CreateProject, Project } from '../interfaces/project';
+import { ProjectStoreService } from '../stores/project-store.service';
 
 @Injectable({
   providedIn: 'root'
@@ -76,12 +77,12 @@ export class SupabaseService {
 
   async addProject(project: CreateProject) {
     const newProject = {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       user_id: this._session$.value.user.id,
       ...project
     };
     // You could check for error, minlegth of task is 3 chars!
-    const result = await this.supabase.from<Project>('projects').insert(newProject, { returning: 'representation' });
+    const query = await this.supabase.from<Project>('projects').insert(newProject, { returning: 'representation' });
+    return query.data;
   }
 
   async loadProjects(): Promise<Project[]> {
