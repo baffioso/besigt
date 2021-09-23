@@ -6,12 +6,16 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-list>
-    <ion-item *ngFor="let project of projects$ | async" detail>
-      <!-- <ion-avatar slot="start">
-        <img src="./assets/icon/favicon.png">
-      </ion-avatar> -->
+<ion-content>
+  <div *ngIf="(projects$ | async).length === 0" class="ion-text-center ion-padding">
+    <ion-text>Du skal logge ind for at se
+      projekter</ion-text>
+    <br>
+    <ion-button class="ion-padding" routerLink="/login">Log ind</ion-button>
+  </div>
+
+  <ion-list *ngIf="(projects$ | async).length > 0">
+    <ion-item *ngFor="let project of projects$ | async" detail (click)="goToProject(project)">
       <ion-label>
         <h2>{{project.name}}</h2>
         <h3>{{project.inserted_at | date}}</h3>

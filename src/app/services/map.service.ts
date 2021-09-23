@@ -72,10 +72,10 @@ export class MapService {
     this.olmap.getLayers().insertAt(0, this.mapLayersService.getBaseMapById(layerName).map);
   }
 
-  flyTo(coordinates: [number, number]): void {
+  flyTo(coordinates: [number, number], zoom = 18): void {
     this.view.animate({
       center: transform(coordinates, 'EPSG:4326', this.viewProjection),
-      zoom: 18,
+      zoom,
       duration: 1000
     });
   }

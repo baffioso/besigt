@@ -10,6 +10,10 @@ export class MapStoreService {
   private _mapstate$ = new BehaviorSubject<MapState>(null);
   mapstate$ = this._mapstate$.asObservable();
 
+  get viewState() {
+    return this._mapstate$.value.view;
+  }
+
   constructor() { }
 
   updateMapState(prop: keyof MapState, value: any) {

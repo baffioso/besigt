@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Credentials } from '../interfaces/credentials';
+import { ViewState } from '../interfaces/map-state';
 import { CreateProject, Project } from '../interfaces/project';
 
 @Injectable({
@@ -95,7 +96,29 @@ export class SupabaseService {
   }
 
   async loadProjects(): Promise<Project[]> {
-    const query = await this.supabase.from<Project>('projects').select('*');
+    const query = await this.supabase
+      .from<Project>('projects')
+      .select(`
+        *,
+        map_state (
+          name,
+          map_state
+        )
+      `);
+    return query.data;
+  }
+
+  async addMapViewState(project_id, viewState: ViewState) {
+    const newViewState = {
+      user_id: this._session$.value.user.id,
+      project_id,
+      name: 'test',
+      map_state: viewState
+    };
+
+    const query = await this.supabase
+      .from('map_state')
+      .insert(newViewState, { returning: 'representation' });
     return query.data;
   }
 
