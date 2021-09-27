@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { GeolocationService } from 'src/app/services/geolocation.service';
+import { ProjectStoreService } from 'src/app/stores/project-store.service';
 
 @Component({
   selector: 'app-map-tools',
@@ -7,8 +9,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MapToolsComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private projectStore: ProjectStoreService,
+    private geolocationService: GeolocationService
+  ) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
+
+  onAddPhoto() {
+    this.projectStore.addPhoto();
+  }
+
+  startTracking() {
+    this.geolocationService.startTracking();
+    this.geolocationService.trackingPositions$.subscribe(console.log);
+  }
 
 }

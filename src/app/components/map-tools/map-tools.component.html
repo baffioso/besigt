@@ -4,15 +4,15 @@
   </ion-fab-button>
   <ion-fab-list>
     <app-map-geosearch></app-map-geosearch>
-    <!-- <ion-fab-button color="light">
-      <ion-icon name="analytics"></ion-icon>
-    </ion-fab-button>
-    <ion-fab-button color="light">
+    <ion-fab-button color="light" (click)="onAddPhoto()">
       <ion-icon name="camera"></ion-icon>
     </ion-fab-button>
-    <ion-fab-button color="light">
-      <ion-icon name="footsteps"></ion-icon>
+    <!-- <ion-fab-button color="light">
+      <ion-icon name="analytics"></ion-icon>
     </ion-fab-button> -->
+    <ion-fab-button color="light" (click)="startTracking()">
+      <ion-icon name="footsteps"></ion-icon>
+    </ion-fab-button>
     <ion-fab-button size="small" color="light" [routerLink]="['/project-create']">
       <ion-icon name="bookmark">
       </ion-icon>

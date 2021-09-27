@@ -8,6 +8,7 @@ import VectorSource from 'ol/source/Vector';
 // import MapboxVector from 'ol/layer/MapboxVector';
 import Feature from 'ol/Feature';
 import Geolocation from 'ol/Geolocation';
+import GeoJSON from 'ol/format/GeoJSON';
 import Point from 'ol/geom/Point';
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 import { ScaleLine } from 'ol/control';
@@ -95,9 +96,9 @@ export class MapService {
         url,
         params: {
           layers: layer.name,
-          'VERSION': '1.1.1',
-          'TRANSPARENT': 'TRUE',
-          'FORMAT': 'image/png',
+          VERSION: '1.1.1',
+          TRANSPARENT: 'TRUE',
+          FORMAT: 'image/png',
         }
       })
     });
@@ -113,7 +114,7 @@ export class MapService {
 
   addMarker(coordinates: [number, number]): void {
     const marker = new Feature({
-      geometry: new Point(transform(coordinates, 'EPSG:4326', 'EPSG:3857'))
+      geometry: new Point(transform(coordinates, 'EPSG:4326', this.viewProjection))
     });
 
     marker.setStyle(
@@ -221,9 +222,36 @@ export class MapService {
     const rotation = this.view.getRotation();
 
     this.mapStoreService.updateMapState('view', { center, zoom, rotation });
-
-
   }
 
+  // UTILS
+  transform(point: [number, number], source: string = 'EPSG:4326', destination: string = 'EPSG:25832') {
+    return transform(point, source, destination);
+  }
 
+  addGeoJSON(geojson, projection: string): void {
+    const vectorSource = new VectorSource({
+      features: new GeoJSON({ featureProjection: 'EPSG:25832' }).readFeatures(geojson, { featureProjection: 'EPSG:3857' }),
+    });
+
+
+    const vectorLayer = new VectorLayer({
+      source: vectorSource,
+      style: new Style({
+        image: new CircleStyle({
+          radius: 15,
+          fill: new Fill({
+            color: '#3399CC',
+          }),
+          stroke: new Stroke({
+            color: '#fff',
+            width: 2,
+          }),
+        }),
+      }),
+    });
+
+    this.olmap.addLayer(vectorLayer);
+
+  }
 }

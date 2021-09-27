@@ -4,8 +4,9 @@ import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Credentials } from '../interfaces/credentials';
+import { Image, CreateImage } from '../interfaces/image';
 import { ViewState } from '../interfaces/map-state';
-import { CreateProject, Project } from '../interfaces/project';
+import { CreateProject, Project, ProjectWithRelations } from '../interfaces/project';
 
 @Injectable({
   providedIn: 'root'
@@ -95,14 +96,20 @@ export class SupabaseService {
     return query.data;
   }
 
-  async loadProjects(): Promise<Project[]> {
+  async loadProjects(): Promise<ProjectWithRelations[]> {
     const query = await this.supabase
-      .from<Project>('projects')
+      .from<ProjectWithRelations>('projects')
       .select(`
         *,
         map_state (
           name,
           map_state
+        ),
+        images (
+          id,
+          file_name,
+          description,
+          geom
         )
       `);
     return query.data;
@@ -120,6 +127,23 @@ export class SupabaseService {
       .from('map_state')
       .insert(newViewState, { returning: 'representation' });
     return query.data;
+  }
+
+  async addImage(image: CreateImage) {
+    const newImage = {
+      user_id: this._session$.value.user.id,
+      ...image
+    };
+    const query = await this.supabase.from('images').insert(newImage, { returning: 'representation' });
+    return query.data;
+  }
+
+  async uploadImage(filePath: string, file: File) {
+    return await this.supabase.storage.from('images').upload(filePath, file);
+  }
+
+  downloadImage(path: string) {
+    return this.supabase.storage.from('images').download(path);
   }
 
 }

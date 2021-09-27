@@ -1,5 +1,7 @@
 import { AfterViewInit, Component } from '@angular/core';
+import { tap } from 'rxjs/operators';
 import { MapService } from 'src/app/services/map.service';
+import { ProjectStoreService } from 'src/app/stores/project-store.service';
 
 @Component({
   selector: 'app-map',
@@ -11,7 +13,7 @@ export class MapComponent implements AfterViewInit {
   private center: [number, number] = [1360103, 7491908];
   private zoom = 13;
 
-  constructor(private mapService: MapService) { }
+  constructor(private mapService: MapService, private projectStore: ProjectStoreService) { }
 
   ngAfterViewInit() {
     this.mapService.createMap(this.center, this.zoom);
@@ -19,6 +21,16 @@ export class MapComponent implements AfterViewInit {
     setTimeout(() => {
       this.mapService.resize();
     }, 500);
+
+    this.projectStore.currentProjectImageGeoJSON$.pipe(
+      tap(geojson => {
+        try {
+          this.mapService.addGeoJSON(geojson, 'EPSG:25832');
+        } catch (error) {
+          console.log(error);
+        }
+      })
+    ).subscribe();
   }
 
 }
