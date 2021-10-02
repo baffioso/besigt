@@ -1,4 +1,5 @@
 <ion-content>
+    <ion-progress-bar *ngIf="loading$ | async" type="indeterminate" color="tertiary"></ion-progress-bar>
     <app-map></app-map>
     <div class="current-project" *ngIf="(currentProject$ | async) !== null">
         <ion-chip class="project-chip" color="primary" outline>

@@ -16,7 +16,7 @@ export class ProjectStoreService {
   private _projects$ = new BehaviorSubject<ProjectWithRelations[]>([]);
   projects$ = this._projects$.asObservable();
 
-  private _currentProject$ = new BehaviorSubject<Project | ProjectWithRelations>(null);
+  private _currentProject$ = new BehaviorSubject<ProjectWithRelations>(null);
   currentProject$ = this._currentProject$.asObservable();
 
   currentProjectImageGeoJSON$ = this.currentProject$.pipe(

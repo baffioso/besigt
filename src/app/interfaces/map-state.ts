@@ -8,6 +8,7 @@ export interface MapState {
     tracking?: boolean;
     locating?: boolean;
     loadingLayer?: boolean;
+    loadingFeatureInfo?: boolean;
     view?: ViewState;
     mapLoaded?: boolean;
 }

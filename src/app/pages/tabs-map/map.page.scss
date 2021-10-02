@@ -9,3 +9,9 @@
 .project-chip {
     background: rgba(255, 255, 255, 0.4);
 }
+
+ion-progress-bar {
+    position: fixed;
+    top: 0px;
+    z-index: 100;
+}

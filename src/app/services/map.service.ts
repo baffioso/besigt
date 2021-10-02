@@ -146,6 +146,8 @@ export class MapService {
   addClickInfo(): void {
 
     this.olmap.on('click', (e) => {
+      this.mapStoreService.updateMapState('loadingFeatureInfo', true);
+
       const features = this.olmap.getFeaturesAtPixel(e.pixel);
 
       if (features.length === 0) {

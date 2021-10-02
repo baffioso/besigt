@@ -14,20 +14,28 @@ import { ProjectStoreService } from 'src/app/stores/project-store.service';
   styleUrls: ['map.page.scss']
 })
 export class TapMapPage implements OnInit {
+  loading$ = this.mapStore.mapstate$.pipe(
+    pluck('loadingFeatureInfo')
+  );
 
   currentProject$ = this.projectStore.currentProject$;
 
   constructor(
     private rounter: Router,
-    private mapState: MapStoreService,
     private route: ActivatedRoute,
-    private mapService: MapService,
-    private mapStoreService: MapStoreService,
+    private mapStore: MapStoreService,
     private projectStore: ProjectStoreService,
+    private mapService: MapService,
     public modalController: ModalController,
   ) { }
 
   ngOnInit(): void {
+
+    this.mapStore.mapstate$.pipe(
+      pluck('loadingFeatureInfo'),
+      tap(console.log)
+    ).subscribe();
+
 
     this.route.queryParams.pipe(
       take(1),
@@ -38,12 +46,12 @@ export class TapMapPage implements OnInit {
         if (center[0]) {
           setTimeout(() => {
             this.mapService.setView({ center, zoom });
-          }, 2000);
+          }, 3000);
         }
       })
     ).subscribe();
 
-    const mapNavigationParams$ = this.mapState.mapstate$.pipe(
+    const mapNavigationParams$ = this.mapStore.mapstate$.pipe(
       pluck('view'),
       map(v => ({ x: v?.center[0], y: v?.center[1], zoom: v?.zoom }))
     );
@@ -63,9 +71,10 @@ export class TapMapPage implements OnInit {
       })
     ).subscribe();
 
-    this.mapStoreService.selectedFeature$.pipe(
+    this.mapStore.selectedFeature$.pipe(
       tap(feature => {
         this.showFeatureInfo(feature);
+        this.mapStore.updateMapState('loadingFeatureInfo', false);
       })
     ).subscribe();
   }

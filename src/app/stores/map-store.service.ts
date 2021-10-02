@@ -10,7 +10,7 @@ import { SupabaseService } from '../services/supabase.service';
 })
 export class MapStoreService {
 
-  private _mapstate$ = new BehaviorSubject<MapState>({ mapLoaded: false });
+  private _mapstate$ = new BehaviorSubject<MapState>({ mapLoaded: false, loadingFeatureInfo: false });
   mapstate$ = this._mapstate$.asObservable();
 
   private _selectedFeature$ = new Subject();
