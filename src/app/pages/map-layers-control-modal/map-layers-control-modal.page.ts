@@ -21,8 +21,7 @@ export class MapLayersControlModalPage implements OnInit {
 
   constructor(public modalController: ModalController, private mapLayersService: MapLayersService, private mapService: MapService) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   onOverlayToggle(event: any, source: MapOverlays, layer: Layer) {
 

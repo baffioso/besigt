@@ -9,6 +9,8 @@ import { ProjectStoreService } from 'src/app/stores/project-store.service';
 })
 export class MapToolsComponent implements OnInit {
 
+  currentProject$ = this.projectStore.currentProject$;
+
   constructor(
     private projectStore: ProjectStoreService,
     private geolocationService: GeolocationService

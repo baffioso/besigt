@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { Session } from '@supabase/supabase-js';
-import { map, tap } from 'rxjs/operators';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { ProjectStoreService } from 'src/app/stores/project-store.service';
 

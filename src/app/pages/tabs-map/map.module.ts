@@ -12,6 +12,9 @@ import { MapGeolocationComponent } from '../../components/map-geolocation-fab/ma
 import { MapGeosearchComponent } from 'src/app/components/map-geosearch-fab/map-geosearch.component';
 import { MapLayersControlModalPage } from '../map-layers-control-modal/map-layers-control-modal.page';
 import { MapGeosearchModalPage } from '../map-geosearch-modal/map-geosearch-modal.page';
+import { MapFeatureInfoModalComponent } from 'src/app/components/map-feature-info-modal/map-feature-info-modal.component';
+import { MapLegendFabComponent } from 'src/app/components/map-legend-fab/map-legend-fab.component';
+import { MapLegendPopoverComponent } from 'src/app/components/map-legend-popover/map-legend-popover.component';
 
 @NgModule({
   imports: [
@@ -28,7 +31,10 @@ import { MapGeosearchModalPage } from '../map-geosearch-modal/map-geosearch-moda
     MapGeolocationComponent,
     MapGeosearchComponent,
     MapLayersControlModalPage,
-    MapGeosearchModalPage
+    MapGeosearchModalPage,
+    MapFeatureInfoModalComponent,
+    MapLegendFabComponent,
+    MapLegendPopoverComponent
   ]
 })
 export class MapPageModule { }

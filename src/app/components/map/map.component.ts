@@ -13,18 +13,23 @@ export class MapComponent implements AfterViewInit {
   private center: [number, number] = [1360103, 7491908];
   private zoom = 13;
 
-  constructor(private mapService: MapService, private projectStore: ProjectStoreService) { }
+  constructor(
+    private mapService: MapService,
+    private projectStore: ProjectStoreService,
+  ) { }
 
   ngAfterViewInit() {
     this.mapService.createMap(this.center, this.zoom);
 
+    // Hack to prevent map not showing
     setTimeout(() => {
       this.mapService.resize();
-    }, 500);
+    }, 1000);
 
     this.projectStore.currentProjectImageGeoJSON$.pipe(
       tap(geojson => {
         try {
+          this.mapService.removeProjectOverlays();
           this.mapService.addGeoJSON(geojson, 'EPSG:25832');
         } catch (error) {
           console.log(error);

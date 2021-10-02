@@ -1,6 +1,13 @@
 <ion-content>
     <app-map></app-map>
+    <div class="current-project" *ngIf="(currentProject$ | async) !== null">
+        <ion-chip class="project-chip" color="primary" outline>
+            <ion-label>{{ (currentProject$ | async)?.name }}</ion-label>
+            <ion-icon (click)="onClearProject()" name="close-circle"></ion-icon>
+        </ion-chip>
+    </div>
     <app-map-layers-control></app-map-layers-control>
     <app-map-tools></app-map-tools>
+    <app-map-legend-fab></app-map-legend-fab>
     <app-map-geolocation></app-map-geolocation>
 </ion-content>

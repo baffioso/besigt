@@ -1,0 +1,11 @@
+.current-project {
+    position: fixed;
+    z-index: 100;
+    top: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+.project-chip {
+    background: rgba(255, 255, 255, 0.4);
+}

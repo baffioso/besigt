@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, tap } from 'rxjs/operators';
 import { CreateImage } from '../interfaces/image';
 import { Project, ProjectWithRelations } from '../interfaces/project';
 import { GeolocationService } from '../services/geolocation.service';
@@ -20,7 +20,12 @@ export class ProjectStoreService {
   currentProject$ = this._currentProject$.asObservable();
 
   currentProjectImageGeoJSON$ = this.currentProject$.pipe(
-    filter(project => project !== undefined || (project as ProjectWithRelations).images.length > 0),
+    filter(project => (
+      project !== undefined ||
+      project !== null ||
+      (project as ProjectWithRelations).images.length > 0
+    )
+    ),
     map((project: ProjectWithRelations) => {
       try {
         const features = project.images.map(image => {
@@ -63,17 +68,17 @@ export class ProjectStoreService {
     const newProject = await this.supabase.addProject(project);
     this.supabase.addMapViewState(newProject[0].id, this.mapStore.viewState);
     this.updateProjects(newProject[0]);
-    return newProject;
+    this.loadProjects();
   }
 
   async addPhoto() {
     const photo = await this.photoService.takePhoto();
     const blob = await fetch(photo.webPath).then(r => r.blob());
-    const file = new File([blob], 'myfile', {
+    const time = new Date().getTime();
+    const file = new File([blob], time.toString(), {
       type: blob.type,
     });
 
-    const time = new Date().getTime();
     const fileName = `${time}.png`;
     const path = await this.supabase.uploadImage(fileName, file);
 
@@ -87,7 +92,8 @@ export class ProjectStoreService {
       project_id: this._currentProject$.value.id
     };
 
-    this.supabase.addImage(imageInfo);
+    this.supabase.addImageInfo(imageInfo);
+
   }
 
   updateProjects(project: Project) {
@@ -100,10 +106,16 @@ export class ProjectStoreService {
 
   clearProjectState() {
     this._projects$.next([]);
+    this._currentProject$.next(null);
+    this.mapService.removeProjectOverlays();
   }
 
-  setCurrentProject(projectId: string) {
-    const currentProject = this._projects$.value.find(project => project.id = projectId);
-    this._currentProject$.next(currentProject);
+  setCurrentProject(project: ProjectWithRelations) {
+    this._currentProject$.next(project);
+  }
+
+  clearCurrentProject(): void {
+    this._currentProject$.next(null);
+    this.mapService.removeProjectOverlays();
   }
 }

@@ -27,6 +27,7 @@
 
 @import "ol/ol.css";
 
+// Dawa geosearch
 .dawa-autocomplete-suggestions {
     margin: 0.3em 0 0 0;
     padding: 0;
@@ -52,4 +53,21 @@
 .dawa-autocomplete-suggestions .dawa-autocomplete-suggestion.dawa-selected,
 .dawa-autocomplete-suggestions .dawa-autocomplete-suggestion:hover {
     background: var(--ion-color-light);
+}
+
+// Openlayers
+.ol-scale-line {
+    left: 50%;
+    transform: translate(-50%, 0);
+    -ms-transform: translate(-50%, 0);
+}
+
+// Legend
+.legend-popover .popover-content {
+    width: auto;
+    transform: translateY(-50%) !important;
+
+    // position: relative;
+    // bottom: 130px;
+    // left: 10px;
 }

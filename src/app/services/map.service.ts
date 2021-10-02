@@ -2,16 +2,15 @@ import { Injectable } from '@angular/core';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
-import ImageWMS from 'ol/source/ImageWMS';
-import { Image as ImageLayer, Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
+import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
-// import MapboxVector from 'ol/layer/MapboxVector';
 import Feature from 'ol/Feature';
 import Geolocation from 'ol/Geolocation';
 import GeoJSON from 'ol/format/GeoJSON';
 import Point from 'ol/geom/Point';
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 import { ScaleLine } from 'ol/control';
+import Select from 'ol/interaction/Select';
 import { transform } from 'ol/proj';
 import TileWMS from 'ol/source/TileWMS';
 import { register } from 'ol/proj/proj4';
@@ -32,7 +31,7 @@ export class MapService {
   private olmap: Map;
   private view: View;
   private geolocation: Geolocation;
-
+  private featureSelection: Select;
 
   constructor(private mapStoreService: MapStoreService, private mapLayersService: MapLayersService) { }
 
@@ -64,6 +63,12 @@ export class MapService {
     this.olmap.on('moveend', () => {
       this.moveend();
     });
+
+    this.olmap.once('postrender', () => {
+      this.mapStoreService.updateMapState('mapLoaded', true);
+    });
+
+    this.addClickInfo();
 
   }
 
@@ -136,6 +141,43 @@ export class MapService {
 
     this.olmap.addLayer(new VectorLayer({ source, properties: { name: 'geosearch' } }));
 
+  }
+
+  addClickInfo(): void {
+
+    this.olmap.on('click', (e) => {
+      const features = this.olmap.getFeaturesAtPixel(e.pixel);
+
+      if (features.length === 0) {
+        return;
+      }
+
+      const feature = features[0].getProperties();
+
+      this.mapStoreService.emitSelectedFeature(feature);
+
+    });
+
+    this.featureSelection = new Select({
+      style: new Style({
+        image: new CircleStyle({
+          radius: 15,
+          fill: new Fill({
+            color: 'tomato',
+          }),
+          stroke: new Stroke({
+            color: '#fff',
+            width: 2,
+          }),
+        }),
+      })
+    });
+    this.olmap.addInteraction(this.featureSelection);
+
+  }
+
+  clearFeatureSelection() {
+    this.olmap.removeInteraction(this.featureSelection);
   }
 
 
@@ -231,12 +273,13 @@ export class MapService {
 
   addGeoJSON(geojson, projection: string): void {
     const vectorSource = new VectorSource({
-      features: new GeoJSON({ featureProjection: 'EPSG:25832' }).readFeatures(geojson, { featureProjection: 'EPSG:3857' }),
+      features: new GeoJSON({ featureProjection: projection }).readFeatures(geojson, { featureProjection: 'EPSG:3857' }),
     });
 
 
     const vectorLayer = new VectorLayer({
       source: vectorSource,
+      properties: { name: 'photos' },
       style: new Style({
         image: new CircleStyle({
           radius: 15,
@@ -254,4 +297,9 @@ export class MapService {
     this.olmap.addLayer(vectorLayer);
 
   }
+
+  removeProjectOverlays() {
+    this.removeLayer('photos');
+  }
+
 }

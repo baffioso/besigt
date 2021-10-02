@@ -4,7 +4,8 @@ import TileLayer from 'ol/layer/Tile';
 import TileWMS from 'ol/source/TileWMS';
 import WMTS from 'ol/source/WMTS';
 import WMTSTileGrid from 'ol/tilegrid/WMTS';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { filter, map, tap } from 'rxjs/operators';
 import { BaseMap, LayersConfig, MapOverlays } from '../interfaces/map-layer-source';
 
 @Injectable({
@@ -126,6 +127,20 @@ export class MapLayersService {
   );
   baseMaps$ = this._baseMaps$.asObservable();
 
+  legends$: Observable<string[]> = this.overlays$.pipe(
+    // eslint-disable-next-line arrow-body-style
+    map((sources: MapOverlays[]) => {
+      const layers = [];
+      // eslint-disable-next-line arrow-body-style
+      sources.forEach(source => {
+        source.layers.filter(layer => layer.addedToMap)
+          .forEach(layer => layers.push(this.getLegendUrl(source.url, layer.name)));
+      });
+
+      return layers;
+    }),
+  );
+
 
   updateOverlays(sourceName: string, layerName: string, state: boolean): void {
     const overlaysUpdate = this._overlays$.value
@@ -163,5 +178,9 @@ export class MapLayersService {
   getBaseMapById(id: 'aerial' | 'streets' | 'hillshade'): BaseMap {
     const baseMap = this._baseMaps$.value.find(map => map.id === id);
     return baseMap;
+  }
+
+  getLegendUrl(url: string, layerName: string): any {
+    return `${url}?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=10&HEIGHT=10&LAYER=${layerName}`;
   }
 }

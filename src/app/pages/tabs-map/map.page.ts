@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, mergeMap, pluck, take, tap } from 'rxjs/operators';
-import { ViewState } from 'src/app/interfaces/map-state';
-import { MapLayersService } from 'src/app/services/map-layers.service';
+import { ModalController } from '@ionic/angular';
+import { map, pluck, take, tap } from 'rxjs/operators';
+import { MapFeatureInfoModalComponent } from 'src/app/components/map-feature-info-modal/map-feature-info-modal.component';
 import { MapService } from 'src/app/services/map.service';
 import { MapStoreService } from 'src/app/stores/map-store.service';
+import { ProjectStoreService } from 'src/app/stores/project-store.service';
+
 
 @Component({
   selector: 'app-tap-map',
@@ -13,12 +15,16 @@ import { MapStoreService } from 'src/app/stores/map-store.service';
 })
 export class TapMapPage implements OnInit {
 
+  currentProject$ = this.projectStore.currentProject$;
+
   constructor(
-    private mapState: MapStoreService,
     private rounter: Router,
+    private mapState: MapStoreService,
     private route: ActivatedRoute,
-    private mapSerice: MapService,
-    private mapLayersService: MapLayersService
+    private mapService: MapService,
+    private mapStoreService: MapStoreService,
+    private projectStore: ProjectStoreService,
+    public modalController: ModalController,
   ) { }
 
   ngOnInit(): void {
@@ -31,7 +37,7 @@ export class TapMapPage implements OnInit {
 
         if (center[0]) {
           setTimeout(() => {
-            this.mapSerice.setView({ center, zoom });
+            this.mapService.setView({ center, zoom });
           }, 2000);
         }
       })
@@ -56,6 +62,27 @@ export class TapMapPage implements OnInit {
         });
       })
     ).subscribe();
+
+    this.mapStoreService.selectedFeature$.pipe(
+      tap(feature => {
+        this.showFeatureInfo(feature);
+      })
+    ).subscribe();
+  }
+
+  async showFeatureInfo(feature) {
+    const modal = await this.modalController.create({
+      component: MapFeatureInfoModalComponent,
+      componentProps: {
+        feature
+      }
+    });
+
+    modal.present();
+  }
+
+  onClearProject() {
+    this.projectStore.clearCurrentProject();
   }
 
 }

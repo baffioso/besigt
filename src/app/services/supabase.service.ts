@@ -129,7 +129,7 @@ export class SupabaseService {
     return query.data;
   }
 
-  async addImage(image: CreateImage) {
+  async addImageInfo(image: CreateImage) {
     const newImage = {
       user_id: this._session$.value.user.id,
       ...image
