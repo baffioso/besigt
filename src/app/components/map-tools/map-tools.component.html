@@ -5,7 +5,7 @@
   <ion-fab-list>
     <app-map-geosearch></app-map-geosearch>
 
-    <ng-container *ngIf="(currentProject$ | async) !== null">
+    <ng-container *ngIf="(currentProject$ | async) !== undefined">
       <ion-fab-button color="light" (click)="onAddPhoto()">
         <ion-icon name="camera"></ion-icon>
       </ion-fab-button>
