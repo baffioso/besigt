@@ -13,7 +13,7 @@ import { MapStoreService } from './map-store.service';
   providedIn: 'root'
 })
 export class ProjectStoreService {
-  private _projects$ = new BehaviorSubject<ProjectWithRelations[] | Project[]>([]);
+  private _projects$ = new BehaviorSubject<ProjectWithRelations[]>([]);
   projects$ = this._projects$.asObservable();
 
   private _currentProject$ = new BehaviorSubject<Project | ProjectWithRelations>(null);
@@ -67,7 +67,7 @@ export class ProjectStoreService {
   async addProject(project: Project) {
     const newProject = await this.supabase.addProject(project);
     this.supabase.addMapViewState(newProject[0].id, this.mapStore.viewState);
-    this.updateProjects(newProject[0]);
+    // this.updateProjects(newProject[0]);
     this.loadProjects();
   }
 
@@ -96,13 +96,13 @@ export class ProjectStoreService {
 
   }
 
-  updateProjects(project: Project) {
-    const updates = [
-      ...this._projects$.value,
-      project
-    ];
-    this._projects$.next(updates);
-  }
+  // updateProjects(project: Project) {
+  //   const updates = [
+  //     ...this._projects$.value,
+  //     project
+  //   ];
+  //   this._projects$.next(updates);
+  // }
 
   clearProjectState() {
     this._projects$.next([]);
