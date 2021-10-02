@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { SupabaseService } from 'src/app/services/supabase.service';
+import { UserNotificationService } from 'src/app/shared/userNotification.service';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,7 @@ export class LoginPage implements OnInit {
     private fb: FormBuilder,
     private alertController: AlertController,
     private router: Router,
-    private loadingController: LoadingController,
+    private userNotificationService: UserNotificationService,
   ) { }
 
   ngOnInit(): void {
@@ -28,8 +29,7 @@ export class LoginPage implements OnInit {
   }
 
   async login() {
-    const loading = await this.loadingController.create();
-    await loading.present();
+    const loading = await this.userNotificationService.presentLoading(null);
 
     this.supabase.signIn(this.credentials.value).then(async () => {
       await loading.dismiss();
@@ -41,8 +41,7 @@ export class LoginPage implements OnInit {
   }
 
   async signUp() {
-    const loading = await this.loadingController.create();
-    await loading.present();
+    const loading = await this.userNotificationService.presentLoading(null);
 
     const user = await this.supabase.signUp(this.credentials.value);
 

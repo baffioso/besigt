@@ -33,7 +33,6 @@ export class TapMapPage implements OnInit {
 
     this.mapStore.mapstate$.pipe(
       pluck('loadingFeatureInfo'),
-      tap(console.log)
     ).subscribe();
 
 

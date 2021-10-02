@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GeolocationService } from 'src/app/services/geolocation.service';
+import { UserNotificationService } from 'src/app/shared/userNotification.service';
 import { ProjectStoreService } from 'src/app/stores/project-store.service';
 
 @Component({
@@ -13,13 +14,23 @@ export class MapToolsComponent implements OnInit {
 
   constructor(
     private projectStore: ProjectStoreService,
-    private geolocationService: GeolocationService
+    private geolocationService: GeolocationService,
+    private userNotificationService: UserNotificationService
   ) { }
 
   ngOnInit() { }
 
-  onAddPhoto() {
-    this.projectStore.addPhoto();
+  async onAddPhoto() {
+    const loading = await this.userNotificationService.presentLoading('Uploader billede');
+    await this.projectStore.addPhoto();
+    loading.dismiss();
+    this.userNotificationService.presentToast(
+      {
+        message: 'Dit billede blev gemt',
+        color: 'success',
+        duration: 2500,
+        position: 'top'
+      });
   }
 
   startTracking() {

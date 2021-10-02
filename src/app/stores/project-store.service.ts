@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { filter, map, tap } from 'rxjs/operators';
+import { filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { CreateImage } from '../interfaces/image';
 import { Project, ProjectWithRelations } from '../interfaces/project';
 import { GeolocationService } from '../services/geolocation.service';
@@ -16,14 +16,20 @@ export class ProjectStoreService {
   private _projects$ = new BehaviorSubject<ProjectWithRelations[]>([]);
   projects$ = this._projects$.asObservable();
 
-  private _currentProject$ = new BehaviorSubject<ProjectWithRelations>(null);
-  currentProject$ = this._currentProject$.asObservable();
+  private _currentProjectId$ = new BehaviorSubject<string>(null);
+  currentProjectId$ = this._currentProjectId$.asObservable();
+
+  currentProject$ = this.projects$.pipe(
+    mergeMap(projects => this.currentProjectId$.pipe(
+      map(id => projects.find(project => project.id === id))
+    ))
+  );
 
   currentProjectImageGeoJSON$ = this.currentProject$.pipe(
     filter(project => (
       project !== undefined ||
       project !== null ||
-      (project as ProjectWithRelations).images.length > 0
+      project.images.length > 0
     )
     ),
     map((project: ProjectWithRelations) => {
@@ -87,35 +93,28 @@ export class ProjectStoreService {
 
     const imageInfo: CreateImage = {
       file_name: path.data.Key,
-      description: '',
+      description: null,
       geom: `POINT(${coords[0]} ${coords[1]})`,
-      project_id: this._currentProject$.value.id
+      project_id: this._currentProjectId$.value
     };
 
-    this.supabase.addImageInfo(imageInfo);
+    await this.supabase.addImageInfo(imageInfo);
+    this.loadProjects();
 
   }
-
-  // updateProjects(project: Project) {
-  //   const updates = [
-  //     ...this._projects$.value,
-  //     project
-  //   ];
-  //   this._projects$.next(updates);
-  // }
 
   clearProjectState() {
     this._projects$.next([]);
-    this._currentProject$.next(null);
+    this._currentProjectId$.next(null);
     this.mapService.removeProjectOverlays();
   }
 
-  setCurrentProject(project: ProjectWithRelations) {
-    this._currentProject$.next(project);
+  setCurrentProjectId(id: string) {
+    this._currentProjectId$.next(id);
   }
 
   clearCurrentProject(): void {
-    this._currentProject$.next(null);
+    this._currentProjectId$.next(null);
     this.mapService.removeProjectOverlays();
   }
 }

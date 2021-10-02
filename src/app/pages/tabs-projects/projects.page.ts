@@ -20,7 +20,7 @@ export class ProjectsPage {
   ) { }
 
   goToProject(project: ProjectWithRelations) {
-    this.projectStoreService.setCurrentProject(project);
+    this.projectStoreService.setCurrentProjectId(project.id);
     const viewState: ViewState = project.map_state[0].map_state;
     this.mapService.flyTo(viewState.center as [number, number], viewState.zoom);
     this.router.navigateByUrl('/app/map');
