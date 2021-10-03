@@ -14,18 +14,22 @@ const routes: Routes = [
       },
       {
         path: 'projects',
-        loadChildren: () => import('../tabs-projects/projects.module').then(m => m.ProjectsPageModule),
         canLoad: [AuthGuard],
-        // children: [
-        //   {
-        //     path: 'projects/create',
-        //     loadChildren: () => import('../project-create/project-create.module').then(m => m.ProjectCreatePageModule)
-        //   },
-        //   {
-        //     path: 'projects/detail',
-        //     loadChildren: () => import('../project-detail/project-detail.module').then(m => m.ProjectDetailPageModule)
-        //   }
-        // ]
+        children: [
+          {
+            path: '',
+            loadChildren: () => import('../tabs-projects/projects.module').then(m => m.ProjectsPageModule),
+            pathMatch: 'full'
+          },
+          {
+            path: 'create',
+            loadChildren: () => import('../project-create/project-create.module').then(m => m.ProjectCreatePageModule)
+          },
+          {
+            path: ':id',
+            loadChildren: () => import('../project-detail/project-detail.module').then(m => m.ProjectDetailPageModule)
+          }
+        ]
       },
       {
         path: 'settings',

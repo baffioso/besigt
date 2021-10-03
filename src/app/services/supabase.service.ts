@@ -1,12 +1,12 @@
 import { Injectable, Query } from '@angular/core';
-import { SupabaseClient, createClient, User, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
-import { Credentials } from '../interfaces/credentials';
-import { Image, CreateImage } from '../interfaces/image';
-import { ViewState } from '../interfaces/map-state';
-import { CreateProject, Project, ProjectWithRelations } from '../interfaces/project';
+import { SupabaseClient, createClient, User, Session, AuthChangeEvent } from '@supabase/supabase-js';
+import { environment } from '@env/environment';
+import { Credentials } from '@app/interfaces/credentials';
+import { CreateImage } from '@app/interfaces/image';
+import { ViewState } from '@app/interfaces/map-state';
+import { CreateProject, Project, ProjectWithRelations } from '@app/interfaces/project';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +24,8 @@ export class SupabaseService {
       environment.supabaseUrl,
       environment.supbaseKey,
       {
-        autoRefreshToken: true
+        autoRefreshToken: true,
+        persistSession: true
       }
     );
 

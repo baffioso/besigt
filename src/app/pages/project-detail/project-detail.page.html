@@ -1,0 +1,52 @@
+<ng-container *ngIf="project$ | async as project">
+  <ion-header>
+    <ion-toolbar color="primary" class="ion-text-center">
+      <ion-buttons slot="start">
+        <ion-back-button aria-label="Tilbage" mode="md" defaultHref="/app/projects"></ion-back-button>
+      </ion-buttons>
+      <ion-title>{{project.name}}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button>
+          <ion-icon name="pencil"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content fullscreen>
+
+    <ion-segment color="secondary" (ionChange)="onTabChange($event)" [(ngModel)]="selectedTab">
+      <ion-segment-button value="detail">
+        <ion-icon name="information-circle"></ion-icon>
+      </ion-segment-button>
+      <ion-segment-button value="photos">
+        <ion-icon name="camera"></ion-icon>
+      </ion-segment-button>
+      <ion-segment-button value="map">
+        <ion-icon name="map"></ion-icon>
+      </ion-segment-button>
+    </ion-segment>
+
+    <ng-container *ngIf="selectedTab === 'detail' ">
+      <ion-card>
+        <!-- <img src="./madison.jpg" /> -->
+        <ion-card-header>
+          <ion-card-subtitle>Oprettet: {{project.inserted_at | date}} </ion-card-subtitle>
+          <ion-card-title>{{project.name}}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          {{project.description}}
+        </ion-card-content>
+      </ion-card>
+    </ng-container>
+
+    <ng-container *ngIf="selectedTab === 'photos' ">
+      <h1>PHOTOS</h1>
+    </ng-container>
+
+    <ng-container *ngIf="selectedTab === 'map' ">
+      <h1>MAP</h1>
+    </ng-container>
+
+  </ion-content>
+</ng-container>
