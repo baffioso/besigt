@@ -70,8 +70,17 @@ export class MapLayersService {
           { name: 'Jordstykke_Gaeldende', label: 'Matrikler', addedToMap: false, opacity: 0.7 },
           { name: 'OptagetVej_Gaeldende', label: 'Optaget vej', addedToMap: false },
         ]
+      },
+      {
+        name: 'Højdemodel',
+        url: 'https://api.dataforsyningen.dk/dhm_DAF?token=44af18dc4d55df1d85ef32b8961ba0de&TRANSPARENT=TRUE',
+        type: 'wms',
+        server: 'mapserver',
+        layers: [
+          { name: 'dhm_kurve_0_25_m', label: 'Højdekurver 0,25m', addedToMap: false, minZoom: 17.40 },
+          { name: 'dhm_kurve_0_5_m', label: 'Højdekurver 0,5m', addedToMap: false, minZoom: 17.40 }
+        ]
       }
-
     ]
 
   );
