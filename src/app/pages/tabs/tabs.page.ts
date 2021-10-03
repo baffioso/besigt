@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { SupabaseService } from '@app/services/supabase.service';
 
 @Component({
   selector: 'app-tabs',
@@ -6,7 +7,10 @@ import { Component } from '@angular/core';
   styleUrls: ['tabs.page.scss']
 })
 export class TabsPage {
+  userAuthenticated$ = this.supabase.authenticated$;
 
-  constructor() {}
+  constructor(
+    private supabase: SupabaseService
+  ) { }
 
 }

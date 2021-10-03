@@ -5,7 +5,7 @@
       <ion-icon name="map"></ion-icon>
     </ion-tab-button>
 
-    <ion-tab-button tab="projects">
+    <ion-tab-button tab="projects" *ngIf="userAuthenticated$ | async">
       <ion-icon name="folder-open"></ion-icon>
     </ion-tab-button>
 
