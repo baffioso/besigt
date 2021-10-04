@@ -44,17 +44,18 @@ export class SupabaseService {
 
 
   async signIn(credentials: Credentials) {
-    const { user, error, session } = await this.supabase.auth.signIn(credentials);
-    if (user) {
-      this._session$.next(session);
-      return user;
-    }
+    return new Promise(async (resolve, reject) => {
 
-    if (error) {
-      console.error(error, credentials);
-      return false;
-    }
+      const { error, session } = await this.supabase.auth.signIn(credentials);
 
+      if (error) {
+        reject(error);
+      } else {
+        this._session$.next(session);
+        resolve(session);
+      }
+
+    });
   }
 
   signOut() {
@@ -70,16 +71,18 @@ export class SupabaseService {
   }
 
   async signUp(credentials: Credentials) {
-    const { user, error, session } = await this.supabase.auth.signUp(credentials);
-    if (user) {
-      this._session$.next(session);
-      return user;
-    }
+    return new Promise(async (resolve, reject) => {
 
-    if (error) {
-      console.error(error);
-      return false;
-    }
+      const { error, session } = await this.supabase.auth.signUp(credentials);
+
+      if (error) {
+        reject(error);
+      } else {
+        this._session$.next(session);
+        resolve(session);
+      }
+
+    });
 
   }
 

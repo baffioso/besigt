@@ -16,7 +16,6 @@ export class LoginPage implements OnInit {
   constructor(
     private readonly supabase: SupabaseService,
     private fb: FormBuilder,
-    private alertController: AlertController,
     private router: Router,
     private userNotificationService: UserNotificationService,
   ) { }
@@ -36,41 +35,31 @@ export class LoginPage implements OnInit {
       this.router.navigateByUrl('/app/map', { replaceUrl: true });
     }, async err => {
       await loading.dismiss();
-      this.showError('Login failed', err.message);
+      this.showError('Login fejlede', err.message);
     });
   }
 
   async signUp() {
     const loading = await this.userNotificationService.presentLoading(null);
 
-    const user = await this.supabase.signUp(this.credentials.value);
-
-    if (user) {
-      loading.dismiss();
-    } else {
-      this.showError('Noget gik galt', 'kunner ikke oprette bruger');
-      loading.dismiss();
-    }
+    this.supabase.signUp(this.credentials.value).then(async () => {
+      await loading.dismiss();
+      this.router.navigateByUrl('/app/map', { replaceUrl: true });
+    }, async err => {
+      await loading.dismiss();
+      this.showError('Sign up fejlede', err.message);
+    });
 
   }
 
-  // async handleLogin(input: string) {
-  //   try {
-  //     await this.supabase.signIn(input);
-  //     alert('Check your email for the login link!');
-  //   } catch (error) {
-  //     alert(error.error_description || error.message);
-  //   } finally {
-  //   }
-  // }
-
-  async showError(title, msg) {
-    const alert = await this.alertController.create({
-      header: title,
-      message: msg,
-      buttons: ['OK'],
+  showError(header: string, message: string) {
+    this.userNotificationService.presentToast({
+      color: 'danger',
+      header,
+      message,
+      duration: 3000,
+      position: 'top'
     });
-    await alert.present();
   }
 
 }
