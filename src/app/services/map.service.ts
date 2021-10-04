@@ -147,7 +147,9 @@ export class MapService {
 
     this.olmap.on('click', (e) => {
 
-      const features = this.olmap.getFeaturesAtPixel(e.pixel);
+      const features = this.olmap.getFeaturesAtPixel(e.pixel, {
+        hitTolerance: 10
+      });
 
       if (features.length === 0) {
         return;
@@ -181,6 +183,7 @@ export class MapService {
 
   clearFeatureSelection() {
     this.olmap.removeInteraction(this.featureSelection);
+    this.olmap.addInteraction(this.featureSelection);
   }
 
 
