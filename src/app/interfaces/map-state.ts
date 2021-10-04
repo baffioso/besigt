@@ -2,6 +2,7 @@ export interface ViewState {
     center: number[];
     zoom: number;
     rotation?: number;
+    extent?: number[];
 }
 
 export interface MapState {

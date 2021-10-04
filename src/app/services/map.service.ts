@@ -268,13 +268,14 @@ export class MapService {
     const zoom = Math.round(this.view.getZoom() * 100) / 100;
     const center = transform(this.view.getCenter(), this.viewProjection, 'EPSG:4326').map(coor => Math.round(coor * 1000) / 1000);
     const rotation = this.view.getRotation();
+    const extent = this.view.calculateExtent();
 
-    this.mapStoreService.updateMapState('view', { center, zoom, rotation });
+    this.mapStoreService.updateMapState('view', { center, zoom, rotation, extent });
   }
 
   // UTILS
-  transform(point: [number, number], source: string = 'EPSG:4326', destination: string = 'EPSG:25832') {
-    return transform(point, source, destination);
+  transform(geometry: number[], source: string = 'EPSG:4326', destination: string = 'EPSG:25832') {
+    return transform(geometry, source, destination);
   }
 
   addGeoJSON(geojson, projection: string): void {
