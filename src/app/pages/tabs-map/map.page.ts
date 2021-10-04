@@ -78,6 +78,10 @@ export class TapMapPage implements OnInit {
     ).subscribe();
   }
 
+  ionViewDidEnter() {
+    this.mapService.resize();
+  }
+
   async showFeatureInfo(feature) {
     const modal = await this.modalController.create({
       component: MapFeatureInfoModalComponent,

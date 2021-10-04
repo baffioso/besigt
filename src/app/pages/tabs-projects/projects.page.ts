@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ViewState } from 'src/app/interfaces/map-state';
-import { Project, ProjectWithRelations } from 'src/app/interfaces/project';
+import { ProjectWithRelations } from 'src/app/interfaces/project';
 import { MapService } from 'src/app/services/map.service';
 import { ProjectStoreService } from 'src/app/stores/project-store.service';
 

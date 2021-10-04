@@ -1,3 +1,4 @@
+/* eslint-disable quote-props */
 import { Injectable } from '@angular/core';
 import { MapboxVector } from 'ol/layer';
 import TileLayer from 'ol/layer/Tile';
@@ -185,7 +186,7 @@ export class MapLayersService {
   }
 
   getBaseMapById(id: 'aerial' | 'streets' | 'hillshade'): BaseMap {
-    const baseMap = this._baseMaps$.value.find(map => map.id === id);
+    const baseMap = this._baseMaps$.value.find(basemap => basemap.id === id);
     return baseMap;
   }
 
