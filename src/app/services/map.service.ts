@@ -145,10 +145,12 @@ export class MapService {
 
   addClickInfo(): void {
 
+    const hitTolerance = 10;
+
     this.olmap.on('click', (e) => {
 
       const features = this.olmap.getFeaturesAtPixel(e.pixel, {
-        hitTolerance: 10
+        hitTolerance
       });
 
       if (features.length === 0) {
@@ -164,6 +166,7 @@ export class MapService {
     });
 
     this.featureSelection = new Select({
+      hitTolerance,
       style: new Style({
         image: new CircleStyle({
           radius: 15,
