@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1633462012151,
+  "timestamp": 1633464100266,
   "index": "/besigt/index.html",
   "assetGroups": [
     {
@@ -61,7 +61,7 @@
         "/besigt/7012.008b4e03d6edc01cb26b.js",
         "/besigt/7221.286c2a6be41bc8311a71.js",
         "/besigt/7370.f5605990c90c9f13c2c9.js",
-        "/besigt/7437.3ed2e9e868baf3f94b30.js",
+        "/besigt/7437.1eb6d38d1b9f4c704da1.js",
         "/besigt/7487.d4a454099c060f70b06c.js",
         "/besigt/7542.e7fcc8af608821c3ccb6.js",
         "/besigt/7618.085577aa82c15de30b94.js",
@@ -85,7 +85,7 @@
         "/besigt/polyfills-css-shim.d389399312b77755db60.js",
         "/besigt/polyfills-dom.d6f6e630402ef55b78d5.js",
         "/besigt/polyfills.c996069025fef90c7739.js",
-        "/besigt/runtime.d4935b24a9c1e936b1bc.js",
+        "/besigt/runtime.dccef9721dc58e5ec1a3.js",
         "/besigt/stencil-polyfills-css-shim.f1cb80c7ab35b223f454.js",
         "/besigt/stencil-polyfills-dom.a3e8766874eef3ea5fd9.js",
         "/besigt/styles.9adc69436e9193b3e556.css"
@@ -166,7 +166,7 @@
     "/besigt/7012.008b4e03d6edc01cb26b.js": "858e906c0ae642903b60a9a8bc0acb5aa5b7eb8c",
     "/besigt/7221.286c2a6be41bc8311a71.js": "ac66dc2ffc8a9dded8280582b44b91d59b9af345",
     "/besigt/7370.f5605990c90c9f13c2c9.js": "c6c9f8b271ab94dc6df26499d068b989ad8f5d2f",
-    "/besigt/7437.3ed2e9e868baf3f94b30.js": "419c52b559409ab06a0f9ce39e20d10ebaa62626",
+    "/besigt/7437.1eb6d38d1b9f4c704da1.js": "a099915d187935a5cd1ea64d32225dab38e95de9",
     "/besigt/7487.d4a454099c060f70b06c.js": "7f67d0d12c9990ed333fd70687618c4191735eba",
     "/besigt/7542.e7fcc8af608821c3ccb6.js": "16b0a55970aaf4b3bc37e039d4a8a9cd7951f04e",
     "/besigt/7618.085577aa82c15de30b94.js": "7caa129e79755a680ba00d78fb79716d65e084ce",
@@ -193,14 +193,14 @@
     "/besigt/assets/icons/icon-96x96.png": "3914125a4b445bf111c5627875fc190f560daa41",
     "/besigt/assets/shapes.svg": "5413e95adabcb2cb639970051f55e0ddb64ace53",
     "/besigt/common.11d9fc0d30a475762c3a.js": "10149a84ffc93d09a45096e7a155bbc67d35e863",
-    "/besigt/index.html": "de829b0a91eb75df30ce6b219597c4f8898dccb1",
+    "/besigt/index.html": "fd7353c8a6368d2afd08a5d0eabe370059f15343",
     "/besigt/main.309722935715bbc5b9f9.js": "e794ef1d938ebb61b0c2f4a6f93adea8822b2c4b",
     "/besigt/manifest.webmanifest": "9a088b7c4339228d1082e666ce105dc889bc180c",
     "/besigt/polyfills-core-js.9647df6406e6bd4fa777.js": "e43cfcb003ee5b9d161240d56db93fe97750eec1",
     "/besigt/polyfills-css-shim.d389399312b77755db60.js": "4db4f25a965bed7180c3cb823ee4b3e8c720a1a4",
     "/besigt/polyfills-dom.d6f6e630402ef55b78d5.js": "5dfa99c712157458a2affa0608ca31200ad577b4",
     "/besigt/polyfills.c996069025fef90c7739.js": "c99eda04c5b1a3b2c2396c2f018c80cd571db20d",
-    "/besigt/runtime.d4935b24a9c1e936b1bc.js": "ddb972f2aff1aa4693107894faf7db3c7ec7af5a",
+    "/besigt/runtime.dccef9721dc58e5ec1a3.js": "875065fc975d2b76338b80adf60a7c1b62c4565d",
     "/besigt/stencil-polyfills-css-shim.f1cb80c7ab35b223f454.js": "f453bea05cf217abe01e3e175e7929409eb993ef",
     "/besigt/stencil-polyfills-dom.a3e8766874eef3ea5fd9.js": "6b2dc8c2353c69cea28a6d50dbb0f17b8c16f9e9",
     "/besigt/styles.9adc69436e9193b3e556.css": "4b79aa7ec8e36edde3dbbd0875fa7f0b53e73d7a"
