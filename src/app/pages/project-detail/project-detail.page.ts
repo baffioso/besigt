@@ -31,7 +31,7 @@ export class ProjectDetailPage implements OnInit {
       this.loader = await this.notification.presentLoading('Henter billeder...');
     }),
     map(project => project.images.map(image => image.file_name.replace('images/', ''))),
-    map(fileNames => {
+    switchMap(fileNames => {
       const p = fileNames.map(fileName => this.supabase.downloadImage(fileName));
       return forkJoin(p).pipe(
         map(imageFiles => {
@@ -41,7 +41,6 @@ export class ProjectDetailPage implements OnInit {
         })
       );
     }),
-    switchMap(p => p),
     tap(() => {
       this.loader.dismiss();
     })
