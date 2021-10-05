@@ -1,8 +1,12 @@
 /* eslint-disable arrow-body-style */
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { map, switchMap } from 'rxjs/operators';
+import { map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { ProjectStoreService } from '@app/stores/project-store.service';
+import { SupabaseService } from '@app/services/supabase.service';
+import { forkJoin, from, of } from 'rxjs';
+import { DomSanitizer } from '@angular/platform-browser';
+import { UserNotificationService } from '@app/shared/userNotification.service';
 
 @Component({
   selector: 'app-project-detail',
@@ -12,6 +16,7 @@ import { ProjectStoreService } from '@app/stores/project-store.service';
 export class ProjectDetailPage implements OnInit {
 
   selectedTab: 'detail' | 'photos' | 'map' = 'detail';
+  loader: HTMLIonLoadingElement;
 
   project$ = this.route.paramMap.pipe(
     switchMap(paramMap => {
@@ -21,10 +26,33 @@ export class ProjectDetailPage implements OnInit {
     })
   );
 
+  photos$ = this.project$.pipe(
+    tap(async () => {
+      this.loader = await this.notification.presentLoading('Henter billeder...');
+    }),
+    map(project => project.images.map(image => image.file_name.replace('images/', ''))),
+    map(fileNames => {
+      const p = fileNames.map(fileName => this.supabase.downloadImage(fileName));
+      return forkJoin(p).pipe(
+        map(imageFiles => {
+          return imageFiles.map(image => {
+            return this.domSanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(image.data));
+          });
+        })
+      );
+    }),
+    switchMap(p => p),
+    tap(() => {
+      this.loader.dismiss();
+    })
+  );
+
   constructor(
     private projectStore: ProjectStoreService,
     private route: ActivatedRoute,
-
+    private supabase: SupabaseService,
+    private readonly domSanitizer: DomSanitizer,
+    private notification: UserNotificationService
   ) { }
 
   ngOnInit() {

@@ -11,9 +11,6 @@
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
-  </ion-header>
-
-  <ion-content fullscreen>
 
     <ion-segment color="secondary" (ionChange)="onTabChange($event)" [(ngModel)]="selectedTab">
       <ion-segment-button value="detail">
@@ -22,11 +19,13 @@
       <ion-segment-button value="photos">
         <ion-icon name="camera"></ion-icon>
       </ion-segment-button>
-      <ion-segment-button value="map">
+      <!-- <ion-segment-button value="map">
         <ion-icon name="map"></ion-icon>
-      </ion-segment-button>
+      </ion-segment-button> -->
     </ion-segment>
+  </ion-header>
 
+  <ion-content fullscreen>
     <ng-container *ngIf="selectedTab === 'detail' ">
       <ion-card>
         <!-- <img src="./madison.jpg" /> -->
@@ -41,12 +40,12 @@
     </ng-container>
 
     <ng-container *ngIf="selectedTab === 'photos' ">
-      <h1>PHOTOS</h1>
+      <img *ngFor="let photo of photos$ | async" [src]="photo" />
     </ng-container>
 
-    <ng-container *ngIf="selectedTab === 'map' ">
+    <!-- <ng-container *ngIf="selectedTab === 'map' ">
       <h1>MAP</h1>
-    </ng-container>
+    </ng-container> -->
 
   </ion-content>
 </ng-container>
