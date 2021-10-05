@@ -6,13 +6,16 @@ import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
 import Geolocation from 'ol/Geolocation';
+import Draw from 'ol/interaction/Draw';
 import GeoJSON from 'ol/format/GeoJSON';
-import Point from 'ol/geom/Point';
+import { LineString, Polygon, Point } from 'ol/geom';
+
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 import { ScaleLine } from 'ol/control';
 import Select from 'ol/interaction/Select';
 import { transform } from 'ol/proj';
 import TileWMS from 'ol/source/TileWMS';
+import { getArea, getLength } from 'ol/sphere';
 import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 
@@ -20,6 +23,7 @@ import { Layer } from '../interfaces/map-layer-source';
 import { MapStoreService } from '../stores/map-store.service';
 import { MapLayersService } from './map-layers.service';
 import { ViewState } from '../interfaces/map-state';
+import { Coordinate } from 'ol/coordinate';
 
 
 @Injectable({
@@ -32,6 +36,27 @@ export class MapService {
   private view: View;
   private geolocation: Geolocation;
   private featureSelection: Select;
+  private draw: Draw;
+  source = new VectorSource();
+
+  vector = new VectorLayer({
+    source: new VectorSource(),
+    style: new Style({
+      fill: new Fill({
+        color: 'rgba(255, 255, 255, 0.2)',
+      }),
+      stroke: new Stroke({
+        color: '#ffcc33',
+        width: 2,
+      }),
+      image: new CircleStyle({
+        radius: 7,
+        fill: new Fill({
+          color: '#ffcc33',
+        }),
+      }),
+    }),
+  });
 
   constructor(private mapStoreService: MapStoreService, private mapLayersService: MapLayersService) { }
 
@@ -257,6 +282,106 @@ export class MapService {
     this.geolocation.setTracking(false);
     this.mapStoreService.updateMapState('tracking', false);
   }
+
+  //--------------------------------
+  // MEASURE TOOL
+  //--------------------------------
+
+  private formatLength(line: LineString) {
+    const length = getLength(line);
+    let output;
+    if (length > 100) {
+      output = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
+    } else {
+      output = Math.round(length * 100) / 100 + ' ' + 'm';
+    }
+    return output;
+  };
+
+  private formatArea(polygon: Polygon) {
+    const area = getArea(polygon);
+    let output;
+    if (area > 10000) {
+      output = Math.round((area / 1000000) * 100) / 100 + ' ' + 'km<sup>2</sup>';
+    } else {
+      output = Math.round(area * 100) / 100 + ' ' + 'm<sup>2</sup>';
+    }
+    return output;
+  };
+
+  addMeasureTool(type: 'Polygon' | 'LineString') {
+    this.draw = new Draw({
+      source: new VectorSource(),
+      type,
+      style: new Style({
+        fill: new Fill({
+          color: 'rgba(255, 255, 255, 0.2)',
+        }),
+        stroke: new Stroke({
+          color: 'rgba(0, 0, 0, 0.5)',
+          lineDash: [10, 10],
+          width: 2,
+        }),
+        image: new CircleStyle({
+          radius: 5,
+          stroke: new Stroke({
+            color: 'rgba(0, 0, 0, 0.7)',
+          }),
+          fill: new Fill({
+            color: 'rgba(255, 255, 255, 0.2)',
+          }),
+        }),
+      }),
+    });
+
+    this.olmap.addInteraction(this.draw);
+
+    // createMeasureTooltip();
+    // createHelpTooltip();
+
+    let listener;
+    let sketch;
+    this.draw.on('drawstart', (evt) => {
+      // set sketch
+      sketch = evt.feature;
+
+      // /** @type {import("../src/ol/coordinate.js").Coordinate|undefined} */
+      // let tooltipCoord: Coordinate = evt.coordinate;
+
+      listener = sketch.getGeometry().on('change', (evt) => {
+        const geom = evt.target;
+        let output;
+        if (geom instanceof Polygon) {
+          output = this.formatArea(geom);
+          // tooltipCoord = geom.getInteriorPoint().getCoordinates();
+        } else if (geom instanceof LineString) {
+          output = this.formatLength(geom);
+          // tooltipCoord = geom.getLastCoordinate();
+        }
+        // measureTooltipElement.innerHTML = output;
+        // measureTooltip.setPosition(tooltipCoord);
+      });
+    });
+
+    this.draw.on('drawend', () => {
+      // measureTooltipElement.className = 'ol-tooltip ol-tooltip-static';
+      // measureTooltip.setOffset([0, -7]);
+      // unset sketch
+      sketch = null;
+      // unset tooltip so that a new one can be created
+      // measureTooltipElement = null;
+      // createMeasureTooltip();
+      // unByKey(listener);
+    });
+
+    this.olmap.addInteraction(this.draw);
+  }
+
+
+
+  //--------------------------------
+  // UTILS
+  //--------------------------------
 
   setView(view: ViewState) {
     const center = transform(view.center, 'EPSG:4326', this.viewProjection);
