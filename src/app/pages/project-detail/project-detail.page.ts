@@ -1,7 +1,7 @@
 /* eslint-disable arrow-body-style */
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { ProjectStoreService } from '@app/stores/project-store.service';
 import { SupabaseService } from '@app/services/supabase.service';
 import { forkJoin, from, of } from 'rxjs';
@@ -28,7 +28,7 @@ export class ProjectDetailPage implements OnInit {
 
   photos$ = this.project$.pipe(
     tap(async () => {
-      this.loader = await this.notification.presentLoading('Henter billeder...');
+      // this.loader = await this.notification.presentLoading('Henter billeder...');
     }),
     map(project => project.images.map(image => image.file_name.replace('images/', ''))),
     switchMap(fileNames => {
@@ -41,8 +41,8 @@ export class ProjectDetailPage implements OnInit {
         })
       );
     }),
-    tap(() => {
-      this.loader.dismiss();
+    tap(async () => {
+      // this.loader.dismiss();
     })
   );
 
