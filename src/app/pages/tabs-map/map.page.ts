@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
-import { map, pluck, take, tap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { map, pluck, take, takeUntil, tap } from 'rxjs/operators';
 import { MapFeatureInfoModalComponent } from 'src/app/components/map-feature-info-modal/map-feature-info-modal.component';
 import { MapService } from 'src/app/services/map.service';
 import { MapStoreService } from 'src/app/stores/map-store.service';
@@ -13,7 +14,8 @@ import { ProjectStoreService } from 'src/app/stores/project-store.service';
   templateUrl: 'map.page.html',
   styleUrls: ['map.page.scss']
 })
-export class TapMapPage implements OnInit {
+export class TapMapPage implements OnInit, OnDestroy {
+  abandon$ = new Subject();
   loading$ = this.mapStore.mapstate$.pipe(
     pluck('loadingFeatureInfo')
   );
@@ -32,6 +34,7 @@ export class TapMapPage implements OnInit {
   ngOnInit(): void {
 
     this.mapStore.mapstate$.pipe(
+      takeUntil(this.abandon$),
       pluck('loadingFeatureInfo'),
     ).subscribe();
 
@@ -62,6 +65,7 @@ export class TapMapPage implements OnInit {
     // ).subscribe();
 
     mapNavigationParams$.pipe(
+      takeUntil(this.abandon$),
       tap(view => {
         this.rounter.navigate([], {
           relativeTo: this.route,
@@ -70,12 +74,29 @@ export class TapMapPage implements OnInit {
       })
     ).subscribe();
 
+    this.projectStore.currentProjectImageGeoJSON$.pipe(
+      takeUntil(this.abandon$),
+      tap(geojson => {
+        try {
+          this.mapService.removeProjectOverlays();
+          this.mapService.addGeoJSON(geojson, 'EPSG:25832');
+        } catch (error) {
+          console.log(error);
+        }
+      })
+    ).subscribe();
+
     this.mapStore.selectedFeature$.pipe(
+      takeUntil(this.abandon$),
       tap(feature => {
         this.showFeatureInfo(feature);
         this.mapStore.updateMapState('loadingFeatureInfo', false);
       })
     ).subscribe();
+  }
+
+  ngOnDestroy(): void {
+    this.abandon$.next();
   }
 
   ionViewDidEnter() {

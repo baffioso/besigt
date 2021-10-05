@@ -20,22 +20,6 @@ export class MapComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.mapService.createMap(this.center, this.zoom);
-
-    // Hack to prevent map not showing
-    setTimeout(() => {
-      this.mapService.resize();
-    }, 1000);
-
-    this.projectStore.currentProjectImageGeoJSON$.pipe(
-      tap(geojson => {
-        try {
-          this.mapService.removeProjectOverlays();
-          this.mapService.addGeoJSON(geojson, 'EPSG:25832');
-        } catch (error) {
-          console.log(error);
-        }
-      })
-    ).subscribe();
   }
 
 }
