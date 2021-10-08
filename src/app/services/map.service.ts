@@ -6,10 +6,9 @@ import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
 import Geolocation from 'ol/Geolocation';
-import Draw from 'ol/interaction/Draw';
-import GeoJSON from 'ol/format/GeoJSON';
+import { Draw, Modify } from 'ol/interaction';
+import { GeoJSON, WKT } from 'ol/format';
 import { LineString, Polygon, Point } from 'ol/geom';
-
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 import { ScaleLine } from 'ol/control';
 import Select from 'ol/interaction/Select';
@@ -74,7 +73,7 @@ export class MapService {
       this.mapStoreService.updateMapState('mapLoaded', true);
     });
 
-    this.addClickInfo();
+    // this.addClickInfo();
     // this.addMeasureTool('Polygon');
 
   }
@@ -187,6 +186,7 @@ export class MapService {
         }),
       })
     });
+
     this.olmap.addInteraction(this.featureSelection);
 
   }
@@ -266,6 +266,51 @@ export class MapService {
   }
 
   //--------------------------------
+  // DRAW TOOL
+  //--------------------------------
+
+  addDrawTool(geometryType: 'Point' | 'LineString' | 'Polygon'): void {
+
+    const drawSource = new VectorSource({ wrapX: false });
+
+    const drawLayer = new VectorLayer({
+      source: drawSource,
+      properties: { name: 'draw' }
+    });
+
+    this.olmap.addLayer(drawLayer);
+
+    const modify = new Modify({ source: drawSource });
+    this.olmap.addInteraction(modify);
+
+    this.draw = new Draw({
+      source: drawSource,
+      type: geometryType
+    });
+
+    this.olmap.addInteraction(this.draw);
+
+    const wkt = new WKT();
+
+    this.draw.on('drawend', (e) => {
+      const wktGeom = wkt.writeFeature(e.feature, {
+        featureProjection: 'EPSG:3857',
+        dataProjection: 'EPSG:25832'
+      });
+      this.mapStoreService.emitDrawnGeometry(wktGeom);
+    });
+  }
+
+  removeLastDrawPoint(): void {
+    this.draw.removeLastPoint();
+  }
+
+  removeDrawTool(): void {
+    this.olmap.removeInteraction(this.draw);
+    this.removeLayer('draw');
+  }
+
+  //--------------------------------
   // MEASURE TOOL
   //--------------------------------
 
@@ -330,8 +375,8 @@ export class MapService {
       // /** @type {import("../src/ol/coordinate.js").Coordinate|undefined} */
       // let tooltipCoord: Coordinate = evt.coordinate;
 
-      this.sketch.getGeometry().on('change', (evt) => {
-        const geom = evt.target;
+      this.sketch.getGeometry().on('change', (ev) => {
+        const geom = ev.target;
         let output;
         if (geom instanceof Polygon) {
           output = this.formatArea(geom);

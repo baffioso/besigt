@@ -1,8 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MapDrawModalComponent } from '@app/components/map-draw-modal/map-draw-modal.component';
+import { UiStateService } from '@app/stores/ui-state.service';
 import { ModalController } from '@ionic/angular';
-import { Subject } from 'rxjs';
-import { map, pluck, take, takeUntil, tap } from 'rxjs/operators';
+import { from, of, Subject } from 'rxjs';
+import { filter, map, mergeMap, pluck, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import { MapFeatureInfoModalComponent } from 'src/app/components/map-feature-info-modal/map-feature-info-modal.component';
 import { MapService } from 'src/app/services/map.service';
 import { MapStoreService } from 'src/app/stores/map-store.service';
@@ -20,6 +22,10 @@ export class TapMapPage implements OnInit, OnDestroy {
     pluck('loadingFeatureInfo')
   );
 
+  showDrawTools$ = this.iuState.uiState$.pipe(
+    pluck('showMapDrawTool')
+  );
+
   currentProject$ = this.projectStore.currentProject$;
 
   constructor(
@@ -29,6 +35,7 @@ export class TapMapPage implements OnInit, OnDestroy {
     private projectStore: ProjectStoreService,
     private mapService: MapService,
     public modalController: ModalController,
+    private iuState: UiStateService
   ) { }
 
   ngOnInit(): void {
@@ -93,6 +100,14 @@ export class TapMapPage implements OnInit, OnDestroy {
         this.mapStore.updateMapState('loadingFeatureInfo', false);
       })
     ).subscribe();
+
+    this.mapStore.drawnGeometry$.pipe(
+      takeUntil(this.abandon$),
+      filter(geom => geom !== null),
+      mergeMap(geom => from(this.showDrawModal()).pipe(
+        map(description => ({ geom, description }))
+      ))
+    ).subscribe(console.log);
   }
 
   ngOnDestroy(): void {
@@ -102,6 +117,20 @@ export class TapMapPage implements OnInit, OnDestroy {
   ionViewDidEnter() {
     this.mapService.resize();
   }
+
+  async showDrawModal(): Promise<string> {
+    const modal = await this.modalController.create({
+      cssClass: 'bottom-modal',
+      component: MapDrawModalComponent,
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    return data;
+  }
+
+
 
   async showFeatureInfo(feature) {
     const modal = await this.modalController.create({

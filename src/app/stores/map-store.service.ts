@@ -10,6 +10,9 @@ import { SupabaseService } from '../services/supabase.service';
 })
 export class MapStoreService {
 
+  private _drawnGeometry$ = new BehaviorSubject<string>(null);
+  drawnGeometry$ = this._drawnGeometry$.asObservable();
+
   private _mapstate$ = new BehaviorSubject<MapState>({ mapLoaded: false, loadingFeatureInfo: false });
   mapstate$ = this._mapstate$.asObservable();
 
@@ -49,5 +52,9 @@ export class MapStoreService {
 
   emitSelectedFeature(feature) {
     this._selectedFeature$.next(feature);
+  }
+
+  emitDrawnGeometry(wktGeom: string) {
+    this._drawnGeometry$.next(wktGeom);
   }
 }

@@ -1,0 +1,11 @@
+<ion-content>
+  <ion-item>
+    <ion-label position="floating">Angiv beskrivelse</ion-label>
+    <ion-input [(ngModel)]="input"></ion-input>
+  </ion-item>
+  <ion-fab horizontal="center" vertical="bottom" slot="fixed">
+    <ion-fab-button (click)="dismiss()">
+      <ion-icon name="save-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

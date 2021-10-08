@@ -9,13 +9,12 @@
       <ion-fab-button color="light" (click)="onAddPhoto()">
         <ion-icon name="camera"></ion-icon>
       </ion-fab-button>
-      <!-- <ion-fab-button color="light">
-        <ion-icon name="analytics"></ion-icon>
-      </ion-fab-button> -->
+
       <!-- <ion-fab-button color="light" (click)="startTracking()">
         <ion-icon name="footsteps"></ion-icon>
       </ion-fab-button> -->
     </ng-container>
+    <app-map-draw-fab></app-map-draw-fab>
 
     <ion-fab-button size="small" color="light" [routerLink]="['/app/projects/create']">
       <ion-icon name="bookmark">

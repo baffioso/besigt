@@ -1,0 +1,26 @@
+<ng-container *ngIf="inEditMode === false">
+  <ion-fab-button size="small" color="primary" (click)="onStartDraw('Point')">
+    <svg width="25" height="25">
+      <image xlink:href="assets/icons/point.svg" width="25" height="25" />
+    </svg>
+  </ion-fab-button>
+  <ion-fab-button size="small" color="primary" (click)="onStartDraw('LineString')">
+    <svg width="25" height="25">
+      <image xlink:href="assets/icons/line.svg" width="25" height="25" />
+    </svg>
+  </ion-fab-button>
+  <ion-fab-button size="small" color="primary" (click)="onStartDraw('Polygon')">
+    <svg width="25" height="25">
+      <image xlink:href="assets/icons/polygon.svg" width="25" height="25" />
+    </svg>
+  </ion-fab-button>
+</ng-container>
+
+<ng-container *ngIf="inEditMode">
+  <ion-fab-button size="small" color="secondary" (click)="undo()">
+    <ion-icon name="arrow-back-outline" (click)="toggleEditMode()"></ion-icon>
+  </ion-fab-button>
+  <ion-fab-button *ngIf="drawGeometry !== 'Point'" size="small" color="secondary" (click)="undo()">
+    <ion-icon name="arrow-undo-circle-outline"></ion-icon>
+  </ion-fab-button>
+</ng-container>

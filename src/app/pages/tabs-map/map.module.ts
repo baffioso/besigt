@@ -15,6 +15,9 @@ import { MapGeosearchModalPage } from '../map-geosearch-modal/map-geosearch-moda
 import { MapFeatureInfoModalComponent } from 'src/app/components/map-feature-info-modal/map-feature-info-modal.component';
 import { MapLegendFabComponent } from 'src/app/components/map-legend-fab/map-legend-fab.component';
 import { MapLegendPopoverComponent } from 'src/app/components/map-legend-popover/map-legend-popover.component';
+import { MapDrawFabComponent } from '@app/components/map-draw-fab/map-draw-fab.component';
+import { MapDrawToolComponent } from '@app/components/map-draw-tool/map-draw-tool.component';
+import { MapDrawModalComponent } from '@app/components/map-draw-modal/map-draw-modal.component';
 
 @NgModule({
   imports: [
@@ -34,7 +37,10 @@ import { MapLegendPopoverComponent } from 'src/app/components/map-legend-popover
     MapGeosearchModalPage,
     MapFeatureInfoModalComponent,
     MapLegendFabComponent,
-    MapLegendPopoverComponent
+    MapLegendPopoverComponent,
+    MapDrawFabComponent,
+    MapDrawToolComponent,
+    MapDrawModalComponent
   ]
 })
 export class MapPageModule { }
