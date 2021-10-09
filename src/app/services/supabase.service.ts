@@ -7,6 +7,7 @@ import { Credentials } from '@app/interfaces/credentials';
 import { CreateImage } from '@app/interfaces/image';
 import { ViewState } from '@app/interfaces/map-state';
 import { CreateProject, Project, ProjectWithRelations } from '@app/interfaces/project';
+import { CreateFeature, Feature } from '@app/interfaces/feature';
 
 @Injectable({
   providedIn: 'root'
@@ -114,6 +115,11 @@ export class SupabaseService {
           file_name,
           description,
           geom
+        ),
+        features (
+          id,
+          geom,
+          properties
         )
       `);
     return query.data;
@@ -139,6 +145,16 @@ export class SupabaseService {
       ...image
     };
     const query = await this.supabase.from('images').insert(newImage, { returning: 'representation' });
+    return query.data;
+  }
+
+  async addFeature(feature: CreateFeature) {
+    const newFeature = {
+      user_id: this._session$.value.user.id,
+      ...feature
+    };
+
+    const query = await this.supabase.from('features').insert(newFeature, { returning: 'representation' });
     return query.data;
   }
 

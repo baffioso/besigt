@@ -23,6 +23,7 @@ import { MapStoreService } from '../stores/map-store.service';
 import { MapLayersService } from './map-layers.service';
 import { ViewState } from '../interfaces/map-state';
 import { Coordinate } from 'ol/coordinate';
+import { FeatureCollection } from 'geojson';
 
 
 @Injectable({
@@ -73,8 +74,7 @@ export class MapService {
       this.mapStoreService.updateMapState('mapLoaded', true);
     });
 
-    // this.addClickInfo();
-    // this.addMeasureTool('Polygon');
+    this.addClickInfo();
 
   }
 
@@ -159,6 +159,8 @@ export class MapService {
         hitTolerance
       });
 
+      console.log(features);
+
       if (features.length === 0) {
         return;
       }
@@ -173,18 +175,7 @@ export class MapService {
 
     this.featureSelection = new Select({
       hitTolerance,
-      style: new Style({
-        image: new CircleStyle({
-          radius: 15,
-          fill: new Fill({
-            color: 'tomato',
-          }),
-          stroke: new Stroke({
-            color: '#fff',
-            width: 2,
-          }),
-        }),
-      })
+      style: selectionStyles
     });
 
     this.olmap.addInteraction(this.featureSelection);
@@ -433,27 +424,15 @@ export class MapService {
     return transform(geometry, source, destination);
   }
 
-  addGeoJSON(geojson, projection: string): void {
+  addGeoJSON(geojson, layerName: string, projection: string): void {
     const vectorSource = new VectorSource({
       features: new GeoJSON({ featureProjection: projection }).readFeatures(geojson, { featureProjection: 'EPSG:3857' }),
     });
 
-
     const vectorLayer = new VectorLayer({
       source: vectorSource,
-      properties: { name: 'photos' },
-      style: new Style({
-        image: new CircleStyle({
-          radius: 15,
-          fill: new Fill({
-            color: '#3399CC',
-          }),
-          stroke: new Stroke({
-            color: '#fff',
-            width: 2,
-          }),
-        }),
-      }),
+      properties: { name: layerName },
+      style: styles
     });
 
     this.olmap.addLayer(vectorLayer);
@@ -462,6 +441,55 @@ export class MapService {
 
   removeProjectOverlays() {
     this.removeLayer('photos');
+    this.removeLayer('features');
   }
 
 }
+
+const styles = [
+  new Style({
+    stroke: new Stroke({
+      color: 'blue',
+      width: 3,
+    }),
+    fill: new Fill({
+      color: 'orange',
+    }),
+  }),
+  new Style({
+    image: new CircleStyle({
+      radius: 15,
+      fill: new Fill({
+        color: '#3399CC',
+      }),
+      stroke: new Stroke({
+        color: '#fff',
+        width: 2,
+      }),
+    }),
+  }),
+];
+
+const selectionStyles = [
+  new Style({
+    stroke: new Stroke({
+      color: 'tomato',
+      width: 3,
+    }),
+    fill: new Fill({
+      color: 'green',
+    }),
+  }),
+  new Style({
+    image: new CircleStyle({
+      radius: 15,
+      fill: new Fill({
+        color: 'red',
+      }),
+      stroke: new Stroke({
+        color: '#fff',
+        width: 2,
+      }),
+    }),
+  }),
+];

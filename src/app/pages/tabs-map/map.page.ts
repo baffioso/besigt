@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MapDrawModalComponent } from '@app/components/map-draw-modal/map-draw-modal.component';
+import { Properties } from '@app/interfaces/feature';
 import { UiStateService } from '@app/stores/ui-state.service';
 import { ModalController } from '@ionic/angular';
 import { from, of, Subject } from 'rxjs';
@@ -85,8 +86,20 @@ export class TapMapPage implements OnInit, OnDestroy {
       takeUntil(this.abandon$),
       tap(geojson => {
         try {
-          this.mapService.removeProjectOverlays();
-          this.mapService.addGeoJSON(geojson, 'EPSG:25832');
+          // this.mapService.removeProjectOverlays();
+          this.mapService.addGeoJSON(geojson, 'photos', 'EPSG:25832');
+        } catch (error) {
+          console.log(error);
+        }
+      })
+    ).subscribe();
+
+    this.projectStore.currentProjectFeatureGeoJSON$.pipe(
+      takeUntil(this.abandon$),
+      tap(geojson => {
+        try {
+          // this.mapService.removeProjectOverlays();
+          this.mapService.addGeoJSON(geojson, 'features', 'EPSG:25832');
         } catch (error) {
           console.log(error);
         }
@@ -95,6 +108,7 @@ export class TapMapPage implements OnInit, OnDestroy {
 
     this.mapStore.selectedFeature$.pipe(
       takeUntil(this.abandon$),
+      filter(feature => feature !== null),
       tap(feature => {
         this.showFeatureInfo(feature);
         this.mapStore.updateMapState('loadingFeatureInfo', false);
@@ -127,10 +141,11 @@ export class TapMapPage implements OnInit, OnDestroy {
     await modal.present();
 
     const { data } = await modal.onWillDismiss();
+
+    this.projectStore.addFeature({ description: data });
+
     return data;
   }
-
-
 
   async showFeatureInfo(feature) {
     const modal = await this.modalController.create({

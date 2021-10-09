@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { BehaviorSubject, from, Subject } from 'rxjs';
+import { BehaviorSubject, from, of, Subject } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { MapState } from '../interfaces/map-state';
 import { SupabaseService } from '../services/supabase.service';
@@ -21,12 +21,16 @@ export class MapStoreService {
     // Fetch image from backend and convert to vebview URL
     // eslint-disable-next-line arrow-body-style
     mergeMap((feature: any) => {
-      return from(this.supabase.downloadImage(feature.file_name.replace('images/', ''))).pipe(
-        map(image => {
-          const webView = this.domSanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(image.data));
-          return { ...feature, webView };
-        })
-      );
+      if (feature.file_name) {
+        return from(this.supabase.downloadImage(feature.file_name?.replace('images/', ''))).pipe(
+          map(image => {
+            const webView = this.domSanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(image.data));
+            return { ...feature, webView };
+          })
+        );
+      } else {
+        return of(null);
+      }
     }
     )
   );

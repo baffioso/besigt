@@ -8,7 +8,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class UiStateService {
 
   private _uiState$ = new BehaviorSubject<UiState>({
-    showMapDrawTool: true
+    showMapDrawTool: false
   });
   uiState$ = this._uiState$.asObservable();
 

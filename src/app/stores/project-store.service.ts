@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { CreateFeature, Properties } from '@app/interfaces/feature';
 import { BehaviorSubject } from 'rxjs';
 import { filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { CreateImage } from '../interfaces/image';
@@ -23,6 +24,38 @@ export class ProjectStoreService {
     mergeMap(projects => this.currentProjectId$.pipe(
       map(id => projects.find(project => project.id === id))
     ))
+  );
+
+  currentProjectFeatureGeoJSON$ = this.currentProject$.pipe(
+    filter(project => (
+      project !== undefined ||
+      project !== null ||
+      project.images.length > 0
+    )
+    ),
+    map((project: ProjectWithRelations) => {
+      try {
+        const features = project.features.map(image => {
+          const { geom, ...properties } = image;
+          return { type: 'Feature', geometry: geom, properties };
+        });
+
+        return {
+          type: 'FeatureCollection',
+          crs: {
+            type: 'name',
+            properties: {
+              name: 'EPSG:25832',
+            },
+          },
+          features
+        };
+
+      } catch (error) {
+        console.log(error);
+      }
+
+    })
   );
 
   currentProjectImageGeoJSON$ = this.currentProject$.pipe(
@@ -101,6 +134,21 @@ export class ProjectStoreService {
     await this.supabase.addImageInfo(imageInfo);
     this.loadProjects();
 
+  }
+
+  async addFeature(properties: Properties) {
+    this.mapStore.drawnGeometry$.pipe(
+      switchMap(geom => {
+        const feature: CreateFeature = {
+          geom,
+          project_id: this._currentProjectId$.value,
+          properties
+        };
+
+        return this.supabase.addFeature(feature);
+      }),
+      tap(() => this.loadProjects())
+    ).subscribe();
   }
 
   clearProjectState() {
