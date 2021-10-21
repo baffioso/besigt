@@ -27,26 +27,26 @@ export class LoginPage implements OnInit {
     });
   }
 
-  async login() {
-    const loading = await this.userNotificationService.presentLoading(null);
+  login() {
+    this.userNotificationService.presentLoading(null).subscribe();
 
     this.supabase.signIn(this.credentials.value).then(async () => {
-      await loading.dismiss();
+      this.userNotificationService.dismissLoading();
       this.router.navigateByUrl('/app/map', { replaceUrl: true });
     }, async err => {
-      await loading.dismiss();
+      this.userNotificationService.dismissLoading();
       this.showError('Login fejlede', err.message);
     });
   }
 
   async signUp() {
-    const loading = await this.userNotificationService.presentLoading(null);
+    this.userNotificationService.presentLoading(null).subscribe();
 
     this.supabase.signUp(this.credentials.value).then(async () => {
-      await loading.dismiss();
+      this.userNotificationService.dismissLoading();
       this.router.navigateByUrl('/app/map', { replaceUrl: true });
     }, async err => {
-      await loading.dismiss();
+      this.userNotificationService.dismissLoading();
       this.showError('Sign up fejlede', err.message);
     });
 

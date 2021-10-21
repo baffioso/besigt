@@ -1,13 +1,13 @@
-import { Injectable, Query } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, from } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { SupabaseClient, createClient, User, Session, AuthChangeEvent } from '@supabase/supabase-js';
+import { SupabaseClient, createClient, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { environment } from '@env/environment';
 import { Credentials } from '@app/interfaces/credentials';
 import { CreateImage } from '@app/interfaces/image';
 import { ViewState } from '@app/interfaces/map-state';
 import { CreateProject, Project, ProjectWithRelations } from '@app/interfaces/project';
-import { CreateFeature, Feature } from '@app/interfaces/feature';
+import { CreateFeature } from '@app/interfaces/feature';
 
 @Injectable({
   providedIn: 'root'
@@ -139,13 +139,20 @@ export class SupabaseService {
     return query.data;
   }
 
-  async addImageInfo(image: CreateImage) {
+  addImageInfo(image: CreateImage) {
+
     const newImage = {
       user_id: this._session$.value.user.id,
       ...image
     };
-    const query = await this.supabase.from('images').insert(newImage, { returning: 'representation' });
-    return query.data;
+
+    return from(
+      this.supabase
+        .from('images')
+        .insert(newImage, { returning: 'representation' })
+    ).pipe(
+      map(imageInfo => imageInfo.data)
+    );
   }
 
   async addFeature(feature: CreateFeature) {
@@ -158,12 +165,12 @@ export class SupabaseService {
     return query.data;
   }
 
-  async uploadImage(filePath: string, file: File) {
-    return await this.supabase.storage.from('images').upload(filePath, file);
+  uploadImage(filePath: string, file: Blob) {
+    return from(this.supabase.storage.from('images').upload(filePath, file));
   }
 
   downloadImage(path: string) {
-    return this.supabase.storage.from('images').download(path);
+    return from(this.supabase.storage.from('images').download(path));
   }
 
 }

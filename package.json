@@ -31,6 +31,7 @@
     "@ionic/pwa-elements": "^3.0.2",
     "@supabase/supabase-js": "^1.22.6",
     "dawa-autocomplete2": "^1.0.2",
+    "font-gis": "^1.0.4",
     "ol": "^6.7.0",
     "proj4": "^2.7.5",
     "rxjs": "~6.6.0",

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UiState } from '@app/interfaces/ui-state';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +8,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class UiStateService {
 
   private _uiState$ = new BehaviorSubject<UiState>({
-    showMapDrawTool: false
+    showMapDrawTool: false,
+    uploadingImage: false
   });
   uiState$ = this._uiState$.asObservable();
 
