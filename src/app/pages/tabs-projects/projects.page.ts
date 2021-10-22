@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { map } from 'rxjs/operators';
 import { ViewState } from 'src/app/interfaces/map-state';
 import { ProjectWithRelations } from 'src/app/interfaces/project';
 import { MapService } from 'src/app/services/map.service';
@@ -11,7 +12,9 @@ import { ProjectStoreService } from 'src/app/stores/project-store.service';
   styleUrls: ['projects.page.scss']
 })
 export class ProjectsPage {
-  projects$ = this.projectStoreService.projects$;
+  projects$ = this.projectStoreService.projects$.pipe(
+    map(projects => projects.sort((a, b) => new Date(b.inserted_at) as any - (new Date(a.inserted_at) as any)))
+  );
 
   constructor(
     private projectStoreService: ProjectStoreService,
