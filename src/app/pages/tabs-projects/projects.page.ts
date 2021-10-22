@@ -16,6 +16,8 @@ export class ProjectsPage {
     map(projects => projects.sort((a, b) => new Date(b.inserted_at) as any - (new Date(a.inserted_at) as any)))
   );
 
+  currentdProjectId$ = this.projectStoreService.currentProjectId$;
+
   constructor(
     private projectStoreService: ProjectStoreService,
     private router: Router,
