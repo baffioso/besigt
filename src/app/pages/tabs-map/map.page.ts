@@ -1,11 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MapDrawModalComponent } from '@app/components/map-draw-modal/map-draw-modal.component';
-import { Properties } from '@app/interfaces/feature';
 import { UiStateService } from '@app/stores/ui-state.service';
 import { ModalController } from '@ionic/angular';
-import { from, of, Subject } from 'rxjs';
-import { filter, map, mergeMap, pluck, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import { from, Subject } from 'rxjs';
+import { filter, map, mergeMap, pluck, take, takeUntil, tap } from 'rxjs/operators';
 import { MapFeatureInfoModalComponent } from 'src/app/components/map-feature-info-modal/map-feature-info-modal.component';
 import { MapService } from 'src/app/services/map.service';
 import { MapStoreService } from 'src/app/stores/map-store.service';
@@ -23,7 +22,7 @@ export class TapMapPage implements OnInit, OnDestroy {
     pluck('loadingFeatureInfo')
   );
 
-  showDrawTools$ = this.iuState.uiState$.pipe(
+  showDrawTools$ = this.uiState.uiState$.pipe(
     pluck('showMapDrawTool')
   );
 
@@ -36,7 +35,7 @@ export class TapMapPage implements OnInit, OnDestroy {
     private projectStore: ProjectStoreService,
     private mapService: MapService,
     public modalController: ModalController,
-    private iuState: UiStateService
+    private uiState: UiStateService
   ) { }
 
   ngOnInit(): void {
@@ -66,12 +65,6 @@ export class TapMapPage implements OnInit, OnDestroy {
       map(v => ({ x: v?.center[0], y: v?.center[1], zoom: v?.zoom }))
     );
 
-    // const addedOverlaysParams$ = this.mapLayersService.overlays$.pipe(
-    //   take(1),
-    //   map(overlays => overlays.map(o => o.layers.filter(l => l.addedToMap))),
-    //   // tap(console.log)
-    // ).subscribe();
-
     mapNavigationParams$.pipe(
       takeUntil(this.abandon$),
       tap(view => {
@@ -89,7 +82,7 @@ export class TapMapPage implements OnInit, OnDestroy {
           // this.mapService.removeProjectOverlays();
           this.mapService.addGeoJSON(geojson, 'photos', 'EPSG:25832');
         } catch (error) {
-          console.log(error);
+          // console.log(error);
         }
       })
     ).subscribe();
@@ -101,7 +94,7 @@ export class TapMapPage implements OnInit, OnDestroy {
           // this.mapService.removeProjectOverlays();
           this.mapService.addGeoJSON(geojson, 'features', 'EPSG:25832');
         } catch (error) {
-          console.log(error);
+          // console.log(error);
         }
       })
     ).subscribe();
@@ -109,9 +102,10 @@ export class TapMapPage implements OnInit, OnDestroy {
     this.mapStore.selectedFeature$.pipe(
       takeUntil(this.abandon$),
       filter(feature => feature !== null),
+      tap(() => this.mapStore.updateMapState('loadingFeatureInfo', true)),
       tap(feature => {
-        this.showFeatureInfo(feature);
         this.mapStore.updateMapState('loadingFeatureInfo', false);
+        this.showFeatureInfo(feature);
       })
     ).subscribe();
 
@@ -121,7 +115,7 @@ export class TapMapPage implements OnInit, OnDestroy {
       mergeMap(geom => from(this.showDrawModal()).pipe(
         map(description => ({ geom, description }))
       ))
-    ).subscribe(console.log);
+    ).subscribe();
   }
 
   ngOnDestroy(): void {
@@ -142,7 +136,10 @@ export class TapMapPage implements OnInit, OnDestroy {
 
     const { data } = await modal.onWillDismiss();
 
-    this.projectStore.addFeature({ description: data });
+    if (data) {
+      this.projectStore.addFeature({ description: data });
+    }
+
 
     return data;
   }

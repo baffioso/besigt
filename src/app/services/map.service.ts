@@ -22,8 +22,8 @@ import { Layer } from '../interfaces/map-layer-source';
 import { MapStoreService } from '../stores/map-store.service';
 import { MapLayersService } from './map-layers.service';
 import { ViewState } from '../interfaces/map-state';
-import { Coordinate } from 'ol/coordinate';
-import { FeatureCollection } from 'geojson';
+import BaseVectorLayer from 'ol/layer/BaseVector';
+import { MapBrowserEvent } from 'ol';
 
 
 @Injectable({
@@ -75,6 +75,8 @@ export class MapService {
     });
 
     this.addClickInfo();
+    // this.olmap.un('click', (evt) => this.handelClickInfo(evt));
+    // this.olmap.removeInteraction(this.featureSelection);
 
   }
 
@@ -117,10 +119,21 @@ export class MapService {
     this.olmap.addLayer(wmsLayer);
   }
 
+  getLayer(layerName: string) {
+    return this.olmap.getLayers().getArray()
+      .find(layer => layer.get('name') === layerName);
+  }
+
   removeLayer(layerName: string): void {
     this.olmap.getLayers().getArray()
       .filter(layer => layer.get('name') === layerName)
       .forEach(layer => this.olmap.removeLayer(layer));
+  }
+
+  changeLayerStyle(layerName: string, style: any) {
+    const layer = this.getLayer(layerName) as BaseVectorLayer<any>;
+    layer.setStyle(editStyles);
+    console.log(layer.setStyle);
   }
 
   addMarker(coordinates: [number, number]): void {
@@ -149,29 +162,29 @@ export class MapService {
 
   }
 
+  private handelClickInfo(evt: MapBrowserEvent<any>) {
+
+    const hitTolerance = 10;
+
+    const features = this.olmap.getFeaturesAtPixel(evt.pixel, {
+      hitTolerance
+    });
+
+    if (features.length === 0) {
+      return;
+    }
+
+    const feature = features[0].getProperties();
+
+    this.mapStoreService.emitSelectedFeature(feature);
+
+  }
+
   addClickInfo(): void {
 
     const hitTolerance = 10;
 
-    this.olmap.on('click', (e) => {
-
-      const features = this.olmap.getFeaturesAtPixel(e.pixel, {
-        hitTolerance
-      });
-
-      console.log(features);
-
-      if (features.length === 0) {
-        return;
-      }
-
-      this.mapStoreService.updateMapState('loadingFeatureInfo', true);
-
-      const feature = features[0].getProperties();
-
-      this.mapStoreService.emitSelectedFeature(feature);
-
-    });
+    this.olmap.on('click', (evt) => this.handelClickInfo(evt));
 
     this.featureSelection = new Select({
       hitTolerance,
@@ -186,6 +199,12 @@ export class MapService {
     this.olmap.removeInteraction(this.featureSelection);
     this.olmap.addInteraction(this.featureSelection);
   }
+
+  removeClickInfo() {
+    this.olmap.un('click', (evt) => this.handelClickInfo(evt));
+    this.olmap.removeInteraction(this.featureSelection);
+  }
+
 
 
   //--------------------------------
@@ -260,7 +279,7 @@ export class MapService {
   // DRAW TOOL
   //--------------------------------
 
-  addDrawTool(geometryType: 'Point' | 'LineString' | 'Polygon'): void {
+  activateDrawTool(geometryType: 'Point' | 'LineString' | 'Polygon'): void {
 
     const drawSource = new VectorSource({ wrapX: false });
 
@@ -290,6 +309,10 @@ export class MapService {
       });
       this.mapStoreService.emitDrawnGeometry(wktGeom);
     });
+  }
+
+  finishDrawing() {
+    this.draw.finishDrawing();
   }
 
   removeLastDrawPoint(): void {
@@ -458,12 +481,36 @@ const styles = [
   }),
   new Style({
     image: new CircleStyle({
-      radius: 15,
+      radius: 10,
       fill: new Fill({
         color: '#3399CC',
       }),
       stroke: new Stroke({
         color: '#fff',
+        width: 2,
+      }),
+    }),
+  }),
+];
+
+const editStyles = [
+  new Style({
+    stroke: new Stroke({
+      color: 'yellow',
+      width: 1,
+    }),
+    fill: new Fill({
+      color: 'black',
+    }),
+  }),
+  new Style({
+    image: new CircleStyle({
+      radius: 2,
+      fill: new Fill({
+        color: 'black',
+      }),
+      stroke: new Stroke({
+        color: 'yellow',
         width: 2,
       }),
     }),
@@ -482,7 +529,7 @@ const selectionStyles = [
   }),
   new Style({
     image: new CircleStyle({
-      radius: 15,
+      radius: 10,
       fill: new Fill({
         color: 'red',
       }),

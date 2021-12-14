@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CreateFeature, Properties } from '@app/interfaces/feature';
 import { BehaviorSubject, combineLatest, of } from 'rxjs';
-import { catchError, filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { catchError, filter, map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
 import { CreateImage } from '../interfaces/image';
 import { Project, ProjectWithRelations } from '../interfaces/project';
 import { GeolocationService } from '../services/geolocation.service';
@@ -159,6 +159,7 @@ export class ProjectStoreService {
 
   async addFeature(properties: Properties) {
     this.mapStore.drawnGeometry$.pipe(
+      take(1),
       switchMap(geom => {
         const feature: CreateFeature = {
           geom,

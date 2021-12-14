@@ -22,7 +22,7 @@ export class MapStoreService {
     // eslint-disable-next-line arrow-body-style
     mergeMap((feature: any) => {
       if (feature.file_name) {
-        return from(this.supabase.downloadImage(feature.file_name?.replace('images/', ''))).pipe(
+        return this.supabase.downloadImage(feature.file_name?.replace('images/', '')).pipe(
           map(image => {
             const webView = this.domSanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(image.data));
             return { ...feature, webView };

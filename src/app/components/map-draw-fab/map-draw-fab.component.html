@@ -1,5 +1,5 @@
 <div class="map-draw-tool">
-  <ion-fab-button size="small" color="light" (click)="onToggleDrawTool()">
-    <ion-icon name="analytics"></ion-icon>
+  <ion-fab-button size="small" [color]="(drawEnabled$ | async) ? 'secondary' : 'light'" (click)="onToggleDrawTool()">
+    <i class="fg-polygon-pt fg-lg"></i>
   </ion-fab-button>
 </div>
