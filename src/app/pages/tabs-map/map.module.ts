@@ -1,7 +1,7 @@
 import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TapMapPage } from './map.page';
 
 import { MapPageRoutingModule } from './map-routing.module';
@@ -18,12 +18,16 @@ import { MapLegendPopoverComponent } from 'src/app/components/map-legend-popover
 import { MapDrawFabComponent } from '@app/components/map-draw-fab/map-draw-fab.component';
 import { MapDrawToolComponent } from '@app/components/map-draw-tool/map-draw-tool.component';
 import { MapDrawModalComponent } from '@app/components/map-draw-modal/map-draw-modal.component';
+import { MapSaveProjectFabComponent } from '@app/components/map-save-project-fab/map-save-project-fab.component';
+// eslint-disable-next-line max-len
+import { MapSaveProjectAreaSelectionComponent } from '@app/components/map-save-project-area-selection/map-save-project-area-selection.component';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     MapPageRoutingModule
   ],
   declarations: [
@@ -40,7 +44,9 @@ import { MapDrawModalComponent } from '@app/components/map-draw-modal/map-draw-m
     MapLegendPopoverComponent,
     MapDrawFabComponent,
     MapDrawToolComponent,
-    MapDrawModalComponent
+    MapDrawModalComponent,
+    MapSaveProjectFabComponent,
+    MapSaveProjectAreaSelectionComponent
   ]
 })
 export class MapPageModule { }

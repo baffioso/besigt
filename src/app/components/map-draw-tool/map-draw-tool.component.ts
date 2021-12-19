@@ -1,6 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { MapService } from '@app/services/map.service';
+import { mapStyles } from '@app/shared/mapStyles';
+import { MapStoreService } from '@app/stores/map-store.service';
+import { ProjectStoreService } from '@app/stores/project-store.service';
 import { UiStateService } from '@app/stores/ui-state.service';
+import { ModalController } from '@ionic/angular';
+import { from } from 'rxjs';
+import { filter, first, map, mergeMap, pluck, takeUntil } from 'rxjs/operators';
+import { MapDrawModalComponent } from '../map-draw-modal/map-draw-modal.component';
 
 @Component({
   selector: 'app-map-draw-tool',
@@ -8,16 +15,23 @@ import { UiStateService } from '@app/stores/ui-state.service';
   styleUrls: ['./map-draw-tool.component.scss'],
 })
 export class MapDrawToolComponent implements OnInit {
-  inEditMode = false;
-  activatedEditTool: 'modify';
+  // inEditMode = false;
   drawGeometry: 'Point' | 'LineString' | 'Polygon';
+  drawUiState$ = this.uiState.uiState$.pipe(
+    pluck('drawConfig')
+  );
 
   constructor(
+    private modalController: ModalController,
     private mapService: MapService,
+    private mapStore: MapStoreService,
+    private projectStore: ProjectStoreService,
     private uiState: UiStateService
   ) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.uiState.resetDrawUiState();
+  }
 
   onStartDraw(geometryType: 'Point' | 'LineString' | 'Polygon'): void {
     this.mapService.removeClickInfo();
@@ -26,7 +40,8 @@ export class MapDrawToolComponent implements OnInit {
     this.drawGeometry = geometryType;
     this.mapService.activateDrawTool(geometryType);
 
-    this.inEditMode = true;
+
+    this.uiState.updateDrawUiState('inEditMode', true);
   }
 
   onEndDraw(): void {
@@ -36,7 +51,7 @@ export class MapDrawToolComponent implements OnInit {
   }
 
   onToggleEditMode(): void {
-    this.inEditMode = !this.inEditMode;
+    this.uiState.updateDrawUiState('inEditMode', false);
   }
 
   onUndo(): void {
@@ -50,7 +65,32 @@ export class MapDrawToolComponent implements OnInit {
 
   onSave(): void {
     this.mapService.finishDrawing();
-    this.mapService.changeLayerStyle('draw', 'style');
+    this.mapService.changeLayerStyle('draw', mapStyles.default);
+    this.mapStore.drawnGeometry$.pipe(
+      first(),
+      filter(geom => geom !== null),
+      mergeMap(geom => from(this.showDrawModal()).pipe(
+        map(description => ({ geom, description }))
+      ))
+    ).subscribe();
+  }
+
+  async showDrawModal(): Promise<string> {
+    const modal = await this.modalController.create({
+      cssClass: 'bottom-modal',
+      component: MapDrawModalComponent,
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+
+    if (data) {
+      this.projectStore.addFeature({ description: data });
+    }
+
+
+    return data;
   }
 
 

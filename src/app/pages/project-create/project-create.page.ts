@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MapStoreService } from '@app/stores/map-store.service';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { ProjectStoreService } from 'src/app/stores/project-store.service';
 
@@ -15,6 +16,7 @@ export class ProjectCreatePage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private projectStore: ProjectStoreService,
+    private mapStore: MapStoreService,
     private router: Router
   ) { }
 
@@ -26,8 +28,8 @@ export class ProjectCreatePage implements OnInit {
   }
 
   onCreateProject() {
-    this.projectStore.addProject(this.project.value)
-      .then(() => this.router.navigateByUrl('/app/projects'));
+    this.projectStore.addProject(this.project.value);
+    this.router.navigateByUrl('/app/projects');
 
   }
 

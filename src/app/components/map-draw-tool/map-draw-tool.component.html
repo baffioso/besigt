@@ -1,4 +1,4 @@
-<ng-container *ngIf="inEditMode === false">
+<ng-container *ngIf="(drawUiState$ | async).inEditMode === false">
   <ion-fab-button size="small" color="primary" (click)="onStartDraw('Point')">
     <i class="fg-point fg-lg"></i>
   </ion-fab-button>
@@ -13,22 +13,18 @@
   </ion-fab-button>
 </ng-container>
 
-<ng-container *ngIf="inEditMode">
-  <ion-fab-button size="small" color="secondary">
+<ng-container *ngIf="(drawUiState$ | async).inEditMode">
+  <ion-fab-button *ngIf="(drawUiState$ | async).showBack" size="small" color="secondary">
     <ion-icon name="arrow-back-outline" (click)="onToggleEditMode()"></ion-icon>
   </ion-fab-button>
-  <ion-fab-button *ngIf="drawGeometry !== 'Point'" size="small" color="secondary" (click)="onUndo()">
+  <ion-fab-button *ngIf="drawGeometry !== 'Point' && (drawUiState$ | async).showUndo" size="small" color="secondary"
+    (click)="onUndo()">
     <ion-icon name="arrow-undo-circle-outline"></ion-icon>
   </ion-fab-button>
-  <!-- <ion-fab-button size="small" color="secondary">
-    <i *ngIf="drawGeometry === 'Point'" class="fg-move fg-lg"></i>
-    <i *ngIf="drawGeometry === 'LineString'" class="fg-modify-line fg-lg"></i>
-    <i *ngIf="drawGeometry === 'Polygon'" class="fg-modify-poly-o fg-lg"></i>
-  </ion-fab-button> -->
-  <ion-fab-button size="small" color="secondary" (click)="onDelete()">
+  <ion-fab-button *ngIf="(drawUiState$ | async).showDelete" size="small" color="secondary" (click)="onDelete()">
     <ion-icon name="trash"></ion-icon>
   </ion-fab-button>
-  <ion-fab-button size="small" color="secondary" (click)="onSave()">
+  <ion-fab-button *ngIf="(drawUiState$ | async).showSave" size="small" color="secondary" (click)="onSave()">
     <ion-icon name="save"></ion-icon>
   </ion-fab-button>
 </ng-container>

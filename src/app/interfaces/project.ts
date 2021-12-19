@@ -4,6 +4,7 @@ import { Image } from '@app/interfaces/image';
 export interface CreateProject {
     name: string;
     description: string;
+    geom?: string;
 }
 
 export interface Project extends CreateProject {

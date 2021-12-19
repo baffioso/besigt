@@ -14,7 +14,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.supabase.authChanges((event, session) => {
       if (event === 'SIGNED_IN') {
-        this.projectStoreService.loadProjects();
+        this.projectStoreService.loadProjects().subscribe();
       }
     });
   }

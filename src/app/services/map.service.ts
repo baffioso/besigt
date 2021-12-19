@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
+import { tap } from 'rxjs/operators';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
+import { MapBrowserEvent } from 'ol';
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
+import BaseVectorLayer from 'ol/layer/BaseVector';
 import Feature from 'ol/Feature';
 import Geolocation from 'ol/Geolocation';
 import { Draw, Modify } from 'ol/interaction';
 import { GeoJSON, WKT } from 'ol/format';
-import { LineString, Polygon, Point } from 'ol/geom';
+import { LineString, Polygon, Point, Geometry } from 'ol/geom';
+import { fromExtent } from 'ol/geom/Polygon';
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 import { ScaleLine } from 'ol/control';
 import Select from 'ol/interaction/Select';
@@ -18,12 +22,13 @@ import { getArea, getLength } from 'ol/sphere';
 import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 
-import { Layer } from '../interfaces/map-layer-source';
+import { ViewState } from '../interfaces/map-state';
 import { MapStoreService } from '../stores/map-store.service';
 import { MapLayersService } from './map-layers.service';
-import { ViewState } from '../interfaces/map-state';
-import BaseVectorLayer from 'ol/layer/BaseVector';
-import { MapBrowserEvent } from 'ol';
+import { DawaService } from './dawa.service';
+import { Layer } from '../interfaces/map-layer-source';
+import { MapStyle, mapStyles } from '@app/shared/mapStyles';
+
 
 
 @Injectable({
@@ -39,7 +44,11 @@ export class MapService {
   private draw: Draw;
   private sketch: any;
 
-  constructor(private mapStoreService: MapStoreService, private mapLayersService: MapLayersService) { }
+  constructor(
+    private mapStoreService: MapStoreService,
+    private mapLayersService: MapLayersService,
+    private dawaService: DawaService
+  ) { }
 
   createMap(center: [number, number], zoom: number): void {
 
@@ -130,9 +139,9 @@ export class MapService {
       .forEach(layer => this.olmap.removeLayer(layer));
   }
 
-  changeLayerStyle(layerName: string, style: any) {
+  changeLayerStyle(layerName: string, style: Style | Style[]) {
     const layer = this.getLayer(layerName) as BaseVectorLayer<any>;
-    layer.setStyle(editStyles);
+    layer.setStyle(style);
     console.log(layer.setStyle);
   }
 
@@ -174,7 +183,7 @@ export class MapService {
       return;
     }
 
-    const feature = features[0].getProperties();
+    const feature = features[0];
 
     this.mapStoreService.emitSelectedFeature(feature);
 
@@ -188,7 +197,7 @@ export class MapService {
 
     this.featureSelection = new Select({
       hitTolerance,
-      style: selectionStyles
+      style: mapStyles.selection
     });
 
     this.olmap.addInteraction(this.featureSelection);
@@ -300,13 +309,8 @@ export class MapService {
 
     this.olmap.addInteraction(this.draw);
 
-    const wkt = new WKT();
-
     this.draw.on('drawend', (e) => {
-      const wktGeom = wkt.writeFeature(e.feature, {
-        featureProjection: 'EPSG:3857',
-        dataProjection: 'EPSG:25832'
-      });
+      const wktGeom = this.featureAsWKT(e.feature);
       this.mapStoreService.emitDrawnGeometry(wktGeom);
     });
   }
@@ -447,7 +451,16 @@ export class MapService {
     return transform(geometry, source, destination);
   }
 
-  addGeoJSON(geojson, layerName: string, projection: string): void {
+  featureAsWKT(feature: Feature<Geometry>, sourceSrid: string = 'EPSG:3857', targetSrid: string = 'EPSG:25832'): string {
+    const wkt = new WKT();
+
+    return wkt.writeFeature(feature, {
+      featureProjection: sourceSrid,
+      dataProjection: targetSrid
+    });
+  }
+
+  addGeoJSON(geojson, layerName: string, projection: string, style: Style | Style[] = mapStyles.default): void {
     const vectorSource = new VectorSource({
       features: new GeoJSON({ featureProjection: projection }).readFeatures(geojson, { featureProjection: 'EPSG:3857' }),
     });
@@ -455,7 +468,7 @@ export class MapService {
     const vectorLayer = new VectorLayer({
       source: vectorSource,
       properties: { name: layerName },
-      style: styles
+      style
     });
 
     this.olmap.addLayer(vectorLayer);
@@ -465,78 +478,25 @@ export class MapService {
   removeProjectOverlays() {
     this.removeLayer('photos');
     this.removeLayer('features');
+    this.removeLayer('projectArea');
+  }
+
+  getViewExtent(): Feature<Geometry> {
+    const extent = this.olmap.getView().calculateExtent(this.olmap.getSize());
+    const polygon = fromExtent(extent).transform('EPSG:3857', 'EPSG:4326') as Polygon;
+    return new Feature({
+      geometry: polygon
+    });
+  }
+
+  addMatrikelWithinViewExtent() {
+    const extentPolygon = this.getViewExtent() as Feature<Polygon>;
+    const extentArray = extentPolygon.getGeometry().getCoordinates();
+
+    this.dawaService.fetchMatriklerWithinPolygon(extentArray).pipe(
+      tap(geojson => this.addGeoJSON(geojson, 'jordstykke', 'EPSG:4326'))
+    ).subscribe(console.log);
+
   }
 
 }
-
-const styles = [
-  new Style({
-    stroke: new Stroke({
-      color: 'blue',
-      width: 3,
-    }),
-    fill: new Fill({
-      color: 'orange',
-    }),
-  }),
-  new Style({
-    image: new CircleStyle({
-      radius: 10,
-      fill: new Fill({
-        color: '#3399CC',
-      }),
-      stroke: new Stroke({
-        color: '#fff',
-        width: 2,
-      }),
-    }),
-  }),
-];
-
-const editStyles = [
-  new Style({
-    stroke: new Stroke({
-      color: 'yellow',
-      width: 1,
-    }),
-    fill: new Fill({
-      color: 'black',
-    }),
-  }),
-  new Style({
-    image: new CircleStyle({
-      radius: 2,
-      fill: new Fill({
-        color: 'black',
-      }),
-      stroke: new Stroke({
-        color: 'yellow',
-        width: 2,
-      }),
-    }),
-  }),
-];
-
-const selectionStyles = [
-  new Style({
-    stroke: new Stroke({
-      color: 'tomato',
-      width: 3,
-    }),
-    fill: new Fill({
-      color: 'green',
-    }),
-  }),
-  new Style({
-    image: new CircleStyle({
-      radius: 10,
-      fill: new Fill({
-        color: 'red',
-      }),
-      stroke: new Stroke({
-        color: '#fff',
-        width: 2,
-      }),
-    }),
-  }),
-];

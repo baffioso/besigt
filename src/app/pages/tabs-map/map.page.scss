@@ -20,3 +20,10 @@ app-map-draw-tool {
     position: fixed;
     top: calc(50% - 76px);
 }
+
+app-map-save-project-area-selection {
+    position: fixed;
+    z-index: 10;
+    bottom: 0;
+    width: 100%;
+}

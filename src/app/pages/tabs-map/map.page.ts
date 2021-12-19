@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MapDrawModalComponent } from '@app/components/map-draw-modal/map-draw-modal.component';
+import { mapStyles } from '@app/shared/mapStyles';
 import { UiStateService } from '@app/stores/ui-state.service';
 import { ModalController } from '@ionic/angular';
 import { from, Subject } from 'rxjs';
@@ -22,9 +23,7 @@ export class TapMapPage implements OnInit, OnDestroy {
     pluck('loadingFeatureInfo')
   );
 
-  showDrawTools$ = this.uiState.uiState$.pipe(
-    pluck('showMapDrawTool')
-  );
+  uiState$ = this.uiState.uiState$;
 
   currentProject$ = this.projectStore.currentProject$;
 
@@ -75,6 +74,12 @@ export class TapMapPage implements OnInit, OnDestroy {
       })
     ).subscribe();
 
+    this.projectStore.currentProjectAreaGeoJSON$.pipe(
+      takeUntil(this.abandon$),
+      tap(console.log),
+      tap(geojson => this.mapService.addGeoJSON(geojson, 'projectArea', 'EPSG:25832', mapStyles.projectArea))
+    ).subscribe();
+
     this.projectStore.currentProjectImageGeoJSON$.pipe(
       takeUntil(this.abandon$),
       tap(geojson => {
@@ -99,7 +104,7 @@ export class TapMapPage implements OnInit, OnDestroy {
       })
     ).subscribe();
 
-    this.mapStore.selectedFeature$.pipe(
+    this.mapStore.selectedImage$.pipe(
       takeUntil(this.abandon$),
       filter(feature => feature !== null),
       tap(() => this.mapStore.updateMapState('loadingFeatureInfo', true)),
@@ -109,13 +114,6 @@ export class TapMapPage implements OnInit, OnDestroy {
       })
     ).subscribe();
 
-    this.mapStore.drawnGeometry$.pipe(
-      takeUntil(this.abandon$),
-      filter(geom => geom !== null),
-      mergeMap(geom => from(this.showDrawModal()).pipe(
-        map(description => ({ geom, description }))
-      ))
-    ).subscribe();
   }
 
   ngOnDestroy(): void {
@@ -124,24 +122,6 @@ export class TapMapPage implements OnInit, OnDestroy {
 
   ionViewDidEnter() {
     this.mapService.resize();
-  }
-
-  async showDrawModal(): Promise<string> {
-    const modal = await this.modalController.create({
-      cssClass: 'bottom-modal',
-      component: MapDrawModalComponent,
-    });
-
-    await modal.present();
-
-    const { data } = await modal.onWillDismiss();
-
-    if (data) {
-      this.projectStore.addFeature({ description: data });
-    }
-
-
-    return data;
   }
 
   async showFeatureInfo(feature) {

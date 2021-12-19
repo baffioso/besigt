@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UiState } from '@app/interfaces/ui-state';
+import { DrawConfig, UiState } from '@app/interfaces/ui-state';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -7,15 +7,25 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class UiStateService {
 
-  private _uiState$ = new BehaviorSubject<UiState>({
+  initialState: UiState = {
     showMapDrawTool: false,
-    uploadingImage: false
-  });
+    showProjectAreaSelection: false,
+    uploadingImage: false,
+    drawConfig: {
+      inEditMode: false,
+      showBack: true,
+      showDelete: true,
+      showSave: true,
+      showUndo: true,
+    }
+  };
+
+  private _uiState$ = new BehaviorSubject<UiState>(this.initialState);
   uiState$ = this._uiState$.asObservable();
 
   constructor() { }
 
-  updateUiState(prop: keyof UiState, value: any) {
+  updateUiState(prop: keyof UiState, value: boolean) {
     const updated = {
       ...this._uiState$.value,
       [prop]: value
@@ -24,5 +34,31 @@ export class UiStateService {
     this._uiState$.next(updated);
   }
 
+  toggleUiState(prop: keyof UiState) {
+    const updated = {
+      ...this._uiState$.value,
+      [prop]: !this._uiState$.value[prop]
+    };
 
+    this._uiState$.next(updated);
+  }
+
+  updateDrawUiState(prop: keyof DrawConfig, value: boolean) {
+    const updated = {
+      ...this._uiState$.value,
+      drawConfig: {
+        ...this._uiState$.value.drawConfig,
+        [prop]: value
+      }
+    };
+
+    this._uiState$.next(updated);
+  }
+
+  resetDrawUiState() {
+    const updated = {
+      ...this._uiState$.value,
+      drawConfig: this.initialState.drawConfig
+    };
+  }
 }

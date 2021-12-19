@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { ViewState } from 'src/app/interfaces/map-state';
@@ -9,7 +9,8 @@ import { ProjectStoreService } from 'src/app/stores/project-store.service';
 @Component({
   selector: 'app-projects',
   templateUrl: 'projects.page.html',
-  styleUrls: ['projects.page.scss']
+  styleUrls: ['projects.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectsPage {
   projects$ = this.projectStoreService.projects$.pipe(

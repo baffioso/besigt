@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CreateFeature, Properties } from '@app/interfaces/feature';
-import { BehaviorSubject, combineLatest, of } from 'rxjs';
-import { catchError, filter, map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
+import { catchError, concatMap, filter, first, map, mergeMap, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { CreateImage } from '../interfaces/image';
 import { Project, ProjectWithRelations } from '../interfaces/project';
 import { GeolocationService } from '../services/geolocation.service';
@@ -24,6 +24,22 @@ export class ProjectStoreService {
   currentProject$ = this.projects$.pipe(
     mergeMap(projects => this.currentProjectId$.pipe(
       map(id => projects.find(project => project.id === id))
+    ))
+  );
+
+  currentProjectAreaGeoJSON$ = this.currentProject$.pipe(
+    filter(project => !!project),
+    map((project: ProjectWithRelations) => (
+      {
+        type: 'FeatureCollection',
+        crs: {
+          type: 'name',
+          properties: {
+            name: 'EPSG:25832',
+          },
+        },
+        features: [project.geom]
+      }
     ))
   );
 
@@ -100,15 +116,39 @@ export class ProjectStoreService {
     private uiState: UiStateService
   ) { }
 
-  async loadProjects() {
-    const projects = await this.supabase.loadProjects();
-    this._projects$.next(projects);
+  loadProjects() {
+    return this.supabase.loadProjects().pipe(
+      shareReplay(),
+      tap(projects => this._projects$.next(projects))
+    );
   }
 
-  async addProject(project: Project) {
-    const newProject = await this.supabase.addProject(project);
-    this.supabase.addMapViewState(newProject[0].id, this.mapStore.viewState);
-    this.loadProjects();
+  addProject(project: Project, geomSource: 'jordstykke' | 'draw' | 'bounds' = 'bounds') {
+
+    let feature: Observable<string>;
+
+    switch (geomSource) {
+      case 'jordstykke':
+        feature = this.mapStore.selectedFeatureAsWKT$;
+        break;
+      case 'draw':
+        feature = this.mapStore.drawnGeometry$;
+        break;
+      case 'bounds':
+        const extent = this.mapService.getViewExtent();
+        feature = of(this.mapService.featureAsWKT(extent, 'EPSG:4326', 'EPSG:25832'));
+        break;
+      default:
+        break;
+    }
+
+    feature.pipe(
+      tap(console.log),
+      first(),
+      concatMap(geom => this.supabase.addProject({ ...project, geom })),
+      concatMap(proj => this.supabase.addMapViewState(proj[0].id, this.mapStore.viewState)),
+      switchMap(() => this.loadProjects())
+    ).subscribe();
   }
 
   addPhoto() {
@@ -145,10 +185,8 @@ export class ProjectStoreService {
 
         return this.supabase.addImageInfo(imageInfo);
       }),
-      tap(() => {
-        this.loadProjects();
-        this.uiState.updateUiState('uploadingImage', false);
-      }),
+      switchMap(() => this.loadProjects()),
+      tap(() => this.uiState.updateUiState('uploadingImage', false)),
       catchError(err => {
         this.uiState.updateUiState('uploadingImage', false);
         return of(null);
@@ -169,7 +207,7 @@ export class ProjectStoreService {
 
         return this.supabase.addFeature(feature);
       }),
-      tap(() => this.loadProjects())
+      switchMap(() => this.loadProjects())
     ).subscribe();
   }
 
