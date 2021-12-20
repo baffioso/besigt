@@ -21,9 +21,13 @@ app-map-draw-tool {
     top: calc(50% - 76px);
 }
 
-app-map-save-project-area-selection {
+.full-width-bottom-tool {
     position: fixed;
     z-index: 10;
     bottom: 0;
     width: 100%;
+}
+
+app-map-info-tool {
+    text-align: center;
 }

@@ -495,7 +495,17 @@ export class MapService {
 
     this.dawaService.fetchMatriklerWithinPolygon(extentArray).pipe(
       tap(geojson => this.addGeoJSON(geojson, 'jordstykke', 'EPSG:4326'))
-    ).subscribe(console.log);
+    ).subscribe();
+
+  }
+
+  addAdresserWithinViewExtent() {
+    const extentPolygon = this.getViewExtent() as Feature<Polygon>;
+    const extentArray = extentPolygon.getGeometry().getCoordinates();
+
+    this.dawaService.fetchAdresserWithinPolygon(extentArray).pipe(
+      tap(geojson => this.addGeoJSON(geojson, 'adresser', 'EPSG:4326', mapStyles.addressInfo))
+    ).subscribe();
 
   }
 

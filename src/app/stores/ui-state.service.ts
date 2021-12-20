@@ -10,6 +10,7 @@ export class UiStateService {
   initialState: UiState = {
     showMapDrawTool: false,
     showProjectAreaSelection: false,
+    showInfoTool: false,
     uploadingImage: false,
     drawConfig: {
       inEditMode: false,

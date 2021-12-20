@@ -9,6 +9,7 @@ export interface DrawConfig {
 export interface UiState {
     showMapDrawTool: boolean;
     showProjectAreaSelection: boolean;
+    showInfoTool: boolean;
     uploadingImage: boolean;
     drawConfig: DrawConfig;
 }

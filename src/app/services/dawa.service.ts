@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { ReverseGeocodeResponse } from '@app/interfaces/dawa';
 import { environment } from '@env/environment';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -30,9 +30,15 @@ export class DawaService {
     );
   }
 
-  fetchMatriklerWithinPolygon(polygon) {
+  fetchMatriklerWithinPolygon(polygon: number[][][]) {
     const p = JSON.stringify(polygon);
     const url = `${this.baseUrl}/jordstykker?format=geojson&polygon=${p}`;
+    return this.http.get(url);
+  }
+
+  fetchAdresserWithinPolygon(polygon: number[][][]) {
+    const p = JSON.stringify(polygon);
+    const url = `${this.baseUrl}/adgangsadresser?format=geojson&polygon=${p}`;
     return this.http.get(url);
   }
 }
