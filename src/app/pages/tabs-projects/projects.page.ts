@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { map } from 'rxjs/operators';
 import { ViewState } from 'src/app/interfaces/map-state';
 import { ProjectWithRelations } from 'src/app/interfaces/project';
 import { MapService } from 'src/app/services/map.service';
@@ -8,10 +9,15 @@ import { ProjectStoreService } from 'src/app/stores/project-store.service';
 @Component({
   selector: 'app-projects',
   templateUrl: 'projects.page.html',
-  styleUrls: ['projects.page.scss']
+  styleUrls: ['projects.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectsPage {
-  projects$ = this.projectStoreService.projects$;
+  projects$ = this.projectStoreService.projects$.pipe(
+    map(projects => projects.sort((a, b) => new Date(b.inserted_at) as any - (new Date(a.inserted_at) as any)))
+  );
+
+  currentdProjectId$ = this.projectStoreService.currentProjectId$;
 
   constructor(
     private projectStoreService: ProjectStoreService,

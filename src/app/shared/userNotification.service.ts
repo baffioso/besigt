@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
 import { AlertController, LoadingController, ToastController, ToastOptions } from '@ionic/angular';
+import { BehaviorSubject, from, Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserNotificationService {
+
+  private loader: HTMLIonLoadingElement;
 
   constructor(
     public loadingController: LoadingController,
@@ -12,14 +16,21 @@ export class UserNotificationService {
     public alertController: AlertController
   ) { }
 
-  async presentLoading(message: string) {
-    const loading = await this.loadingController.create({
-      message,
-    });
-    await loading.present();
+  presentLoading(message: string) {
+    return from(this.loadingController.create({ message })).pipe(
+      tap(loader => {
+        this.loader = loader;
+        loader.present();
+      })
+    );
+  }
 
-    return loading;
+  dismissLoading(): Observable<boolean> {
+    if (this.loader) {
+      return from(this.loader.dismiss());
+    }
 
+    return of(null);
   }
 
   async presentToast(options: ToastOptions) {

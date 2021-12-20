@@ -10,5 +10,8 @@
     <app-map-layers-control></app-map-layers-control>
     <app-map-tools></app-map-tools>
     <app-map-legend-fab></app-map-legend-fab>
-    <app-map-geolocation></app-map-geolocation>
+    <app-map-geolocation *ngIf="(uiState$ | async).showProjectAreaSelection === false"></app-map-geolocation>
+    <app-map-draw-tool *ngIf="(uiState$ | async).showMapDrawTool"></app-map-draw-tool>
+    <app-map-save-project-area-selection *ngIf="(uiState$ | async).showProjectAreaSelection">
+    </app-map-save-project-area-selection>
 </ion-content>

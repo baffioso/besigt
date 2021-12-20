@@ -1,0 +1,44 @@
+<ion-badge *ngIf="(disableMatrikel$ | async) && geomSource === 'jordstykke'">Zoom ind for at
+  vælge matrikler</ion-badge>
+<ion-badge *ngIf="geomSource === 'draw'">Tryk på kortet for at tegne</ion-badge>
+<ion-fab
+  *ngIf="((selectedArea$ | async) && geomSource === 'jordstykke' ) || geomSource === 'draw' || (geomSource === 'bounds') "
+  vertical="bottom" horizontal="center" slot="fixed">
+  <ion-fab-button (click)="toggleModal()">
+    <ion-icon name="checkmark-outline"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+<!-- <ion-button expand="full" id="openModal">
+  I open the modal
+</ion-button> -->
+<ion-segment (ionChange)="selectionMethodChanged($event)" mode="md">
+  <ion-segment-button [disabled]="(disableMatrikel$ | async) && geomSource === 'jordstykke'" value="jordstykke">
+    <ion-label>Matrikel</ion-label>
+  </ion-segment-button>
+  <ion-segment-button value="draw">
+    <ion-label>Tegn</ion-label>
+  </ion-segment-button>
+  <ion-segment-button value="bounds">
+    <ion-label>Kortudsnit</ion-label>
+  </ion-segment-button>
+</ion-segment>
+
+<ion-modal [isOpen]="showModal" [initialBreakpoint]="0.4" [breakpoints]="[0, 0.4, 0.5]">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar color="primary">
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <form (ngSubmit)="onCreateProject()" [formGroup]="project">
+        <ion-item>
+          <ion-input placeholder="Navn" formControlName="name"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-textarea placeholder="Beskrivelse" rows="3" formControlName="description"></ion-textarea>
+        </ion-item>
+        <ion-button type="submit" size="large" expand="full" color="primary">Opret projekt</ion-button>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>

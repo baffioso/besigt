@@ -1,8 +1,10 @@
-import { Image } from './image';
+import { Feature } from '@app/interfaces/feature';
+import { Image } from '@app/interfaces/image';
 
 export interface CreateProject {
     name: string;
     description: string;
+    geom?: string;
 }
 
 export interface Project extends CreateProject {
@@ -13,5 +15,6 @@ export interface Project extends CreateProject {
 
 export interface ProjectWithRelations extends Project {
     images: Image[];
+    features: Feature[];
     map_state: any[];
 }

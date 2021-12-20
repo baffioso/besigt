@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { UiStateService } from '@app/stores/ui-state.service';
+import { from, of } from 'rxjs';
+import { filter, finalize, mergeMap, pluck, switchMap, tap } from 'rxjs/operators';
 import { GeolocationService } from 'src/app/services/geolocation.service';
 import { UserNotificationService } from 'src/app/shared/userNotification.service';
 import { ProjectStoreService } from 'src/app/stores/project-store.service';
@@ -15,22 +18,37 @@ export class MapToolsComponent implements OnInit {
   constructor(
     private projectStore: ProjectStoreService,
     private geolocationService: GeolocationService,
-    private userNotificationService: UserNotificationService
+    private userNotificationService: UserNotificationService,
+    private uiState: UiStateService
   ) { }
 
-  ngOnInit() { }
+  ngOnInit() {
 
-  async onAddPhoto() {
-    const loading = await this.userNotificationService.presentLoading('Uploader billede');
-    await this.projectStore.addPhoto();
-    loading.dismiss();
-    this.userNotificationService.presentToast(
-      {
-        message: 'Dit billede blev gemt',
-        color: 'success',
-        duration: 2500,
-        position: 'top'
-      });
+    this.uiState.uiState$.pipe(
+      pluck('uploadingImage'),
+      mergeMap(uploading => {
+        if (uploading) {
+          return this.userNotificationService.presentLoading('Uploader billede');
+        } else {
+          return this.userNotificationService.dismissLoading();
+        }
+      })
+    ).subscribe();
+  }
+
+  onAddPhoto() {
+
+    this.projectStore.addPhoto().pipe(
+      tap(() => {
+        this.userNotificationService.presentToast(
+          {
+            message: 'Dit billede blev gemt',
+            color: 'success',
+            duration: 2500,
+            position: 'top'
+          });
+      })
+    ).subscribe();
   }
 
   startTracking() {

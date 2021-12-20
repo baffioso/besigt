@@ -1,8 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MapDrawModalComponent } from '@app/components/map-draw-modal/map-draw-modal.component';
+import { mapStyles } from '@app/shared/mapStyles';
+import { UiStateService } from '@app/stores/ui-state.service';
 import { ModalController } from '@ionic/angular';
-import { Subject } from 'rxjs';
-import { map, pluck, take, takeUntil, tap } from 'rxjs/operators';
+import { from, Subject } from 'rxjs';
+import { filter, map, mergeMap, pluck, take, takeUntil, tap } from 'rxjs/operators';
 import { MapFeatureInfoModalComponent } from 'src/app/components/map-feature-info-modal/map-feature-info-modal.component';
 import { MapService } from 'src/app/services/map.service';
 import { MapStoreService } from 'src/app/stores/map-store.service';
@@ -20,6 +23,8 @@ export class TapMapPage implements OnInit, OnDestroy {
     pluck('loadingFeatureInfo')
   );
 
+  uiState$ = this.uiState.uiState$;
+
   currentProject$ = this.projectStore.currentProject$;
 
   constructor(
@@ -29,6 +34,7 @@ export class TapMapPage implements OnInit, OnDestroy {
     private projectStore: ProjectStoreService,
     private mapService: MapService,
     public modalController: ModalController,
+    private uiState: UiStateService
   ) { }
 
   ngOnInit(): void {
@@ -58,12 +64,6 @@ export class TapMapPage implements OnInit, OnDestroy {
       map(v => ({ x: v?.center[0], y: v?.center[1], zoom: v?.zoom }))
     );
 
-    // const addedOverlaysParams$ = this.mapLayersService.overlays$.pipe(
-    //   take(1),
-    //   map(overlays => overlays.map(o => o.layers.filter(l => l.addedToMap))),
-    //   // tap(console.log)
-    // ).subscribe();
-
     mapNavigationParams$.pipe(
       takeUntil(this.abandon$),
       tap(view => {
@@ -74,25 +74,46 @@ export class TapMapPage implements OnInit, OnDestroy {
       })
     ).subscribe();
 
+    this.projectStore.currentProjectAreaGeoJSON$.pipe(
+      takeUntil(this.abandon$),
+      tap(console.log),
+      tap(geojson => this.mapService.addGeoJSON(geojson, 'projectArea', 'EPSG:25832', mapStyles.projectArea))
+    ).subscribe();
+
     this.projectStore.currentProjectImageGeoJSON$.pipe(
       takeUntil(this.abandon$),
       tap(geojson => {
         try {
-          this.mapService.removeProjectOverlays();
-          this.mapService.addGeoJSON(geojson, 'EPSG:25832');
+          // this.mapService.removeProjectOverlays();
+          this.mapService.addGeoJSON(geojson, 'photos', 'EPSG:25832');
         } catch (error) {
-          console.log(error);
+          // console.log(error);
         }
       })
     ).subscribe();
 
-    this.mapStore.selectedFeature$.pipe(
+    this.projectStore.currentProjectFeatureGeoJSON$.pipe(
       takeUntil(this.abandon$),
-      tap(feature => {
-        this.showFeatureInfo(feature);
-        this.mapStore.updateMapState('loadingFeatureInfo', false);
+      tap(geojson => {
+        try {
+          // this.mapService.removeProjectOverlays();
+          this.mapService.addGeoJSON(geojson, 'features', 'EPSG:25832');
+        } catch (error) {
+          // console.log(error);
+        }
       })
     ).subscribe();
+
+    this.mapStore.selectedImage$.pipe(
+      takeUntil(this.abandon$),
+      filter(feature => feature !== null),
+      tap(() => this.mapStore.updateMapState('loadingFeatureInfo', true)),
+      tap(feature => {
+        this.mapStore.updateMapState('loadingFeatureInfo', false);
+        this.showFeatureInfo(feature);
+      })
+    ).subscribe();
+
   }
 
   ngOnDestroy(): void {

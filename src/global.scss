@@ -26,6 +26,7 @@
 @import "~@ionic/angular/css/flex-utils.css";
 
 @import "ol/ol.css";
+@import "font-gis/css/font-gis.css";
 
 // Dawa geosearch
 .dawa-autocomplete-suggestions {
@@ -70,4 +71,10 @@
     // position: relative;
     // bottom: 130px;
     // left: 10px;
+}
+
+.bottom-modal .modal-wrapper {
+    position: absolute;
+    bottom: 0px;
+    height: 300px;
 }

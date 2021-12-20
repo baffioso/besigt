@@ -1,15 +1,18 @@
 import { Injectable } from '@angular/core';
+import { tap } from 'rxjs/operators';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
+import { MapBrowserEvent } from 'ol';
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
+import BaseVectorLayer from 'ol/layer/BaseVector';
 import Feature from 'ol/Feature';
 import Geolocation from 'ol/Geolocation';
-import Draw from 'ol/interaction/Draw';
-import GeoJSON from 'ol/format/GeoJSON';
-import { LineString, Polygon, Point } from 'ol/geom';
-
+import { Draw, Modify } from 'ol/interaction';
+import { GeoJSON, WKT } from 'ol/format';
+import { LineString, Polygon, Point, Geometry } from 'ol/geom';
+import { fromExtent } from 'ol/geom/Polygon';
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 import { ScaleLine } from 'ol/control';
 import Select from 'ol/interaction/Select';
@@ -19,11 +22,13 @@ import { getArea, getLength } from 'ol/sphere';
 import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 
-import { Layer } from '../interfaces/map-layer-source';
+import { ViewState } from '../interfaces/map-state';
 import { MapStoreService } from '../stores/map-store.service';
 import { MapLayersService } from './map-layers.service';
-import { ViewState } from '../interfaces/map-state';
-import { Coordinate } from 'ol/coordinate';
+import { DawaService } from './dawa.service';
+import { Layer } from '../interfaces/map-layer-source';
+import { MapStyle, mapStyles } from '@app/shared/mapStyles';
+
 
 
 @Injectable({
@@ -39,7 +44,11 @@ export class MapService {
   private draw: Draw;
   private sketch: any;
 
-  constructor(private mapStoreService: MapStoreService, private mapLayersService: MapLayersService) { }
+  constructor(
+    private mapStoreService: MapStoreService,
+    private mapLayersService: MapLayersService,
+    private dawaService: DawaService
+  ) { }
 
   createMap(center: [number, number], zoom: number): void {
 
@@ -75,7 +84,8 @@ export class MapService {
     });
 
     this.addClickInfo();
-    // this.addMeasureTool('Polygon');
+    // this.olmap.un('click', (evt) => this.handelClickInfo(evt));
+    // this.olmap.removeInteraction(this.featureSelection);
 
   }
 
@@ -118,10 +128,21 @@ export class MapService {
     this.olmap.addLayer(wmsLayer);
   }
 
+  getLayer(layerName: string) {
+    return this.olmap.getLayers().getArray()
+      .find(layer => layer.get('name') === layerName);
+  }
+
   removeLayer(layerName: string): void {
     this.olmap.getLayers().getArray()
       .filter(layer => layer.get('name') === layerName)
       .forEach(layer => this.olmap.removeLayer(layer));
+  }
+
+  changeLayerStyle(layerName: string, style: Style | Style[]) {
+    const layer = this.getLayer(layerName) as BaseVectorLayer<any>;
+    layer.setStyle(style);
+    console.log(layer.setStyle);
   }
 
   addMarker(coordinates: [number, number]): void {
@@ -150,43 +171,35 @@ export class MapService {
 
   }
 
+  private handelClickInfo(evt: MapBrowserEvent<any>) {
+
+    const hitTolerance = 10;
+
+    const features = this.olmap.getFeaturesAtPixel(evt.pixel, {
+      hitTolerance
+    });
+
+    if (features.length === 0) {
+      return;
+    }
+
+    const feature = features[0];
+
+    this.mapStoreService.emitSelectedFeature(feature);
+
+  }
+
   addClickInfo(): void {
 
     const hitTolerance = 10;
 
-    this.olmap.on('click', (e) => {
-
-      const features = this.olmap.getFeaturesAtPixel(e.pixel, {
-        hitTolerance
-      });
-
-      if (features.length === 0) {
-        return;
-      }
-
-      this.mapStoreService.updateMapState('loadingFeatureInfo', true);
-
-      const feature = features[0].getProperties();
-
-      this.mapStoreService.emitSelectedFeature(feature);
-
-    });
+    this.olmap.on('click', (evt) => this.handelClickInfo(evt));
 
     this.featureSelection = new Select({
       hitTolerance,
-      style: new Style({
-        image: new CircleStyle({
-          radius: 15,
-          fill: new Fill({
-            color: 'tomato',
-          }),
-          stroke: new Stroke({
-            color: '#fff',
-            width: 2,
-          }),
-        }),
-      })
+      style: mapStyles.selection
     });
+
     this.olmap.addInteraction(this.featureSelection);
 
   }
@@ -195,6 +208,12 @@ export class MapService {
     this.olmap.removeInteraction(this.featureSelection);
     this.olmap.addInteraction(this.featureSelection);
   }
+
+  removeClickInfo() {
+    this.olmap.un('click', (evt) => this.handelClickInfo(evt));
+    this.olmap.removeInteraction(this.featureSelection);
+  }
+
 
 
   //--------------------------------
@@ -266,6 +285,50 @@ export class MapService {
   }
 
   //--------------------------------
+  // DRAW TOOL
+  //--------------------------------
+
+  activateDrawTool(geometryType: 'Point' | 'LineString' | 'Polygon'): void {
+
+    const drawSource = new VectorSource({ wrapX: false });
+
+    const drawLayer = new VectorLayer({
+      source: drawSource,
+      properties: { name: 'draw' }
+    });
+
+    this.olmap.addLayer(drawLayer);
+
+    const modify = new Modify({ source: drawSource });
+    this.olmap.addInteraction(modify);
+
+    this.draw = new Draw({
+      source: drawSource,
+      type: geometryType
+    });
+
+    this.olmap.addInteraction(this.draw);
+
+    this.draw.on('drawend', (e) => {
+      const wktGeom = this.featureAsWKT(e.feature);
+      this.mapStoreService.emitDrawnGeometry(wktGeom);
+    });
+  }
+
+  finishDrawing() {
+    this.draw.finishDrawing();
+  }
+
+  removeLastDrawPoint(): void {
+    this.draw.removeLastPoint();
+  }
+
+  removeDrawTool(): void {
+    this.olmap.removeInteraction(this.draw);
+    this.removeLayer('draw');
+  }
+
+  //--------------------------------
   // MEASURE TOOL
   //--------------------------------
 
@@ -330,8 +393,8 @@ export class MapService {
       // /** @type {import("../src/ol/coordinate.js").Coordinate|undefined} */
       // let tooltipCoord: Coordinate = evt.coordinate;
 
-      this.sketch.getGeometry().on('change', (evt) => {
-        const geom = evt.target;
+      this.sketch.getGeometry().on('change', (ev) => {
+        const geom = ev.target;
         let output;
         if (geom instanceof Polygon) {
           output = this.formatArea(geom);
@@ -388,27 +451,24 @@ export class MapService {
     return transform(geometry, source, destination);
   }
 
-  addGeoJSON(geojson, projection: string): void {
+  featureAsWKT(feature: Feature<Geometry>, sourceSrid: string = 'EPSG:3857', targetSrid: string = 'EPSG:25832'): string {
+    const wkt = new WKT();
+
+    return wkt.writeFeature(feature, {
+      featureProjection: sourceSrid,
+      dataProjection: targetSrid
+    });
+  }
+
+  addGeoJSON(geojson, layerName: string, projection: string, style: Style | Style[] = mapStyles.default): void {
     const vectorSource = new VectorSource({
       features: new GeoJSON({ featureProjection: projection }).readFeatures(geojson, { featureProjection: 'EPSG:3857' }),
     });
 
-
     const vectorLayer = new VectorLayer({
       source: vectorSource,
-      properties: { name: 'photos' },
-      style: new Style({
-        image: new CircleStyle({
-          radius: 15,
-          fill: new Fill({
-            color: '#3399CC',
-          }),
-          stroke: new Stroke({
-            color: '#fff',
-            width: 2,
-          }),
-        }),
-      }),
+      properties: { name: layerName },
+      style
     });
 
     this.olmap.addLayer(vectorLayer);
@@ -417,6 +477,26 @@ export class MapService {
 
   removeProjectOverlays() {
     this.removeLayer('photos');
+    this.removeLayer('features');
+    this.removeLayer('projectArea');
+  }
+
+  getViewExtent(): Feature<Geometry> {
+    const extent = this.olmap.getView().calculateExtent(this.olmap.getSize());
+    const polygon = fromExtent(extent).transform('EPSG:3857', 'EPSG:4326') as Polygon;
+    return new Feature({
+      geometry: polygon
+    });
+  }
+
+  addMatrikelWithinViewExtent() {
+    const extentPolygon = this.getViewExtent() as Feature<Polygon>;
+    const extentArray = extentPolygon.getGeometry().getCoordinates();
+
+    this.dawaService.fetchMatriklerWithinPolygon(extentArray).pipe(
+      tap(geojson => this.addGeoJSON(geojson, 'jordstykke', 'EPSG:4326'))
+    ).subscribe(console.log);
+
   }
 
 }

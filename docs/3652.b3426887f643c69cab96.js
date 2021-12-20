@@ -1,0 +1,1 @@
+(self.webpackChunkbesigt=self.webpackChunkbesigt||[]).push([[3652],{3652:(e,s,i)=>{"use strict";i.r(s),i.d(s,{ion_loading:()=>a.L});var a=i(4200);i(9633),i(2964),i(1064),i(3065),i(1354),i(399)}}]);

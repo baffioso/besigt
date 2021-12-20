@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Geolocation, Position, PositionOptions } from '@capacitor/geolocation';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, from, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -18,9 +18,11 @@ export class GeolocationService {
 
   constructor() { }
 
-  async getPosition() {
-    return Geolocation.getCurrentPosition(
-      this.positionOptions
+  getPosition(): Observable<Position> {
+    return from(
+      Geolocation.getCurrentPosition(
+        this.positionOptions
+      )
     );
   }
 
