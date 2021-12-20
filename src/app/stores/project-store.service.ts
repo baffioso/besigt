@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CreateFeature, Properties } from '@app/interfaces/feature';
+import { WKT } from 'ol/format';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { catchError, concatMap, filter, first, map, mergeMap, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { CreateImage } from '../interfaces/image';
@@ -10,6 +11,7 @@ import { PhotoService } from '../services/photo.service';
 import { SupabaseService } from '../services/supabase.service';
 import { MapStoreService } from './map-store.service';
 import { UiStateService } from './ui-state.service';
+import { getCenter } from 'ol/extent';
 
 @Injectable({
   providedIn: 'root'
@@ -143,7 +145,6 @@ export class ProjectStoreService {
     }
 
     feature.pipe(
-      tap(console.log),
       first(),
       concatMap(geom => this.supabase.addProject({ ...project, geom })),
       concatMap(proj => this.supabase.addMapViewState(proj[0].id, this.mapStore.viewState)),

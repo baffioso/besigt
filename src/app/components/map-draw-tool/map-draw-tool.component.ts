@@ -68,7 +68,7 @@ export class MapDrawToolComponent implements OnInit {
     this.mapService.changeLayerStyle('draw', mapStyles.default);
     this.mapStore.drawnGeometry$.pipe(
       first(),
-      filter(geom => geom !== null),
+      filter(geom => !!geom),
       mergeMap(geom => from(this.showDrawModal()).pipe(
         map(description => ({ geom, description }))
       ))
