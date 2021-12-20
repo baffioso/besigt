@@ -5,7 +5,7 @@ import { WKT } from 'ol/format';
 import { Geometry } from 'ol/geom';
 import RenderFeature from 'ol/render/Feature';
 import { BehaviorSubject, of, Subject } from 'rxjs';
-import { filter, map, mergeMap, tap } from 'rxjs/operators';
+import { filter, map, mergeMap, share, shareReplay, tap } from 'rxjs/operators';
 import { MapState } from '../interfaces/map-state';
 import { SupabaseService } from '../services/supabase.service';
 

@@ -5,6 +5,10 @@
   <ion-fab-list>
     <app-map-geosearch></app-map-geosearch>
 
+    <ion-fab-button color="light" (click)="toggleTool('showInfoTool')">
+      <i class="fg-poi-info fg-lg"></i>
+    </ion-fab-button>
+
     <ng-container *ngIf="(currentProject$ | async) !== undefined">
 
       <ion-fab-button color="light" (click)="onAddPhoto()">
@@ -14,6 +18,6 @@
       <app-map-draw-fab></app-map-draw-fab>
     </ng-container>
 
-    <app-map-save-project-fab></app-map-save-project-fab>
+    <app-map-save-project-fab *ngIf="(currentProject$ | async) === undefined"></app-map-save-project-fab>
   </ion-fab-list>
 </ion-fab>

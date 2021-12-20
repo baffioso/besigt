@@ -80,6 +80,18 @@ export const mapStyles: MapStyle = {
       width: 3,
       lineDash: [4, 8]
     })
+  }),
+  addressInfo: new Style({
+    image: new CircleStyle({
+      radius: 5,
+      fill: new Fill({
+        color: '#3399CC',
+      }),
+      stroke: new Stroke({
+        color: '#fff',
+        width: 1,
+      }),
+    }),
   })
 
 };

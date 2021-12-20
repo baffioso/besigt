@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UiStateService } from '@app/stores/ui-state.service';
-import { from, of } from 'rxjs';
-import { filter, finalize, mergeMap, pluck, switchMap, tap } from 'rxjs/operators';
+import { UiState } from '@app/interfaces/ui-state';
+import { mergeMap, pluck, tap } from 'rxjs/operators';
 import { GeolocationService } from 'src/app/services/geolocation.service';
 import { UserNotificationService } from 'src/app/shared/userNotification.service';
 import { ProjectStoreService } from 'src/app/stores/project-store.service';
@@ -34,6 +34,10 @@ export class MapToolsComponent implements OnInit {
         }
       })
     ).subscribe();
+  }
+
+  toggleTool(name: keyof UiState) {
+    this.uiState.toggleUiState(name);
   }
 
   onAddPhoto() {

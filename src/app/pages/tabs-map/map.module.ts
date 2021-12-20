@@ -16,9 +16,10 @@ import { MapFeatureInfoModalComponent } from 'src/app/components/map-feature-inf
 import { MapLegendFabComponent } from 'src/app/components/map-legend-fab/map-legend-fab.component';
 import { MapLegendPopoverComponent } from 'src/app/components/map-legend-popover/map-legend-popover.component';
 import { MapDrawFabComponent } from '@app/components/map-draw-fab/map-draw-fab.component';
-import { MapDrawToolComponent } from '@app/components/map-draw-tool/map-draw-tool.component';
 import { MapDrawModalComponent } from '@app/components/map-draw-modal/map-draw-modal.component';
 import { MapSaveProjectFabComponent } from '@app/components/map-save-project-fab/map-save-project-fab.component';
+import { MapInfoToolComponent } from '@app/components/map-info-tool/map-info-tool.component';
+import { MapDrawToolComponent } from '@app/components/map-draw-tool/map-draw-tool.component';
 // eslint-disable-next-line max-len
 import { MapSaveProjectAreaSelectionComponent } from '@app/components/map-save-project-area-selection/map-save-project-area-selection.component';
 
@@ -46,7 +47,8 @@ import { MapSaveProjectAreaSelectionComponent } from '@app/components/map-save-p
     MapDrawToolComponent,
     MapDrawModalComponent,
     MapSaveProjectFabComponent,
-    MapSaveProjectAreaSelectionComponent
+    MapSaveProjectAreaSelectionComponent,
+    MapInfoToolComponent
   ]
 })
 export class MapPageModule { }

@@ -1,0 +1,43 @@
+<ion-button [disabled]="disableAddressButton$ | async" color="tertiary" (click)="onShowPOI()">
+    {{(disableAddressButton$ | async) === false ? 'Hent adresser' : 'Zoom længere ind for info'}}
+</ion-button>
+
+<ion-modal [isOpen]="showModal" [initialBreakpoint]="0.4" [breakpoints]="[0, 0.4, 0.6]">
+    <ng-template>
+        <ion-header>
+            <ion-toolbar color="primary">
+                <ion-title class="ion-text-center">
+                    Adresseoplysning
+                </ion-title>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content>
+            <ion-item>
+                <ion-icon name="home-outline" slot="start"></ion-icon>
+                <ion-label>
+                    <h2>{{(dawaInfo$ | async).adresse}}</h2>
+                    <p>{{(dawaInfo$ | async).matrikkel.nummer}}, {{(dawaInfo$ | async).matrikkel.ejerlav}}</p>
+                </ion-label>
+            </ion-item>
+            <ion-item [href]="'http://gis.frederiksberg.dk/vaerktoejer/ois-link.html?' + (dawaInfo$ | async).ois"
+                target="_blank">
+                <ion-icon name="link-outline" slot="start"></ion-icon>
+                <ion-label>
+                    OIS
+                </ion-label>
+            </ion-item>
+            <ion-item [href]="'https://www.dingeo.dk/adresse/' + (dawaInfo$ | async).dinGeo" target="_blank">
+                <ion-icon name="link-outline" slot="start"></ion-icon>
+                <ion-label>
+                    DinGeo
+                </ion-label>
+            </ion-item>
+            <ion-item [href]="'https://kort.degulesider.dk/s/' + (dawaInfo$ | async).adresse" target="_blank">
+                <ion-icon name="link-outline" slot="start"></ion-icon>
+                <ion-label>
+                    De Gule Sider
+                </ion-label>
+            </ion-item>
+        </ion-content>
+    </ng-template>
+</ion-modal>
