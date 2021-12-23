@@ -17,7 +17,7 @@ export class MapStoreService {
   private _drawnGeometry$ = new BehaviorSubject<string>(null);
   drawnGeometry$ = this._drawnGeometry$.asObservable();
 
-  private _mapstate$ = new BehaviorSubject<MapState>({ mapLoaded: false, loadingFeatureInfo: false });
+  private _mapstate$ = new BehaviorSubject<MapState>({ mapLoaded: false, loadingFeatureInfo: false, loadingLayer: false });
   mapstate$ = this._mapstate$.asObservable();
 
   private _selectedFeature$ = new BehaviorSubject<RenderFeature | Feature<Geometry>>(null);

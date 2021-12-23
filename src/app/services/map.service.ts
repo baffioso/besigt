@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { tap } from 'rxjs/operators';
+import { catchError, finalize, tap } from 'rxjs/operators';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -28,6 +28,7 @@ import { MapLayersService } from './map-layers.service';
 import { DawaService } from './dawa.service';
 import { Layer } from '../interfaces/map-layer-source';
 import { MapStyle, mapStyles } from '@app/shared/mapStyles';
+import { of } from 'rxjs';
 
 
 
@@ -492,9 +493,12 @@ export class MapService {
   addMatrikelWithinViewExtent() {
     const extentPolygon = this.getViewExtent() as Feature<Polygon>;
     const extentArray = extentPolygon.getGeometry().getCoordinates();
+    this.mapStoreService.updateMapState('loadingLayer', true);
 
     this.dawaService.fetchMatriklerWithinPolygon(extentArray).pipe(
-      tap(geojson => this.addGeoJSON(geojson, 'jordstykke', 'EPSG:4326'))
+      tap(geojson => this.addGeoJSON(geojson, 'jordstykke', 'EPSG:4326')),
+      tap(() => this.mapStoreService.updateMapState('loadingLayer', false)),
+      finalize(() => this.mapStoreService.updateMapState('loadingLayer', false))
     ).subscribe();
 
   }
@@ -502,9 +506,11 @@ export class MapService {
   addAdresserWithinViewExtent() {
     const extentPolygon = this.getViewExtent() as Feature<Polygon>;
     const extentArray = extentPolygon.getGeometry().getCoordinates();
+    this.mapStoreService.updateMapState('loadingLayer', true);
 
     this.dawaService.fetchAdresserWithinPolygon(extentArray).pipe(
-      tap(geojson => this.addGeoJSON(geojson, 'adresser', 'EPSG:4326', mapStyles.addressInfo))
+      tap(geojson => this.addGeoJSON(geojson, 'adresser', 'EPSG:4326', mapStyles.addressInfo)),
+      finalize(() => this.mapStoreService.updateMapState('loadingLayer', false))
     ).subscribe();
 
   }

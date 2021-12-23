@@ -20,7 +20,8 @@ import { ProjectStoreService } from 'src/app/stores/project-store.service';
 export class TapMapPage implements OnInit, OnDestroy {
   abandon$ = new Subject();
   loading$ = this.mapStore.mapstate$.pipe(
-    pluck('loadingFeatureInfo')
+    map(({ loadingFeatureInfo, loadingLayer }) => ({ loadingFeatureInfo, loadingLayer })),
+    map(isLoading => Object.values(isLoading).some((val: boolean) => val))
   );
 
   uiState$ = this.uiState.uiState$;
