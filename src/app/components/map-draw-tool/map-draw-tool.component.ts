@@ -45,7 +45,7 @@ export class MapDrawToolComponent implements OnInit {
   }
 
   onEndDraw(): void {
-    this.uiState.updateUiState('showMapDrawTool', false);
+    this.uiState.removeAllMapTools();
     this.mapService.removeDrawTool();
     this.mapService.addClickInfo();
   }

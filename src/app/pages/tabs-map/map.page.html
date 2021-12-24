@@ -9,11 +9,14 @@
     </div>
     <app-map-layers-control></app-map-layers-control>
     <app-map-tools></app-map-tools>
-    <app-map-info-tool class="full-width-bottom-tool" *ngIf="(uiState$ | async).showInfoTool"></app-map-info-tool>
+    <app-map-info-tool class="full-width-bottom-tool"
+        *ngIf="(uiState$ | async).activatedMapTools.includes('addressInfo')">
+    </app-map-info-tool>
     <app-map-legend-fab></app-map-legend-fab>
-    <app-map-geolocation *ngIf="(uiState$ | async).showProjectAreaSelection === false"></app-map-geolocation>
-    <app-map-draw-tool *ngIf="(uiState$ | async).showMapDrawTool"></app-map-draw-tool>
+    <app-map-geolocation *ngIf="(uiState$ | async).activatedMapTools.includes('saveProject') === false">
+    </app-map-geolocation>
+    <app-map-draw-tool *ngIf="(uiState$ | async).activatedMapTools.includes('draw')"></app-map-draw-tool>
     <app-map-save-project-area-selection class="full-width-bottom-tool"
-        *ngIf="(uiState$ | async).showProjectAreaSelection">
+        *ngIf="(uiState$ | async).activatedMapTools.includes('saveProject')">
     </app-map-save-project-area-selection>
 </ion-content>

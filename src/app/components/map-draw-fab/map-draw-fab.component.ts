@@ -8,9 +8,7 @@ import { pluck } from 'rxjs/operators';
   styleUrls: ['./map-draw-fab.component.scss'],
 })
 export class MapDrawFabComponent implements OnInit {
-  drawEnabled$ = this.uiState.uiState$.pipe(
-    pluck('showMapDrawTool')
-  );
+  uiState$ = this.uiState.uiState$;
 
   constructor(
     private uiState: UiStateService
@@ -18,8 +16,8 @@ export class MapDrawFabComponent implements OnInit {
 
   ngOnInit() { }
 
-  onToggleDrawTool() {
-    this.uiState.updateUiState('showMapDrawTool', true);
+  onActivateDrawTool() {
+    this.uiState.shiftMapTool('draw');
   }
 
 }

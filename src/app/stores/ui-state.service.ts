@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
-import { DrawConfig, UiState } from '@app/interfaces/ui-state';
+import { DrawConfig, MapTool, UiState } from '@app/interfaces/ui-state';
 import { BehaviorSubject } from 'rxjs';
+
+type ValueOf<T> = T[keyof T];
 
 @Injectable({
   providedIn: 'root'
@@ -8,9 +10,7 @@ import { BehaviorSubject } from 'rxjs';
 export class UiStateService {
 
   initialState: UiState = {
-    showMapDrawTool: false,
-    showProjectAreaSelection: false,
-    showInfoTool: false,
+    activatedMapTools: [],
     uploadingImage: false,
     drawConfig: {
       inEditMode: false,
@@ -26,7 +26,7 @@ export class UiStateService {
 
   constructor() { }
 
-  updateUiState(prop: keyof UiState, value: boolean) {
+  updateUiState(prop: keyof UiState, value: ValueOf<UiState>) {
     const updated = {
       ...this._uiState$.value,
       [prop]: value
@@ -44,7 +44,43 @@ export class UiStateService {
     this._uiState$.next(updated);
   }
 
-  updateDrawUiState(prop: keyof DrawConfig, value: boolean) {
+  shiftMapTool(tool: MapTool): void {
+
+    const update: UiState = {
+      ...this._uiState$.value,
+      activatedMapTools: [tool]
+    };
+    this._uiState$.next(update);
+  };
+
+  addMapTool(tool: MapTool): void {
+    const update: UiState = {
+      ...this._uiState$.value,
+      activatedMapTools: [...this._uiState$.value.activatedMapTools, tool]
+    };
+
+    this._uiState$.next(update);
+  }
+
+  removeMapTool(tool: MapTool): void {
+    const update: UiState = {
+      ...this._uiState$.value,
+      activatedMapTools: this._uiState$.value.activatedMapTools.filter(t => t !== tool)
+    };
+
+    this._uiState$.next(update);
+  }
+
+  removeAllMapTools(): void {
+    const update: UiState = {
+      ...this._uiState$.value,
+      activatedMapTools: []
+    };
+
+    this._uiState$.next(update);
+  }
+
+  updateDrawUiState(prop: keyof DrawConfig, value: ValueOf<DrawConfig>) {
     const updated = {
       ...this._uiState$.value,
       drawConfig: {

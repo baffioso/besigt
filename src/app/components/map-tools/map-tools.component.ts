@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { UiStateService } from '@app/stores/ui-state.service';
-import { UiState } from '@app/interfaces/ui-state';
 import { mergeMap, pluck, tap } from 'rxjs/operators';
 import { GeolocationService } from 'src/app/services/geolocation.service';
 import { UserNotificationService } from 'src/app/shared/userNotification.service';
@@ -36,8 +35,8 @@ export class MapToolsComponent implements OnInit {
     ).subscribe();
   }
 
-  toggleTool(name: keyof UiState) {
-    this.uiState.toggleUiState(name);
+  activateAddressInfo() {
+    this.uiState.shiftMapTool('addressInfo');
   }
 
   onAddPhoto() {
