@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MapService } from '@app/services/map.service';
 import { UserNotificationService } from '@app/shared/userNotification.service';
 import { MapStoreService } from '@app/stores/map-store.service';
+import { UiStateService } from '@app/stores/ui-state.service';
 import { Feature } from 'ol';
 import { Geometry } from 'ol/geom';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -37,7 +38,8 @@ export class MapInfoToolComponent implements OnInit, OnDestroy {
   constructor(
     private mapService: MapService,
     private mapStore: MapStoreService,
-    private notification: UserNotificationService
+    private notification: UserNotificationService,
+    private uiState: UiStateService
   ) { }
 
   ngOnInit() {
@@ -61,6 +63,15 @@ export class MapInfoToolComponent implements OnInit, OnDestroy {
       )),
       tap(() => this.showModal = !this.showModal)
     ).subscribe(console.log);
+
+    this.uiState.uiState$.pipe(
+      tap(ui => (
+        ui.activatedMapTools.includes('addressInfo') === false ?
+          this.mapService.removeLayer('adresser') :
+          null
+      ))
+    ).subscribe();
+
   }
 
   ngOnDestroy(): void {

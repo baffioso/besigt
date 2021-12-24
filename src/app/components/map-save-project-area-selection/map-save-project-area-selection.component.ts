@@ -93,7 +93,7 @@ export class MapSaveProjectAreaSelectionComponent implements OnInit {
         this.mapService.removeDrawTool();
         this.mapService.removeLayer('jordstykke');
         this.mapService.addMatrikelWithinViewExtent();
-        this.uiState.updateUiState('showMapDrawTool', false);
+        this.uiState.removeMapTool('draw');
         break;
       case 'draw':
         this.uiState.updateDrawUiState('inEditMode', true);
@@ -102,11 +102,11 @@ export class MapSaveProjectAreaSelectionComponent implements OnInit {
         this.mapService.removeLayer('jordstykke');
         this.mapService.removeDrawTool();
         this.mapService.activateDrawTool('Polygon');
-        this.uiState.updateUiState('showMapDrawTool', true);
+        this.uiState.addMapTool('draw');
         break;
       case 'bounds':
-        this.uiState.updateUiState('showMapDrawTool', false);
         this.mapService.removeLayer('jordstykke');
+        this.uiState.removeMapTool('draw');
         this.mapService.removeDrawTool();
         break;
       default:
@@ -117,7 +117,7 @@ export class MapSaveProjectAreaSelectionComponent implements OnInit {
   onCreateProject() {
     if (this.geomSource === 'draw') {
       this.mapService.finishDrawing();
-      this.uiState.updateUiState('showMapDrawTool', false);
+      this.uiState.removeMapTool('draw');
     }
 
     this.toggleModal();
@@ -126,7 +126,7 @@ export class MapSaveProjectAreaSelectionComponent implements OnInit {
 
     // Delayed navigation in order to close modal
     setTimeout(() => {
-      this.uiState.toggleUiState('showProjectAreaSelection');
+      this.uiState.removeAllMapTools();
       this.projectStore.addProject(this.project.value, this.geomSource);
       this.router.navigateByUrl('/app/projects');
     }, 250);

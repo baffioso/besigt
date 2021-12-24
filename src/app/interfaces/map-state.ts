@@ -1,3 +1,4 @@
+
 export interface ViewState {
     center: number[];
     zoom: number;
@@ -6,10 +7,11 @@ export interface ViewState {
 }
 
 export interface MapState {
-    tracking?: boolean;
-    locating?: boolean;
-    loadingLayer?: boolean;
-    loadingFeatureInfo?: boolean;
+    mapInteraction: 'singleSelect' | 'multiSelect';
+    tracking: boolean;
+    locating: boolean;
+    loadingLayer: boolean;
+    loadingFeatureInfo: boolean;
     view?: ViewState;
-    mapLoaded?: boolean;
+    mapLoaded: boolean;
 }

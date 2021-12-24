@@ -1,3 +1,5 @@
+export type MapTool = 'addressInfo' | 'saveProject' | 'takePhoto' | 'draw' | 'measure';
+
 export interface DrawConfig {
     inEditMode: boolean;
     showBack: boolean;
@@ -7,9 +9,7 @@ export interface DrawConfig {
 }
 
 export interface UiState {
-    showMapDrawTool: boolean;
-    showProjectAreaSelection: boolean;
-    showInfoTool: boolean;
+    activatedMapTools: MapTool[];
     uploadingImage: boolean;
     drawConfig: DrawConfig;
 }

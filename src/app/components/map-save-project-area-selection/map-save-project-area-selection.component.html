@@ -1,4 +1,4 @@
-<ion-badge *ngIf="(disableMatrikel$ | async) && geomSource === 'jordstykke'">Zoom ind for at
+<ion-badge *ngIf="(disableMatrikel$ | async) && geomSource === undefined">Zoom ind for at
   vælge matrikler</ion-badge>
 <ion-badge *ngIf="geomSource === 'draw'">Tryk på kortet for at tegne</ion-badge>
 <ion-fab
@@ -12,7 +12,7 @@
   I open the modal
 </ion-button> -->
 <ion-segment (ionChange)="selectionMethodChanged($event)" mode="md">
-  <ion-segment-button [disabled]="(disableMatrikel$ | async) && geomSource === 'jordstykke'" value="jordstykke">
+  <ion-segment-button [disabled]="(disableMatrikel$ | async)" value="jordstykke">
     <ion-label>Matrikel</ion-label>
   </ion-segment-button>
   <ion-segment-button value="draw">

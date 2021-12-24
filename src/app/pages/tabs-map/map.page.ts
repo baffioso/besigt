@@ -18,6 +18,7 @@ import { ProjectStoreService } from 'src/app/stores/project-store.service';
   styleUrls: ['map.page.scss']
 })
 export class TapMapPage implements OnInit, OnDestroy {
+
   abandon$ = new Subject();
   loading$ = this.mapStore.mapstate$.pipe(
     map(({ loadingFeatureInfo, loadingLayer }) => ({ loadingFeatureInfo, loadingLayer })),

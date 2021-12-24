@@ -15,7 +15,7 @@ export class MapSaveProjectFabComponent implements OnInit {
   ngOnInit() { }
 
   toggleAreaSelection() {
-    this.uiState.toggleUiState('showProjectAreaSelection');
+    this.uiState.shiftMapTool('saveProject');
   }
 
 }
