@@ -1,11 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MapDrawModalComponent } from '@app/components/map-draw-modal/map-draw-modal.component';
 import { mapStyles } from '@app/shared/mapStyles';
 import { UiStateService } from '@app/stores/ui-state.service';
 import { ModalController } from '@ionic/angular';
-import { from, Subject } from 'rxjs';
-import { filter, map, mergeMap, pluck, take, takeUntil, tap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { filter, map, pluck, take, takeUntil, tap } from 'rxjs/operators';
 import { MapFeatureInfoModalComponent } from 'src/app/components/map-feature-info-modal/map-feature-info-modal.component';
 import { MapService } from 'src/app/services/map.service';
 import { MapStoreService } from 'src/app/stores/map-store.service';
