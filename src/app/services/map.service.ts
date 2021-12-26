@@ -143,7 +143,6 @@ export class MapService {
   changeLayerStyle(layerName: string, style: Style | Style[]) {
     const layer = this.getLayer(layerName) as BaseVectorLayer<any>;
     layer.setStyle(style);
-    console.log(layer.setStyle);
   }
 
   addMarker(coordinates: [number, number]): void {

@@ -1,13 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MapService } from '@app/services/map.service';
 import { mapStyles } from '@app/shared/mapStyles';
 import { MapStoreService } from '@app/stores/map-store.service';
 import { ProjectStoreService } from '@app/stores/project-store.service';
 import { UiStateService } from '@app/stores/ui-state.service';
-import { ModalController } from '@ionic/angular';
-import { from } from 'rxjs';
-import { filter, first, map, mergeMap, pluck, takeUntil } from 'rxjs/operators';
-import { MapDrawModalComponent } from '../map-draw-modal/map-draw-modal.component';
+import { filter, first, pluck, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-map-draw-tool',
@@ -15,22 +13,28 @@ import { MapDrawModalComponent } from '../map-draw-modal/map-draw-modal.componen
   styleUrls: ['./map-draw-tool.component.scss'],
 })
 export class MapDrawToolComponent implements OnInit {
-  // inEditMode = false;
+  showModal = false;
+  featureProperties: FormGroup;
   drawGeometry: 'Point' | 'LineString' | 'Polygon';
   drawUiState$ = this.uiState.uiState$.pipe(
     pluck('drawConfig')
   );
 
   constructor(
-    private modalController: ModalController,
     private mapService: MapService,
     private mapStore: MapStoreService,
     private projectStore: ProjectStoreService,
-    private uiState: UiStateService
+    private uiState: UiStateService,
+    private fb: FormBuilder
   ) { }
 
   ngOnInit(): void {
     this.uiState.resetDrawUiState();
+
+    this.featureProperties = this.fb.group({
+      name: ['', [Validators.required]],
+      description: ['']
+    });
   }
 
   onStartDraw(geometryType: 'Point' | 'LineString' | 'Polygon'): void {
@@ -69,29 +73,12 @@ export class MapDrawToolComponent implements OnInit {
     this.mapStore.drawnGeometry$.pipe(
       first(),
       filter(geom => !!geom),
-      mergeMap(geom => from(this.showDrawModal()).pipe(
-        map(description => ({ geom, description }))
-      ))
+      tap(() => this.showModal = true)
     ).subscribe();
   }
 
-  async showDrawModal(): Promise<string> {
-    const modal = await this.modalController.create({
-      cssClass: 'bottom-modal',
-      component: MapDrawModalComponent,
-    });
-
-    await modal.present();
-
-    const { data } = await modal.onWillDismiss();
-
-    if (data) {
-      this.projectStore.addFeature({ description: data });
-    }
-
-
-    return data;
+  onCreateFeature() {
+    this.showModal = false;
+    this.projectStore.addFeature(this.featureProperties.value);
   }
-
-
 }
