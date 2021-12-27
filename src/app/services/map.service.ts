@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { catchError, finalize, tap } from 'rxjs/operators';
+import { finalize, tap } from 'rxjs/operators';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -11,6 +11,8 @@ import Feature from 'ol/Feature';
 import Geolocation from 'ol/Geolocation';
 import { Draw, Modify } from 'ol/interaction';
 import { GeoJSON, WKT } from 'ol/format';
+import { GeoJSON as geoJay } from 'geojson';
+import { GeoJSONFeature, GeoJSONFeatureCollection } from 'ol/format/GeoJSON';
 import { LineString, Polygon, Point, Geometry } from 'ol/geom';
 import { fromExtent } from 'ol/geom/Polygon';
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
@@ -27,8 +29,7 @@ import { MapStoreService } from '../stores/map-store.service';
 import { MapLayersService } from './map-layers.service';
 import { DawaService } from './dawa.service';
 import { Layer } from '../interfaces/map-layer-source';
-import { MapStyle, mapStyles } from '@app/shared/mapStyles';
-import { of } from 'rxjs';
+import { mapStyles } from '@app/shared/mapStyles';
 
 
 
@@ -460,9 +461,18 @@ export class MapService {
     });
   }
 
-  addGeoJSON(geojson, layerName: string, projection: string, style: Style | Style[] = mapStyles.default): void {
+  // eslint-disable-next-line max-len
+  addGeoJSON(geojson: any, layerName: string, sourceSrid: string, style: Style | Style[] = mapStyles.default): void {
+    let features: Feature<any>[];
+
+    if (geojson.type === 'FeatureCollection') {
+      features = new GeoJSON({ featureProjection: sourceSrid }).readFeatures(geojson, { featureProjection: this.viewProjection });
+    } else {
+      features = [new GeoJSON({ featureProjection: sourceSrid }).readFeature(geojson, { featureProjection: this.viewProjection })];
+    }
+
     const vectorSource = new VectorSource({
-      features: new GeoJSON({ featureProjection: projection }).readFeatures(geojson, { featureProjection: 'EPSG:3857' }),
+      features
     });
 
     const vectorLayer = new VectorLayer({

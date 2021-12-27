@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ReverseGeocodeResponse } from '@app/interfaces/dawa';
 import { environment } from '@env/environment';
+import { GeoJSONFeatureCollection } from 'ol/format/GeoJSON';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
@@ -30,15 +31,15 @@ export class DawaService {
     );
   }
 
-  fetchMatriklerWithinPolygon(polygon: number[][][]) {
+  fetchMatriklerWithinPolygon(polygon: number[][][]): Observable<GeoJSONFeatureCollection> {
     const p = JSON.stringify(polygon);
     const url = `${this.baseUrl}/jordstykker?format=geojson&polygon=${p}`;
-    return this.http.get(url);
+    return this.http.get<GeoJSONFeatureCollection>(url);
   }
 
-  fetchAdresserWithinPolygon(polygon: number[][][]) {
+  fetchAdresserWithinPolygon(polygon: number[][][]): Observable<GeoJSONFeatureCollection> {
     const p = JSON.stringify(polygon);
     const url = `${this.baseUrl}/adgangsadresser?format=geojson&polygon=${p}`;
-    return this.http.get(url);
+    return this.http.get<GeoJSONFeatureCollection>(url);
   }
 }

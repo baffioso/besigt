@@ -128,6 +128,7 @@ export class SupabaseService {
           properties
         )
       `)
+        .order('inserted_at', { ascending: false })
     ).pipe(
       map(query => query.data)
     );

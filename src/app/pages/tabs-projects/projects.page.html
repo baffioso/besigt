@@ -14,9 +14,9 @@
   </div>
 
   <ion-list *ngIf="(projects$ | async).length > 0">
-    <ion-item *ngFor="let project of projects$ | async"
-      [color]="(currentdProjectId$ | async) === project.id ? 'danger' : null">
-      <ion-label (click)="goToProject(project)" [routerLink]="">
+    <ion-item *ngFor="let project of (projects$ | async)"
+      [color]="(selectedProject$ | async)?.id === project.id ? 'danger' : null">
+      <ion-label (click)="goToProject(project)" [routerLink]="[]">
         <h2>{{project.name}}</h2>
         <h3>{{project.inserted_at | date}}</h3>
         <p>{{project.description}}</p>

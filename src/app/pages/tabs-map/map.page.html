@@ -1,9 +1,9 @@
 <ion-content>
     <ion-progress-bar *ngIf="loading$ | async" type="indeterminate" color="tertiary"></ion-progress-bar>
     <app-map></app-map>
-    <div class="current-project" *ngIf="(currentProject$ | async) !== undefined">
+    <div class="current-project" *ngIf="(selectedProject$ | async) !== null">
         <ion-chip class="project-chip" color="primary" outline>
-            <ion-label>{{ (currentProject$ | async).name }}</ion-label>
+            <ion-label>{{ (selectedProject$ | async).name }}</ion-label>
             <ion-icon (click)="onClearProject()" name="close-circle"></ion-icon>
         </ion-chip>
     </div>

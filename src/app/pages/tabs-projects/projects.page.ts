@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { map } from 'rxjs/operators';
-import { ViewState } from 'src/app/interfaces/map-state';
+import { Store } from '@ngrx/store';
+
+import { AppState } from '@app/store/app.reducer';
+import * as fromProject from '@app/state/project.actions';
+import * as fromMap from '@app/state/map.actions';
 import { ProjectWithRelations } from 'src/app/interfaces/project';
-import { MapService } from 'src/app/services/map.service';
-import { ProjectStoreService } from 'src/app/stores/project-store.service';
 
 @Component({
   selector: 'app-projects',
@@ -13,23 +14,22 @@ import { ProjectStoreService } from 'src/app/stores/project-store.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectsPage {
-  projects$ = this.projectStoreService.projects$.pipe(
-    map(projects => projects.sort((a, b) => new Date(b.inserted_at) as any - (new Date(a.inserted_at) as any)))
-  );
+  projects$ = this.store.select('project', 'projects');
 
-  currentdProjectId$ = this.projectStoreService.currentProjectId$;
+  selectedProject$ = this.store.select('project', 'selectedProject');
 
   constructor(
-    private projectStoreService: ProjectStoreService,
     private router: Router,
-    private mapService: MapService
+    private store: Store<AppState>
   ) { }
 
   goToProject(project: ProjectWithRelations) {
-    this.projectStoreService.setCurrentProjectId(project.id);
-    const viewState: ViewState = project.map_state[0].map_state;
-    this.mapService.flyTo(viewState.center as [number, number], viewState.zoom);
-    this.router.navigateByUrl('/app/map');
+    this.store.dispatch(fromProject.selectedProject({ id: project.id }));
+    this.store.dispatch(fromMap.zoomToProjectArea());
+    this.store.dispatch(fromMap.addProjectAreaToMap());
+    this.store.dispatch(fromMap.addProjectFeaturesToMap());
+
+    this.router.navigate(['app', 'map']);
   }
 
 }

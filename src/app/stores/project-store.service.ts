@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CreateFeature, Properties } from '@app/interfaces/feature';
-import { WKT } from 'ol/format';
+import { GeoJSONFeatureCollection } from 'ol/format/GeoJSON';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { catchError, concatMap, filter, first, map, mergeMap, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { CreateImage } from '../interfaces/image';
@@ -11,7 +11,6 @@ import { PhotoService } from '../services/photo.service';
 import { SupabaseService } from '../services/supabase.service';
 import { MapStoreService } from './map-store.service';
 import { UiStateService } from './ui-state.service';
-import { getCenter } from 'ol/extent';
 
 @Injectable({
   providedIn: 'root'
@@ -27,54 +26,6 @@ export class ProjectStoreService {
     mergeMap(projects => this.currentProjectId$.pipe(
       map(id => projects.find(project => project.id === id))
     ))
-  );
-
-  currentProjectAreaGeoJSON$ = this.currentProject$.pipe(
-    filter(project => !!project),
-    map((project: ProjectWithRelations) => (
-      {
-        type: 'FeatureCollection',
-        crs: {
-          type: 'name',
-          properties: {
-            name: 'EPSG:25832',
-          },
-        },
-        features: [project.geom]
-      }
-    ))
-  );
-
-  currentProjectFeatureGeoJSON$ = this.currentProject$.pipe(
-    filter(project => (
-      project !== undefined ||
-      project !== null ||
-      project.images.length > 0
-    )
-    ),
-    map((project: ProjectWithRelations) => {
-      try {
-        const features = project.features.map(image => {
-          const { geom, ...properties } = image;
-          return { type: 'Feature', geometry: geom, properties };
-        });
-
-        return {
-          type: 'FeatureCollection',
-          crs: {
-            type: 'name',
-            properties: {
-              name: 'EPSG:25832',
-            },
-          },
-          features
-        };
-
-      } catch (error) {
-        // console.log(error);
-      }
-
-    })
   );
 
   currentProjectImageGeoJSON$ = this.currentProject$.pipe(
@@ -100,7 +51,7 @@ export class ProjectStoreService {
             },
           },
           features
-        };
+        } as GeoJSONFeatureCollection;
 
       } catch (error) {
         // console.log(error);

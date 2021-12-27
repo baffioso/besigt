@@ -1,6 +1,6 @@
 
 export interface ViewState {
-    center: number[];
+    center: [number, number];
     zoom: number;
     rotation?: number;
     extent?: number[];

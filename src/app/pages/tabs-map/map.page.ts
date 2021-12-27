@@ -1,14 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { mapStyles } from '@app/shared/mapStyles';
-import { UiStateService } from '@app/stores/ui-state.service';
-import { ModalController } from '@ionic/angular';
 import { Subject } from 'rxjs';
 import { filter, map, pluck, take, takeUntil, tap } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { ModalController } from '@ionic/angular';
+
+import { UiStateService } from '@app/stores/ui-state.service';
 import { MapFeatureInfoModalComponent } from 'src/app/components/map-feature-info-modal/map-feature-info-modal.component';
 import { MapService } from 'src/app/services/map.service';
 import { MapStoreService } from 'src/app/stores/map-store.service';
-import { ProjectStoreService } from 'src/app/stores/project-store.service';
+import { AppState } from '@app/store/app.reducer';
+import * as fromProject from '@app/state/project.actions';
+import * as fromMap from '@app/state/map.actions';
 
 
 @Component({
@@ -26,16 +29,16 @@ export class TapMapPage implements OnInit, OnDestroy {
 
   uiState$ = this.uiState.uiState$;
 
-  currentProject$ = this.projectStore.currentProject$;
+  selectedProject$ = this.store.select('project', 'selectedProject');
 
   constructor(
     private rounter: Router,
     private route: ActivatedRoute,
     private mapStore: MapStoreService,
-    private projectStore: ProjectStoreService,
     private mapService: MapService,
     public modalController: ModalController,
-    private uiState: UiStateService
+    private uiState: UiStateService,
+    private store: Store<AppState>
   ) { }
 
   ngOnInit(): void {
@@ -49,7 +52,7 @@ export class TapMapPage implements OnInit, OnDestroy {
     this.route.queryParams.pipe(
       take(1),
       tap(params => {
-        const center = [Number(params.x), Number(params.y)];
+        const center: [number, number] = [Number(params.x), Number(params.y)];
         const zoom = Number(params.zoom);
 
         if (center[0]) {
@@ -72,36 +75,6 @@ export class TapMapPage implements OnInit, OnDestroy {
           relativeTo: this.route,
           queryParams: view
         });
-      })
-    ).subscribe();
-
-    this.projectStore.currentProjectAreaGeoJSON$.pipe(
-      takeUntil(this.abandon$),
-      tap(console.log),
-      tap(geojson => this.mapService.addGeoJSON(geojson, 'projectArea', 'EPSG:25832', mapStyles.projectArea))
-    ).subscribe();
-
-    this.projectStore.currentProjectImageGeoJSON$.pipe(
-      takeUntil(this.abandon$),
-      tap(geojson => {
-        try {
-          // this.mapService.removeProjectOverlays();
-          this.mapService.addGeoJSON(geojson, 'photos', 'EPSG:25832');
-        } catch (error) {
-          // console.log(error);
-        }
-      })
-    ).subscribe();
-
-    this.projectStore.currentProjectFeatureGeoJSON$.pipe(
-      takeUntil(this.abandon$),
-      tap(geojson => {
-        try {
-          // this.mapService.removeProjectOverlays();
-          this.mapService.addGeoJSON(geojson, 'features', 'EPSG:25832');
-        } catch (error) {
-          // console.log(error);
-        }
       })
     ).subscribe();
 
@@ -137,7 +110,8 @@ export class TapMapPage implements OnInit, OnDestroy {
   }
 
   onClearProject() {
-    this.projectStore.clearCurrentProject();
+    this.store.dispatch(fromProject.clearSelectedProject());
+    this.store.dispatch(fromMap.removeProjectMapOverlays());
   }
 
 }
