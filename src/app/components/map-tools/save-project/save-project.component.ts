@@ -12,11 +12,11 @@ import { Observable, of } from 'rxjs';
 import { concatMap, first, map, tap } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-map-save-project-area-selection',
-  templateUrl: './map-save-project-area-selection.component.html',
-  styleUrls: ['./map-save-project-area-selection.component.scss'],
+  selector: 'app-save-project',
+  templateUrl: './save-project.component.html',
+  styleUrls: ['./save-project.component.scss'],
 })
-export class MapSaveProjectAreaSelectionComponent implements OnInit {
+export class SaveProjectComponent implements OnInit {
 
   project: FormGroup;
 

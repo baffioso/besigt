@@ -9,18 +9,16 @@ import { MapComponent } from '../../components/map/map.component';
 import { MapLayersControlComponent } from '../../components/map-layers-control/map-layers-control.component';
 import { MapToolsComponent } from '../../components/map-tools/map-tools.component';
 import { MapGeolocationComponent } from '../../components/map-geolocation-fab/map-geolocation.component';
-import { MapGeosearchComponent } from '@app/components/map-geosearch-fab/map-geosearch.component';
 import { MapLayersControlModalPage } from '../map-layers-control-modal/map-layers-control-modal.page';
-import { MapGeosearchModalPage } from '../map-geosearch-modal/map-geosearch-modal.page';
 import { MapFeatureInfoModalComponent } from '@app/components/map-feature-info-modal/map-feature-info-modal.component';
 import { MapLegendFabComponent } from '@app/components/map-legend-fab/map-legend-fab.component';
 import { MapLegendPopoverComponent } from '@app/components/map-legend-popover/map-legend-popover.component';
-import { MapDrawFabComponent } from '@app/components/map-draw-fab/map-draw-fab.component';
-import { MapSaveProjectFabComponent } from '@app/components/map-save-project-fab/map-save-project-fab.component';
-import { MapInfoToolComponent } from '@app/components/map-info-tool/map-info-tool.component';
-import { MapDrawToolComponent } from '@app/components/map-draw-tool/map-draw-tool.component';
+import { InfoToolComponent } from '@app/components/map-tools/info-tool/info-tool.component';
+import { DrawToolComponent } from '@app/components/map-tools/draw-tool/draw-tool.component';
 // eslint-disable-next-line max-len
-import { MapSaveProjectAreaSelectionComponent } from '@app/components/map-save-project-area-selection/map-save-project-area-selection.component';
+import { PhotoToolComponent } from '@app/components/map-tools/photo-tool/photo-tool.component';
+import { SaveProjectComponent } from '@app/components/map-tools/save-project/save-project.component';
+import { GeoSearchComponent } from '@app/components/map-tools/geo-search/geo-search.component';
 
 @NgModule({
   imports: [
@@ -34,19 +32,17 @@ import { MapSaveProjectAreaSelectionComponent } from '@app/components/map-save-p
     TapMapPage,
     MapComponent,
     MapLayersControlComponent,
-    MapToolsComponent,
     MapGeolocationComponent,
-    MapGeosearchComponent,
     MapLayersControlModalPage,
-    MapGeosearchModalPage,
     MapFeatureInfoModalComponent,
     MapLegendFabComponent,
     MapLegendPopoverComponent,
-    MapDrawFabComponent,
-    MapDrawToolComponent,
-    MapSaveProjectFabComponent,
-    MapSaveProjectAreaSelectionComponent,
-    MapInfoToolComponent
+    GeoSearchComponent,
+    MapToolsComponent,
+    SaveProjectComponent,
+    PhotoToolComponent,
+    DrawToolComponent,
+    InfoToolComponent
   ]
 })
 export class MapPageModule { }

@@ -1,7 +1,8 @@
 import { AfterViewInit, Component } from '@angular/core';
-import { tap } from 'rxjs/operators';
+import { AppState } from '@app/store/app.reducer';
+import { Store } from '@ngrx/store';
+import { map } from 'rxjs/operators';
 import { MapService } from 'src/app/services/map.service';
-import { ProjectStoreService } from 'src/app/stores/project-store.service';
 
 @Component({
   selector: 'app-map',
@@ -10,12 +11,16 @@ import { ProjectStoreService } from 'src/app/stores/project-store.service';
 })
 export class MapComponent implements AfterViewInit {
 
+  showMapCenter$ = this.store.select('mapTool', 'activatedMapTools').pipe(
+    map(tools => tools.includes('takePhoto'))
+  )
+
   private center: [number, number] = [1360103, 7491908];
   private zoom = 13;
 
   constructor(
     private mapService: MapService,
-    private projectStore: ProjectStoreService,
+    private store: Store<AppState>
   ) { }
 
   ngAfterViewInit() {

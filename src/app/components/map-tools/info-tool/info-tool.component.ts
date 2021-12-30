@@ -23,10 +23,10 @@ interface DawaInfo {
 
 @Component({
   selector: 'app-map-info-tool',
-  templateUrl: './map-info-tool.component.html',
-  styleUrls: ['./map-info-tool.component.scss'],
+  templateUrl: './info-tool.component.html',
+  styleUrls: ['./info-tool.component.scss'],
 })
-export class MapInfoToolComponent implements OnInit, OnDestroy {
+export class InfoToolComponent implements OnInit, OnDestroy {
 
   showModal = false;
   adandon$ = new Subject();

@@ -1,19 +1,20 @@
 import { Injectable } from '@angular/core';
-import { catchError, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
 import { MapService } from '@app/services/map.service';
-import * as fromMap from '@app/state/map.actions';
+import * as mapActions from '@app/state/map.actions';
 import { AppState } from '@app/store/app.reducer';
 import { EMPTY } from 'rxjs';
 import { mapStyles } from '@app/shared/mapStyles';
+import { GeolocationService } from '@app/services/geolocation.service';
 
 @Injectable()
 export class MapEffects {
 
     zoomToProjectArea$ = createEffect(() => this.actions$.pipe(
-        ofType(fromMap.ZOOM_TO_PROJECT_AREA),
+        ofType(mapActions.ZOOM_TO_PROJECT_AREA),
         withLatestFrom(this.store.select('project', 'selectedProject')),
         tap((project) => {
             const viewState = project[1].map_state[0].map_state;
@@ -23,9 +24,9 @@ export class MapEffects {
     ), { dispatch: false });
 
     addProjectAreaToMap$ = createEffect(() => this.actions$.pipe(
-        ofType(fromMap.ADD_PROJECT_AREA_TO_MAP),
-        withLatestFrom(this.store.select('project', 'selectedProject')),
-        tap(([_, project]) => {
+        ofType(mapActions.ADD_PROJECT_AREA_TO_MAP),
+        switchMap(() => this.store.select('project', 'selectedProject')),
+        tap(project => {
 
             const geojson = {
                 type: 'FeatureCollection',
@@ -43,7 +44,7 @@ export class MapEffects {
     ), { dispatch: false });
 
     addProjectFeaturesToMap$ = createEffect(() => this.actions$.pipe(
-        ofType(fromMap.ADD_PROJECT_FEATURES_TO_MAP),
+        ofType(mapActions.ADD_PROJECT_FEATURES_TO_MAP),
         withLatestFrom(this.store.select('project', 'selectedProject')),
         tap(([_, project]) => {
 
@@ -68,13 +69,31 @@ export class MapEffects {
     ), { dispatch: false });
 
     removeProjectMapOverlays$ = createEffect(() => this.actions$.pipe(
-        ofType(fromMap.REMOVE_PROJECT_MAP_OVERLAYS),
+        ofType(mapActions.REMOVE_PROJECT_MAP_OVERLAYS),
         tap(() => this.mapService.removeProjectOverlays())
     ), { dispatch: false });
+
+    zoomToCurrentPosition$ = createEffect(() => this.actions$.pipe(
+        ofType(mapActions.ZOOM_TO_CURRENT_POSITION),
+        switchMap(() => this.geolocationService.getPosition()
+            .pipe(
+                tap(position => {
+                    const coords: [number, number] = [position.coords.longitude, position.coords.latitude]
+                    this.mapService.removeLayer('marker')
+                    this.mapService.addMarker(coords);
+                    this.mapService.flyTo(coords);
+                }),
+                map(position => mapActions.currentPositionSuccess({ position })),
+                catchError(() => EMPTY)
+            ))
+    ));
 
     constructor(
         private actions$: Actions,
         private store: Store<AppState>,
-        private mapService: MapService
+        private mapService: MapService,
+        private geolocationService: GeolocationService
     ) { }
+
+
 }

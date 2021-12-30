@@ -1,23 +1,40 @@
 <ion-fab horizontal="start" vertical="top" slot="fixed">
+
   <ion-fab-button color="primary">
     <ion-icon name="construct-outline"></ion-icon>
   </ion-fab-button>
-  <ion-fab-list>
-    <app-map-geosearch></app-map-geosearch>
 
-    <ion-fab-button color="light" (click)="activateAddressInfo()">
+  <ion-fab-list>
+    <!-- GEOSEARCH -->
+    <ion-fab-button color="light" [color]="(activatedMapTools$ | async).includes('geoSearch') ? 'secondary' : 'light'"
+      (click)="activateTool('geoSearch')">
+      <ion-icon name="search"></ion-icon>
+    </ion-fab-button>
+    <!-- ADDRESS INFO -->
+    <ion-fab-button [color]="(activatedMapTools$ | async).includes('addressInfo') ? 'secondary' : 'light'"
+      (click)="activateTool('addressInfo')">
       <i class="fg-poi-info fg-lg"></i>
     </ion-fab-button>
 
-    <ng-container *ngIf="(currentProject$ | async) !== undefined">
-
-      <ion-fab-button color="light" (click)="onAddPhoto()">
+    <ng-container *ngIf="(selectedProject$ | async) !== null">
+      <!-- PHOTO -->
+      <ion-fab-button [color]="(activatedMapTools$ | async).includes('takePhoto') ? 'secondary' : 'light'"
+        (click)="activateTool('takePhoto')">
         <ion-icon name="camera"></ion-icon>
       </ion-fab-button>
-
-      <app-map-draw-fab></app-map-draw-fab>
+      <!-- DRAW -->
+      <ion-fab-button [color]="(activatedMapTools$ | async).includes('draw') ? 'secondary' : 'light'"
+        (click)="activateTool('draw')">
+        <i class="fg-polygon-pt fg-lg"></i>
+      </ion-fab-button>
     </ng-container>
+    <!-- SAVE PROJECT -->
+    <ion-fab-button [color]="(activatedMapTools$ | async).includes('saveProject') ? 'secondary' : 'light'"
+      (click)="activateTool('saveProject')">
+      <ion-icon name="archive"></ion-icon>
+    </ion-fab-button>
 
-    <app-map-save-project-fab *ngIf="(currentProject$ | async) === undefined"></app-map-save-project-fab>
   </ion-fab-list>
 </ion-fab>
+<!-- Use component projection in order to nest tools TODO: move fab to tool component -->
+<ng-content #mapTools></ng-content>

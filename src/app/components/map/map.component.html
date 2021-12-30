@@ -1,1 +1,4 @@
-<div id="ol-map" class="map-container"></div>
+<div id="ol-map" class="map-container">
+    <div *ngIf="showMapCenter$ | async" id="center"></div>
+    <ng-content></ng-content>
+</div>

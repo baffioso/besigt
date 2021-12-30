@@ -1,18 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { pluck } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+
+import { AppState } from '@app/store/app.reducer';
+import * as projectActions from '@app/state/project.actions';
+import * as mapToolActions from '@app/state/map-tool.actions';
+
 import { MapService } from '@app/services/map.service';
 import { mapStyles } from '@app/shared/mapStyles';
-import { MapStoreService } from '@app/stores/map-store.service';
-import { ProjectStoreService } from '@app/stores/project-store.service';
 import { UiStateService } from '@app/stores/ui-state.service';
-import { filter, first, pluck, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-map-draw-tool',
-  templateUrl: './map-draw-tool.component.html',
-  styleUrls: ['./map-draw-tool.component.scss'],
+  templateUrl: './draw-tool.component.html',
+  styleUrls: ['./draw-tool.component.scss'],
 })
-export class MapDrawToolComponent implements OnInit {
+export class DrawToolComponent implements OnInit {
   showModal = false;
   featureProperties: FormGroup;
   drawGeometry: 'Point' | 'LineString' | 'Polygon';
@@ -22,10 +26,9 @@ export class MapDrawToolComponent implements OnInit {
 
   constructor(
     private mapService: MapService,
-    private mapStore: MapStoreService,
-    private projectStore: ProjectStoreService,
     private uiState: UiStateService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private store: Store<AppState>
   ) { }
 
   ngOnInit(): void {
@@ -49,7 +52,7 @@ export class MapDrawToolComponent implements OnInit {
   }
 
   onEndDraw(): void {
-    this.uiState.removeAllMapTools();
+    this.store.dispatch(mapToolActions.removeMapTool({ tool: 'draw' }))
     this.mapService.removeDrawTool();
     this.mapService.addClickInfo();
   }
@@ -70,15 +73,11 @@ export class MapDrawToolComponent implements OnInit {
   onSave(): void {
     this.mapService.finishDrawing();
     this.mapService.changeLayerStyle('draw', mapStyles.default);
-    this.mapStore.drawnGeometry$.pipe(
-      first(),
-      filter(geom => !!geom),
-      tap(() => this.showModal = true)
-    ).subscribe();
+    this.showModal = true;
   }
 
   onCreateFeature() {
+    this.store.dispatch(projectActions.addFeature({ properties: this.featureProperties.value }));
     this.showModal = false;
-    this.projectStore.addFeature(this.featureProperties.value);
   }
 }

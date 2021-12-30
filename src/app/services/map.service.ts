@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 import { finalize, tap } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import * as mapActions from '@app/state/map.actions';
+import copy from 'fast-copy';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -30,6 +33,7 @@ import { MapLayersService } from './map-layers.service';
 import { DawaService } from './dawa.service';
 import { Layer } from '../interfaces/map-layer-source';
 import { mapStyles } from '@app/shared/mapStyles';
+import { AppState } from '@app/store/app.reducer';
 
 
 
@@ -49,7 +53,8 @@ export class MapService {
   constructor(
     private mapStoreService: MapStoreService,
     private mapLayersService: MapLayersService,
-    private dawaService: DawaService
+    private dawaService: DawaService,
+    private store: Store<AppState>
   ) { }
 
   createMap(center: [number, number], zoom: number): void {
@@ -142,7 +147,7 @@ export class MapService {
   }
 
   changeLayerStyle(layerName: string, style: Style | Style[]) {
-    const layer = this.getLayer(layerName) as BaseVectorLayer<any>;
+    const layer = this.getLayer(layerName) as any;
     layer.setStyle(style);
   }
 
@@ -168,7 +173,7 @@ export class MapService {
 
     const source = new VectorSource({ features: [marker] });
 
-    this.olmap.addLayer(new VectorLayer({ source, properties: { name: 'geosearch' } }));
+    this.olmap.addLayer(new VectorLayer({ source, properties: { name: 'marker' } }));
 
   }
 
@@ -311,8 +316,9 @@ export class MapService {
     this.olmap.addInteraction(this.draw);
 
     this.draw.on('drawend', (e) => {
-      const wktGeom = this.featureAsWKT(e.feature);
-      this.mapStoreService.emitDrawnGeometry(wktGeom);
+      // NGRX needs deep clone of feature https://stackoverflow.com/a/60885787
+      const feature = copy(e.feature);;
+      this.store.dispatch(mapActions.drawnFeature({ feature }));
     });
   }
 
@@ -440,10 +446,11 @@ export class MapService {
 
   private getViewParams() {
     const zoom = Math.round(this.view.getZoom() * 100) / 100;
-    const center = transform(this.view.getCenter(), this.viewProjection, 'EPSG:4326').map(coor => Math.round(coor * 1000) / 1000);
+    const center = transform(this.view.getCenter(), this.viewProjection, 'EPSG:4326') as [number, number];
     const rotation = this.view.getRotation();
-    const extent = this.view.calculateExtent();
+    const extent = this.view.calculateExtent(); // in EPSG:3857
 
+    this.store.dispatch(mapActions.updateViewParams({ viewParams: { center, zoom, rotation, extent } }))
     this.mapStoreService.updateMapState('view', { center, zoom, rotation, extent });
   }
 

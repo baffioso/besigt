@@ -5,7 +5,6 @@ import { filter, map, pluck, take, takeUntil, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { ModalController } from '@ionic/angular';
 
-import { UiStateService } from '@app/stores/ui-state.service';
 import { MapFeatureInfoModalComponent } from 'src/app/components/map-feature-info-modal/map-feature-info-modal.component';
 import { MapService } from 'src/app/services/map.service';
 import { MapStoreService } from 'src/app/stores/map-store.service';
@@ -27,8 +26,7 @@ export class TapMapPage implements OnInit, OnDestroy {
     map(isLoading => Object.values(isLoading).some((val: boolean) => val))
   );
 
-  uiState$ = this.uiState.uiState$;
-
+  activatedMapTools$ = this.store.select('mapTool', 'activatedMapTools');
   selectedProject$ = this.store.select('project', 'selectedProject');
 
   constructor(
@@ -37,7 +35,6 @@ export class TapMapPage implements OnInit, OnDestroy {
     private mapStore: MapStoreService,
     private mapService: MapService,
     public modalController: ModalController,
-    private uiState: UiStateService,
     private store: Store<AppState>
   ) { }
 

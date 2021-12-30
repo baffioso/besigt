@@ -7,7 +7,7 @@ import { Credentials } from '@app/interfaces/credentials';
 import { CreateImage } from '@app/interfaces/image';
 import { ViewState } from '@app/interfaces/map-state';
 import { CreateProject, Project, ProjectWithRelations } from '@app/interfaces/project';
-import { CreateFeature } from '@app/interfaces/feature';
+import { CreateFeature, Feature } from '@app/interfaces/feature';
 
 @Injectable({
   providedIn: 'root'
@@ -165,14 +165,17 @@ export class SupabaseService {
     );
   }
 
-  async addFeature(feature: CreateFeature) {
+  addFeature(feature: CreateFeature): Observable<Feature[]> {
     const newFeature = {
       user_id: this._session$.value.user.id,
       ...feature
     };
 
-    const query = await this.supabase.from('features').insert(newFeature, { returning: 'representation' });
-    return query.data;
+    return from(
+      this.supabase.from('features').insert(newFeature, { returning: 'representation' })
+    ).pipe(
+      map(res => res.data)
+    )
   }
 
   uploadImage(filePath: string, file: Blob) {
