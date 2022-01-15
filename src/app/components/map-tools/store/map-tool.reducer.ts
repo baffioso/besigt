@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import * as mapToolActions from '@app/state/map-tool.actions';
+import * as mapToolActions from '@app/components/map-tools/store/map-tool.actions';
 
 export type MapTool = 'geoSearch' | 'addressInfo' | 'saveProject' | 'takePhoto' | 'draw' | 'measure';
 
@@ -9,7 +9,7 @@ export interface MapToolState {
 };
 
 export const initialState: MapToolState = {
-    activatedMapTools: ['takePhoto'],
+    activatedMapTools: [],
     photoPosition: null
 };
 
@@ -22,6 +22,10 @@ export const mapToolReducer = createReducer(
     on(mapToolActions.shiftMapTool, (state, { tool }) => ({
         ...state,
         activatedMapTools: [tool]
+    })),
+    on(mapToolActions.toggleMapTool, (state, { tool }) => ({
+        ...state,
+        activatedMapTools: state.activatedMapTools.includes(tool) ? state.activatedMapTools.filter(t => t !== tool) : [tool]
     })),
     on(mapToolActions.removeMapTool, (state, { tool }) => ({
         ...state,

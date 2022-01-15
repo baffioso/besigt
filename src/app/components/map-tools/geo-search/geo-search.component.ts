@@ -1,20 +1,21 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import * as dawa from 'dawa-autocomplete2';
 
 import { MapService } from '@app/services/map.service';
 import { Store } from '@ngrx/store';
-import * as mapToolActions from '@app/state/map-tool.actions';
+import * as mapToolActions from '@app/components/map-tools/store/map-tool.actions';
 import { AppState } from '@app/store/app.reducer';
 import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-geo-search',
   templateUrl: './geo-search.component.html',
-  styleUrls: ['./geo-search.component.scss']
+  styleUrls: ['./geo-search.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GeoSearchComponent implements AfterViewInit, OnDestroy {
   @ViewChild('input') input: ElementRef;
-  showModal$ = this.store.select('mapTool', 'activatedMapTools').pipe(
+  showModal$ = this.store.select('mapTools', 'activatedMapTools').pipe(
     map(tools => tools.includes('geoSearch'))
   );
   autocomplete: any;
@@ -36,7 +37,7 @@ export class GeoSearchComponent implements AfterViewInit, OnDestroy {
         },
         adgangsadresserOnly: true
       });
-    }, 150);
+    }, 250);
 
     setTimeout(() => { // this will make the execution after the above boolean has changed
       this.input.nativeElement.focus();

@@ -25,7 +25,11 @@ import { environment } from '../environments/environment';
         AppRoutingModule,
         IonicModule.forRoot(),
         StoreModule.forRoot(appReducer),
-        EffectsModule.forRoot([ProjectEffects, MapEffects, PhotoEffects]),
+        EffectsModule.forRoot([
+            ProjectEffects,
+            MapEffects,
+            PhotoEffects,
+        ]),
         StoreDevtoolsModule.instrument({
             maxAge: 25,
             logOnly: environment.production,

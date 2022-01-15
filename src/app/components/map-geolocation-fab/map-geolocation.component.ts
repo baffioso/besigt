@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { MapService } from 'src/app/services/map.service';
 import { MapStoreService } from 'src/app/stores/map-store.service';
 import { pluck } from 'rxjs/operators';
@@ -7,6 +7,7 @@ import { pluck } from 'rxjs/operators';
   selector: 'app-map-geolocation',
   templateUrl: './map-geolocation.component.html',
   styleUrls: ['./map-geolocation.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MapGeolocationComponent implements OnInit {
 

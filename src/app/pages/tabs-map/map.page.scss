@@ -19,6 +19,9 @@ ion-progress-bar {
 app-map-draw-tool {
     position: fixed;
     top: calc(50% - 76px);
+    z-index: 100;
+    background-color: rgba(var(--ion-color-tertiary-rgb), 0.8);
+    border-radius: 28px;
 }
 
 .full-width-bottom-tool {
@@ -28,6 +31,7 @@ app-map-draw-tool {
     width: 100%;
 }
 
-app-map-info-tool {
+app-info-tool,
+app-photo-tool {
     text-align: center;
 }

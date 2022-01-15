@@ -28,6 +28,7 @@ export class ProjectsPage {
     this.store.dispatch(fromMap.zoomToProjectArea());
     this.store.dispatch(fromMap.addProjectAreaToMap());
     this.store.dispatch(fromMap.addProjectFeaturesToMap());
+    this.store.dispatch(fromMap.addProjectPhotosToMap());
 
     this.router.navigate(['app', 'map']);
   }

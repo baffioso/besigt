@@ -9,13 +9,12 @@ import View from 'ol/View';
 import { MapBrowserEvent } from 'ol';
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
+import VectorTileLayer from 'ol/layer/VectorTile';
 import BaseVectorLayer from 'ol/layer/BaseVector';
 import Feature from 'ol/Feature';
 import Geolocation from 'ol/Geolocation';
 import { Draw, Modify } from 'ol/interaction';
 import { GeoJSON, WKT } from 'ol/format';
-import { GeoJSON as geoJay } from 'geojson';
-import { GeoJSONFeature, GeoJSONFeatureCollection } from 'ol/format/GeoJSON';
 import { LineString, Polygon, Point, Geometry } from 'ol/geom';
 import { fromExtent } from 'ol/geom/Polygon';
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
@@ -76,7 +75,7 @@ export class MapService {
         }),
       ],
       layers: [
-        this.mapLayersService.getBaseMapById('aerial').map
+        this.mapLayersService.getBaseMapById('streets').map
       ],
       target: 'ol-map',
       view: this.view,
@@ -87,12 +86,10 @@ export class MapService {
     });
 
     this.olmap.once('postrender', () => {
-      this.mapStoreService.updateMapState('mapLoaded', true);
+      this.store.dispatch(mapActions.mapLoaded());
     });
 
     this.addClickInfo();
-    // this.olmap.un('click', (evt) => this.handelClickInfo(evt));
-    // this.olmap.removeInteraction(this.featureSelection);
 
   }
 
@@ -177,6 +174,7 @@ export class MapService {
 
   }
 
+
   private handelClickInfo(evt: MapBrowserEvent<any>) {
 
     const hitTolerance = 10;
@@ -185,29 +183,14 @@ export class MapService {
       hitTolerance
     });
 
-    if (features.length === 0) {
-      return;
-    }
-
-    const feature = features[0];
-
-    this.mapStoreService.emitSelectedFeature(feature);
+    features.length === 0 ?
+      this.store.dispatch(mapActions.selectedFeatures(null)) :
+      this.store.dispatch(mapActions.selectedFeatures({ features }))
 
   }
 
   addClickInfo(): void {
-
-    const hitTolerance = 10;
-
     this.olmap.on('click', (evt) => this.handelClickInfo(evt));
-
-    this.featureSelection = new Select({
-      hitTolerance,
-      style: mapStyles.selection
-    });
-
-    this.olmap.addInteraction(this.featureSelection);
-
   }
 
   clearFeatureSelection() {
@@ -469,7 +452,12 @@ export class MapService {
   }
 
   // eslint-disable-next-line max-len
-  addGeoJSON(geojson: any, layerName: string, sourceSrid: string, style: Style | Style[] = mapStyles.default): void {
+  addGeoJSON(
+    geojson: any,
+    layerName: string,
+    sourceSrid: string, style: Style | Style[] = mapStyles.default,
+    addHighlightLayer = false
+  ): void {
     let features: Feature<any>[];
 
     if (geojson.type === 'FeatureCollection') {
@@ -487,6 +475,10 @@ export class MapService {
       properties: { name: layerName },
       style
     });
+
+    // if(addHighlightLayer) {
+    //   const selection = new VectorTileLayer
+    // }
 
     this.olmap.addLayer(vectorLayer);
 

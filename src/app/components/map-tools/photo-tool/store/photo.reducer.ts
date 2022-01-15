@@ -1,4 +1,3 @@
-import { CreateImage } from '@app/interfaces/image'
 import { createReducer, on } from '@ngrx/store'
 import * as photoActions from './photo.actions';
 
@@ -10,7 +9,7 @@ export interface PhotoToolState {
 
 export const initialState: PhotoToolState = {
     photo: null,
-    description: null,
+    description: '',
     geom: null
 }
 

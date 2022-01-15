@@ -1,5 +1,5 @@
 /* eslint-disable arrow-body-style */
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { ProjectStoreService } from '@app/stores/project-store.service';
@@ -12,6 +12,7 @@ import { UserNotificationService } from '@app/shared/userNotification.service';
   selector: 'app-project-detail',
   templateUrl: './project-detail.page.html',
   styleUrls: ['./project-detail.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectDetailPage implements OnInit {
 

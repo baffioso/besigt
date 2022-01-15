@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { SegmentChangeEventDetail } from '@ionic/core/dist/types/interface';
 import { map } from 'rxjs/operators';
@@ -10,6 +10,7 @@ import { MapService } from 'src/app/services/map.service';
   selector: 'app-map-layers-control-modal',
   templateUrl: './map-layers-control-modal.page.html',
   styleUrls: ['./map-layers-control-modal.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MapLayersControlModalPage implements OnInit {
   segment: 'overlays' | 'baselayers' = 'overlays';

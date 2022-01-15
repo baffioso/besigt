@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { MapLayersControlModalPage } from '../../pages/map-layers-control-modal/map-layers-control-modal.page';
 
@@ -6,6 +6,7 @@ import { MapLayersControlModalPage } from '../../pages/map-layers-control-modal/
   selector: 'app-map-layers-control',
   templateUrl: './map-layers-control.component.html',
   styleUrls: ['./map-layers-control.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MapLayersControlComponent implements OnInit {
 

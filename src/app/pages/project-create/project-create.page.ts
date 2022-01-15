@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MapStoreService } from '@app/stores/map-store.service';
@@ -9,6 +9,7 @@ import { ProjectStoreService } from 'src/app/stores/project-store.service';
   selector: 'app-project-create',
   templateUrl: './project-create.page.html',
   styleUrls: ['./project-create.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectCreatePage implements OnInit {
   project: FormGroup;

@@ -1,11 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { filter, map, pluck, take, takeUntil, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { ModalController } from '@ionic/angular';
 
-import { MapFeatureInfoModalComponent } from 'src/app/components/map-feature-info-modal/map-feature-info-modal.component';
+// import { MapFeatureInfoModalComponent } from '@app/components/map-feature-info/map-feature-info-modal.component';
 import { MapService } from 'src/app/services/map.service';
 import { MapStoreService } from 'src/app/stores/map-store.service';
 import { AppState } from '@app/store/app.reducer';
@@ -16,7 +16,8 @@ import * as fromMap from '@app/state/map.actions';
 @Component({
   selector: 'app-tap-map',
   templateUrl: 'map.page.html',
-  styleUrls: ['map.page.scss']
+  styleUrls: ['map.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TapMapPage implements OnInit, OnDestroy {
 
@@ -26,7 +27,7 @@ export class TapMapPage implements OnInit, OnDestroy {
     map(isLoading => Object.values(isLoading).some((val: boolean) => val))
   );
 
-  activatedMapTools$ = this.store.select('mapTool', 'activatedMapTools');
+  activatedMapTools$ = this.store.select('mapTools', 'activatedMapTools');
   selectedProject$ = this.store.select('project', 'selectedProject');
 
   constructor(
@@ -75,15 +76,15 @@ export class TapMapPage implements OnInit, OnDestroy {
       })
     ).subscribe();
 
-    this.mapStore.selectedImage$.pipe(
-      takeUntil(this.abandon$),
-      filter(feature => feature !== null),
-      tap(() => this.mapStore.updateMapState('loadingFeatureInfo', true)),
-      tap(feature => {
-        this.mapStore.updateMapState('loadingFeatureInfo', false);
-        this.showFeatureInfo(feature);
-      })
-    ).subscribe();
+    // this.mapStore.selectedImage$.pipe(
+    //   takeUntil(this.abandon$),
+    //   filter(feature => feature !== null),
+    //   tap(() => this.mapStore.updateMapState('loadingFeatureInfo', true)),
+    //   tap(feature => {
+    //     this.mapStore.updateMapState('loadingFeatureInfo', false);
+    //     this.showFeatureInfo(feature);
+    //   })
+    // ).subscribe();
 
   }
 
@@ -95,16 +96,16 @@ export class TapMapPage implements OnInit, OnDestroy {
     this.mapService.resize();
   }
 
-  async showFeatureInfo(feature) {
-    const modal = await this.modalController.create({
-      component: MapFeatureInfoModalComponent,
-      componentProps: {
-        feature
-      }
-    });
+  // async showFeatureInfo(feature) {
+  //   const modal = await this.modalController.create({
+  //     component: MapFeatureInfoModalComponent,
+  //     componentProps: {
+  //       feature
+  //     }
+  //   });
 
-    modal.present();
-  }
+  //   modal.present();
+  // }
 
   onClearProject() {
     this.store.dispatch(fromProject.clearSelectedProject());

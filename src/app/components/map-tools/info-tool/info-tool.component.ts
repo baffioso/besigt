@@ -1,8 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { MapService } from '@app/services/map.service';
 import { UserNotificationService } from '@app/shared/userNotification.service';
+import { AppState } from '@app/store/app.reducer';
 import { MapStoreService } from '@app/stores/map-store.service';
-import { UiStateService } from '@app/stores/ui-state.service';
+// import { UiStateService } from '@app/stores/ui-state.service';
+import { Store } from '@ngrx/store';
 import { Feature } from 'ol';
 import { Geometry } from 'ol/geom';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -22,9 +24,10 @@ interface DawaInfo {
 }
 
 @Component({
-  selector: 'app-map-info-tool',
+  selector: 'app-info-tool',
   templateUrl: './info-tool.component.html',
   styleUrls: ['./info-tool.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InfoToolComponent implements OnInit, OnDestroy {
 
@@ -39,14 +42,15 @@ export class InfoToolComponent implements OnInit, OnDestroy {
     private mapService: MapService,
     private mapStore: MapStoreService,
     private notification: UserNotificationService,
-    private uiState: UiStateService
+    // private uiState: UiStateService,
+    private store: Store<AppState>
   ) { }
 
   ngOnInit() {
-    this.mapStore.selectedFeature$.pipe(
+    this.store.select('map', 'selectedFeatures').pipe(
       takeUntil(this.adandon$),
       filter(feature => !!feature),
-      map((feature: Feature<Geometry>) => feature.getProperties()),
+      map((feature: Feature<Geometry>[]) => feature[0].getProperties()),
       tap(feature => this.dawaInfo$.next(
         {
           id: feature.id,
@@ -62,15 +66,15 @@ export class InfoToolComponent implements OnInit, OnDestroy {
         }
       )),
       tap(() => this.showModal = !this.showModal)
-    ).subscribe(console.log);
-
-    this.uiState.uiState$.pipe(
-      tap(ui => (
-        ui.activatedMapTools.includes('addressInfo') === false ?
-          this.mapService.removeLayer('adresser') :
-          null
-      ))
     ).subscribe();
+
+    // this.uiState.uiState$.pipe(
+    //   tap(ui => (
+    //     ui.activatedMapTools.includes('addressInfo') === false ?
+    //       this.mapService.removeLayer('adresser') :
+    //       null
+    //   ))
+    // ).subscribe();
 
   }
 

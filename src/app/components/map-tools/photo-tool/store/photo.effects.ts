@@ -37,21 +37,26 @@ export class PhotoEffects {
 
 
     addPhoto$ = createEffect(() => this.actions$.pipe(
-        ofType(photoActions.ADD_PHOTO),
+        ofType(photoActions.TAKE_PHOTO_SUCCESS),
         withLatestFrom(
-            this.store.select('map', 'viewParams')
+            this.store.select('photoTool', 'photo'),
+            this.store.select('photoTool', 'geom'),
+            this.store.select('project', 'selectedProject'),
         ),
-        switchMap(() => {
+        switchMap(([_, photo, geom, project]) => {
             const time = new Date().getTime();
             const fileName = `${time}.png`;
 
-            // Take photo, upload and return path supabase path
-            return this.photoService.takePhoto().pipe(
-                switchMap(photo => this.photoService.photoToBlob(photo)),
-                switchMap(blob => this.supabase.uploadImage(fileName, blob)),
-                map(res => res.data.Key)
-            );
-        })
+            return this.supabase.uploadImage(fileName, photo).pipe(
+                map(res => ({
+                    file_name: res.data.Key,
+                    description: '',
+                    geom,
+                    project_id: project.id
+                }))
+            )
+        }),
+        switchMap(photoDetail => this.supabase.addImageInfo(photoDetail))
     ), { dispatch: false })
 
     constructor(

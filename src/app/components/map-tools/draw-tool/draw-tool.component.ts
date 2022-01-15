@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { pluck } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { AppState } from '@app/store/app.reducer';
 import * as projectActions from '@app/state/project.actions';
-import * as mapToolActions from '@app/state/map-tool.actions';
+import * as mapToolActions from '@app/components/map-tools/store/map-tool.actions';
+import * as drawToolActions from './store/draw.actions';
+
 
 import { MapService } from '@app/services/map.service';
 import { mapStyles } from '@app/shared/mapStyles';
@@ -15,24 +17,22 @@ import { UiStateService } from '@app/stores/ui-state.service';
   selector: 'app-map-draw-tool',
   templateUrl: './draw-tool.component.html',
   styleUrls: ['./draw-tool.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DrawToolComponent implements OnInit {
   showModal = false;
   featureProperties: FormGroup;
   drawGeometry: 'Point' | 'LineString' | 'Polygon';
-  drawUiState$ = this.uiState.uiState$.pipe(
-    pluck('drawConfig')
-  );
+  drawConfig$ = this.store.select('drawTool');
 
   constructor(
     private mapService: MapService,
-    private uiState: UiStateService,
     private fb: FormBuilder,
     private store: Store<AppState>
   ) { }
 
   ngOnInit(): void {
-    this.uiState.resetDrawUiState();
+    this.store.dispatch(drawToolActions.resetDrawTool());
 
     this.featureProperties = this.fb.group({
       name: ['', [Validators.required]],
@@ -48,7 +48,11 @@ export class DrawToolComponent implements OnInit {
     this.mapService.activateDrawTool(geometryType);
 
 
-    this.uiState.updateDrawUiState('inEditMode', true);
+    this.store.dispatch(drawToolActions.changeDrawEditMode({
+      change: {
+        prop: 'inEditMode', value: true
+      }
+    }))
   }
 
   onEndDraw(): void {
@@ -57,8 +61,12 @@ export class DrawToolComponent implements OnInit {
     this.mapService.addClickInfo();
   }
 
-  onToggleEditMode(): void {
-    this.uiState.updateDrawUiState('inEditMode', false);
+  onDisableEditMode(): void {
+    this.store.dispatch(drawToolActions.changeDrawEditMode({
+      change: {
+        prop: 'inEditMode', value: false
+      }
+    }))
   }
 
   onUndo(): void {
@@ -76,7 +84,7 @@ export class DrawToolComponent implements OnInit {
     this.showModal = true;
   }
 
-  onCreateFeature() {
+  onAddFeature() {
     this.store.dispatch(projectActions.addFeature({ properties: this.featureProperties.value }));
     this.showModal = false;
   }

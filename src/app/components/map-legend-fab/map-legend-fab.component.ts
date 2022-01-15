@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { PopoverController } from '@ionic/angular';
 import { map } from 'rxjs/operators';
 import { MapLayersService } from 'src/app/services/map-layers.service';
@@ -8,6 +8,7 @@ import { MapLegendPopoverComponent } from '../map-legend-popover/map-legend-popo
   selector: 'app-map-legend-fab',
   templateUrl: './map-legend-fab.component.html',
   styleUrls: ['./map-legend-fab.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MapLegendFabComponent {
 

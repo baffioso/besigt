@@ -28,6 +28,14 @@
 @import "ol/ol.css";
 @import "font-gis/css/font-gis.css";
 
+ion-backdrop {
+    pointer-events: none !important;
+}
+
+.modal-wrapper {
+    pointer-events: none;
+}
+
 // Dawa geosearch
 .dawa-autocomplete-suggestions {
     margin: 0.3em 0 0 0;

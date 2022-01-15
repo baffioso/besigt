@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+
+import { AppState } from '@app/store/app.reducer';
 import { DawaService } from '@app/services/dawa.service';
 import { MapService } from '@app/services/map.service';
 import { MapStoreService } from '@app/stores/map-store.service';
@@ -15,6 +18,7 @@ import { concatMap, first, map, tap } from 'rxjs/operators';
   selector: 'app-save-project',
   templateUrl: './save-project.component.html',
   styleUrls: ['./save-project.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SaveProjectComponent implements OnInit {
 
@@ -28,8 +32,10 @@ export class SaveProjectComponent implements OnInit {
     map(mapState => mapState.view?.zoom < 15 ? true : false)
   );
 
-  selectedArea$ = this.mapStore.selectedFeature$;
-  drawnGeometry$ = this.mapStore.drawnGeometry$;
+  // selectedArea$ = this.mapStore.selectedFeature$;
+  // drawnGeometry$ = this.mapStore.drawnGeometry$;
+  selectedArea$ = this.store.select('map', 'selectedFeatures');
+  drawnGeometry$ = this.store.select('map', 'drawnFeature');
 
   constructor(
     private router: Router,
@@ -38,7 +44,8 @@ export class SaveProjectComponent implements OnInit {
     private mapStore: MapStoreService,
     private projectStore: ProjectStoreService,
     private uiState: UiStateService,
-    private dawaService: DawaService
+    private dawaService: DawaService,
+    private store: Store<AppState>
   ) { }
 
   ngOnInit() {
@@ -126,6 +133,7 @@ export class SaveProjectComponent implements OnInit {
 
     // Delayed navigation in order to close modal
     setTimeout(() => {
+      this
       this.uiState.removeAllMapTools();
       this.projectStore.addProject(this.project.value, this.geomSource);
       this.router.navigateByUrl('/app/projects');

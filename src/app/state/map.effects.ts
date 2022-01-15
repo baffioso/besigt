@@ -68,6 +68,31 @@ export class MapEffects {
         })
     ), { dispatch: false });
 
+    addProjectPhotosToMap$ = createEffect(() => this.actions$.pipe(
+        ofType(mapActions.ADD_PROJECT_PHOTOS_TO_MAP),
+        withLatestFrom(this.store.select('project', 'selectedProject')),
+        tap(([_, project]) => {
+
+            const features = project.images.map(feature => {
+                const { geom, ...properties } = feature;
+                return { type: 'Feature', geometry: geom, properties };
+            });
+
+            const geojson = {
+                type: 'FeatureCollection',
+                crs: {
+                    type: 'name',
+                    properties: {
+                        name: 'EPSG:25832',
+                    },
+                },
+                features
+            };
+
+            this.mapService.addGeoJSON(geojson, 'projectPhotos', 'EPSG:25832');
+        })
+    ), { dispatch: false });
+
     removeProjectMapOverlays$ = createEffect(() => this.actions$.pipe(
         ofType(mapActions.REMOVE_PROJECT_MAP_OVERLAYS),
         tap(() => this.mapService.removeProjectOverlays())
@@ -79,14 +104,16 @@ export class MapEffects {
             .pipe(
                 tap(position => {
                     const coords: [number, number] = [position.coords.longitude, position.coords.latitude]
-                    this.mapService.removeLayer('marker')
-                    this.mapService.addMarker(coords);
                     this.mapService.flyTo(coords);
                 }),
                 map(position => mapActions.currentPositionSuccess({ position })),
                 catchError(() => EMPTY)
             ))
     ));
+
+    selectedFeature$ = createEffect(() => this.actions$.pipe(
+        ofType(mapActions.SELECTED_FEATURES),
+    ), { dispatch: false })
 
     constructor(
         private actions$: Actions,
