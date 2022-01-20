@@ -4,6 +4,7 @@ import { Position } from '@capacitor/geolocation';
 import { Feature } from 'ol';
 import RenderFeature from 'ol/render/Feature';
 import { Geometry } from 'ol/geom';
+import { LayerName } from '@app/interfaces/layerNames';
 
 export interface ViewParams {
     center: [number, number];
@@ -15,7 +16,7 @@ export interface MapState {
     mapLoaded: boolean;
     viewParams: ViewParams
     drawnFeature: Feature<any>;
-    selectedFeatures: (Feature<Geometry> | RenderFeature)[]
+    selectedFeatures: { feature: (Feature<Geometry> | RenderFeature), layerName: LayerName }[]
     currentPosition?: Position
 };
 

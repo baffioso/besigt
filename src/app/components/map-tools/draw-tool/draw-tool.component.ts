@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { pluck } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { AppState } from '@app/store/app.reducer';
@@ -11,7 +10,6 @@ import * as drawToolActions from './store/draw.actions';
 
 import { MapService } from '@app/services/map.service';
 import { mapStyles } from '@app/shared/mapStyles';
-import { UiStateService } from '@app/stores/ui-state.service';
 
 @Component({
   selector: 'app-map-draw-tool',
@@ -41,6 +39,7 @@ export class DrawToolComponent implements OnInit {
   }
 
   onStartDraw(geometryType: 'Point' | 'LineString' | 'Polygon'): void {
+    console.log('ADNED')
     this.mapService.removeClickInfo();
     this.mapService.removeDrawTool();
 
@@ -81,6 +80,7 @@ export class DrawToolComponent implements OnInit {
   onSave(): void {
     this.mapService.finishDrawing();
     this.mapService.changeLayerStyle('draw', mapStyles.default);
+    this.onDisableEditMode();
     this.showModal = true;
   }
 

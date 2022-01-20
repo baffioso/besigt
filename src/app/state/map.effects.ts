@@ -64,7 +64,7 @@ export class MapEffects {
                 features
             };
 
-            this.mapService.addGeoJSON(geojson, 'projectArea', 'EPSG:25832');
+            this.mapService.addGeoJSON(geojson, 'projectFeatures', 'EPSG:25832');
         })
     ), { dispatch: false });
 

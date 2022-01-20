@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title class="ion-text-center">Adresseinfo</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+  <ion-list>
+    <ion-item>
+      <ion-icon name="home-outline" slot="start"></ion-icon>
+      <ion-label>
+        <h2>{{properties.betegnelse}}</h2>
+        <p>{{properties.matrikelnr}}, {{properties.ejerlavnavn}}</p>
+      </ion-label>
+    </ion-item>
+    <ion-item [href]="oisUrl(properties)" target="_blank">
+      <ion-icon name="link-outline" slot="start"></ion-icon>
+      <ion-label>
+        OIS
+      </ion-label>
+    </ion-item>
+    <ion-item [href]="dinGeoUrl(properties)" target="_blank">
+      <ion-icon name="link-outline" slot="start"></ion-icon>
+      <ion-label>
+        DinGeo
+      </ion-label>
+    </ion-item>
+    <ion-item [href]="'https://kort.degulesider.dk/s/' + properties.betegnelse" target="_blank">
+      <ion-icon name="link-outline" slot="start"></ion-icon>
+      <ion-label>
+        De Gule Sider
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

@@ -81,6 +81,27 @@ export class MapLayersService {
           { name: 'dhm_kurve_0_25_m', label: 'Højdekurver 0,25m', addedToMap: false, minZoom: 17.40 },
           { name: 'dhm_kurve_0_5_m', label: 'Højdekurver 0,5m', addedToMap: false, minZoom: 17.40 }
         ]
+      },
+      {
+        name: 'Nedbør',
+        url: 'https://api.dataforsyningen.dk/dhm?token=44af18dc4d55df1d85ef32b8961ba0de',
+        type: 'wms',
+        server: 'mapserver',
+        layers: [
+          { name: 'dhm_bluespot_ekstremregn', label: 'Bluespot', addedToMap: false },
+          { name: 'dhm_flow_ekstremregn', label: 'Flow', addedToMap: false },
+          // { name: 'dhm_kurve_0_5_m', label: 'Højdekurver 0,5m', addedToMap: false, minZoom: 17.40 }
+        ]
+      },
+      {
+        name: 'Støj',
+        url: 'https://tilecache2-miljoegis.mim.dk/gwc/service/wms',
+        type: 'wms',
+        server: 'mapserver',
+        layers: [
+          { name: 'theme-pg-noisedataarea-g1', label: 'Trafikstøj', addedToMap: false },
+          // { name: 'dhm_kurve_0_5_m', label: 'Højdekurver 0,5m', addedToMap: false, minZoom: 17.40 }
+        ]
       }
     ]
 

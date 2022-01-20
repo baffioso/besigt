@@ -1,10 +1,12 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { LayerName } from '@app/interfaces/layerNames';
 import { AppState } from '@app/store/app.reducer';
 import { ModalController } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { from } from 'rxjs';
-import { filter, map, tap } from 'rxjs/operators';
+import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { MapService } from 'src/app/services/map.service';
+import { MapFeatureInfoModalComponent } from './map-feature-info-modal/map-feature-info-modal.component';
 
 @Component({
   selector: 'app-map-feature-info',
@@ -12,17 +14,7 @@ import { MapService } from 'src/app/services/map.service';
   styleUrls: ['./map-feature-info.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MapFeatureInfoComponent implements OnInit, OnDestroy {
-
-  selectedFeatures$ = this.store.select('map', 'selectedFeatures').pipe(
-    filter(feature => !!feature),
-    map(feature => feature[0].getProperties()),
-  );
-
-  isOpen$ = this.selectedFeatures$.pipe(
-    map(properties => properties ? true : false),
-    tap(console.log)
-  )
+export class MapFeatureInfoComponent implements OnInit {
 
   constructor(
     private modalController: ModalController,
@@ -32,23 +24,21 @@ export class MapFeatureInfoComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.store.select('map', 'selectedFeatures').pipe(
-      tap(() => this.showModal())
+      filter(feature => !!feature),
+      map(features => ({
+        properties: features[0].feature.getProperties(),
+        layerName: features[0].layerName
+      })),
+      switchMap(props => this.showModal(props))
     ).subscribe()
-
-    // from(this.modalController.create({
-    //   component: ,
-    // })).pipe(
-    //   map(modal => modal.present())
-    // ).subscribe()
   }
 
-  ngOnDestroy(): void {
-    console.log('destroy')
-  }
-
-  showModal() {
-    const modal = from(this.modalController.create({
-      component: MapFeatureInfoComponent,
+  showModal(feature: { layerName: LayerName, properties: { [x: string]: any } }) {
+    return from(this.modalController.create({
+      component: MapFeatureInfoModalComponent,
+      componentProps: { feature },
+      initialBreakpoint: 0.4,
+      breakpoints: [0, 0.4, 1],
     })).pipe(
       map(modal => modal.present())
     )

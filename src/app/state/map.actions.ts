@@ -4,6 +4,7 @@ import { Feature } from 'ol';
 import RenderFeature from 'ol/render/Feature';
 import { Geometry } from 'ol/geom';
 import { ViewParams } from './map.reducer';
+import { LayerName } from '@app/interfaces/layerNames';
 
 export const MAP_LOADED = '[Map Component] Map Loaded';
 export const mapLoaded = createAction(MAP_LOADED);
@@ -28,7 +29,7 @@ export const removeProjectMapOverlays = createAction(REMOVE_PROJECT_MAP_OVERLAYS
 // FEATURE SELECTION
 export const SELECTED_FEATURES = '[Map Component] Selected Features';
 
-export const selectedFeatures = createAction(SELECTED_FEATURES, props<{ features: (RenderFeature | Feature<Geometry>)[] }>())
+export const selectedFeatures = createAction(SELECTED_FEATURES, props<{ features: { feature: (RenderFeature | Feature<Geometry>), layerName: LayerName }[] }>())
 
 // DRAW
 export const DRAWN_FEATURE = '[MAP COMPONENT] Drawn Feature';

@@ -7,8 +7,9 @@ import copy from 'fast-copy';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { MapBrowserEvent } from 'ol';
-import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
+import { Tile as TileLayer, Vector as VectorLayer, Layer as OlLayer } from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
+import { unByKey } from 'ol/Observable';
 import VectorTileLayer from 'ol/layer/VectorTile';
 import BaseVectorLayer from 'ol/layer/BaseVector';
 import Feature from 'ol/Feature';
@@ -33,6 +34,10 @@ import { DawaService } from './dawa.service';
 import { Layer } from '../interfaces/map-layer-source';
 import { mapStyles } from '@app/shared/mapStyles';
 import { AppState } from '@app/store/app.reducer';
+import { EventsKey } from 'ol/events';
+import { LayerName } from '@app/interfaces/layerNames';
+import RenderFeature from 'ol/render/Feature';
+import Source from 'ol/source/Source';
 
 
 
@@ -48,6 +53,8 @@ export class MapService {
   private featureSelection: Select;
   private draw: Draw;
   private sketch: any;
+  private clickEventKey: EventsKey;
+  private clickInfoLayerNames: LayerName[] = ['adresser', 'jordstykke', 'projectArea', 'projectPhotos', 'projectFeatures']
 
   constructor(
     private mapStoreService: MapStoreService,
@@ -177,11 +184,19 @@ export class MapService {
 
   private handelClickInfo(evt: MapBrowserEvent<any>) {
 
-    const hitTolerance = 10;
+    let features: { feature: RenderFeature | Feature<Geometry>, layerName: LayerName }[] = [];
 
-    const features = this.olmap.getFeaturesAtPixel(evt.pixel, {
-      hitTolerance
-    });
+    this.olmap.forEachFeatureAtPixel(evt.pixel,
+      (feature, layer) => {
+        features.push({ feature: feature, layerName: layer.get('layerName') })
+      },
+      {
+        hitTolerance: 10,
+        layerFilter: (layer) => {
+          return this.clickInfoLayerNames.includes(layer.get('layerName'))
+        }
+      }
+    );
 
     features.length === 0 ?
       this.store.dispatch(mapActions.selectedFeatures(null)) :
@@ -190,7 +205,13 @@ export class MapService {
   }
 
   addClickInfo(): void {
-    this.olmap.on('click', (evt) => this.handelClickInfo(evt));
+    this.clickEventKey = this.olmap.on('click', evt => this.handelClickInfo(evt));
+  }
+
+  removeClickInfo() {
+    unByKey(this.clickEventKey);
+    // this.olmap.un('click', evt => this.handelClickInfo(evt));
+    // this.olmap.removeInteraction(this.featureSelection);
   }
 
   clearFeatureSelection() {
@@ -198,10 +219,6 @@ export class MapService {
     this.olmap.addInteraction(this.featureSelection);
   }
 
-  removeClickInfo() {
-    this.olmap.un('click', (evt) => this.handelClickInfo(evt));
-    this.olmap.removeInteraction(this.featureSelection);
-  }
 
 
 
@@ -454,8 +471,9 @@ export class MapService {
   // eslint-disable-next-line max-len
   addGeoJSON(
     geojson: any,
-    layerName: string,
-    sourceSrid: string, style: Style | Style[] = mapStyles.default,
+    layerName: LayerName,
+    sourceSrid: string,
+    style: Style | Style[] = mapStyles.default,
     addHighlightLayer = false
   ): void {
     let features: Feature<any>[];
@@ -472,7 +490,7 @@ export class MapService {
 
     const vectorLayer = new VectorLayer({
       source: vectorSource,
-      properties: { name: layerName },
+      properties: { layerName },
       style
     });
 
