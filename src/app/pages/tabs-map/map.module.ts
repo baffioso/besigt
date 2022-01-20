@@ -13,6 +13,7 @@ import { MapLayersControlModalPage } from '../map-layers-control-modal/map-layer
 import { MapFeatureInfoComponent } from '@app/components/map-feature-info/map-feature-info.component';
 import { MapFeatureInfoModalComponent } from '@app/components/map-feature-info/map-feature-info-modal/map-feature-info-modal.component';
 import { AddressInfoComponent } from '@app/components/map-feature-info/map-feature-info-modal/address-info/address-info.component';
+import { PhotoViewerComponent } from '@app/components/map-feature-info/map-feature-info-modal/photo-viewer/photo-viewer.component';
 import { MapLegendFabComponent } from '@app/components/map-legend-fab/map-legend-fab.component';
 import { MapLegendPopoverComponent } from '@app/components/map-legend-popover/map-legend-popover.component';
 import { InfoToolComponent } from '@app/components/map-tools/info-tool/info-tool.component';
@@ -38,6 +39,7 @@ import { PhotoToolComponent } from '@app/components/map-tools/photo-tool/photo-t
     MapFeatureInfoComponent,
     MapFeatureInfoModalComponent,
     AddressInfoComponent,
+    PhotoViewerComponent,
     MapLegendFabComponent,
     MapLegendPopoverComponent,
     GeoSearchComponent,
