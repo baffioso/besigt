@@ -95,9 +95,9 @@ export class MapLayersService {
       },
       {
         name: 'Støj',
-        url: 'https://tilecache2-miljoegis.mim.dk/gwc/service/wms',
+        url: 'https://tilecache2-miljoegis.mim.dk/gwc/service/wms?SERVICENAME=noise&ID=theme-pg-noisedataarea-b1&FORMAT=image%2Fpng&LAYERS=theme-pg-noisedataarea-b1&TRANSPARENT=TRUE&SERVICE=WMS&REQUEST=GetMap&STYLES=&SRS=EPSG%3A25832',
         type: 'wms',
-        server: 'mapserver',
+        server: 'geoserver',
         layers: [
           { name: 'theme-pg-noisedataarea-g1', label: 'Trafikstøj', addedToMap: false },
           // { name: 'dhm_kurve_0_5_m', label: 'Højdekurver 0,5m', addedToMap: false, minZoom: 17.40 }

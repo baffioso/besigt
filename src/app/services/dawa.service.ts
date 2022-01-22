@@ -34,12 +34,23 @@ export class DawaService {
   fetchMatriklerWithinPolygon(polygon: number[][][]): Observable<GeoJSONFeatureCollection> {
     const p = JSON.stringify(polygon);
     const url = `${this.baseUrl}/jordstykker?format=geojson&polygon=${p}`;
-    return this.http.get<GeoJSONFeatureCollection>(url);
+    return this.http.get<GeoJSONFeatureCollection>(url).pipe(
+      map(geojson => {
+        const features = geojson.features.map(feature => ({ id: feature.properties.featureid, ...feature }))
+        return { ...geojson, features }
+      })
+    );
   }
 
   fetchAdresserWithinPolygon(polygon: number[][][]): Observable<GeoJSONFeatureCollection> {
     const p = JSON.stringify(polygon);
     const url = `${this.baseUrl}/adgangsadresser?format=geojson&polygon=${p}`;
-    return this.http.get<GeoJSONFeatureCollection>(url);
+    return this.http.get<GeoJSONFeatureCollection>(url).pipe(
+      map(geojson => {
+        const features = geojson.features.map(feature => ({ id: feature.properties.id, ...feature }))
+        console.log(features)
+        return { ...geojson, features }
+      })
+    );
   }
 }

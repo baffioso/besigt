@@ -50,11 +50,17 @@ export class MapService {
   private olmap: Map;
   private view: View;
   private geolocation: Geolocation;
-  private featureSelection: Select;
+  // private featureSelection: Select;
   private draw: Draw;
   private sketch: any;
   private clickEventKey: EventsKey;
-  private clickInfoLayerNames: LayerName[] = ['adresser', 'jordstykke', 'projectArea', 'projectPhotos', 'projectFeatures']
+  private clickInfoLayerNames: LayerName[] = [
+    'adresser',
+    'jordstykke',
+    'projectArea',
+    'projectPhotos',
+    'projectFeatures'
+  ]
 
   constructor(
     private mapStoreService: MapStoreService,
@@ -184,11 +190,30 @@ export class MapService {
 
   private handelClickInfo(evt: MapBrowserEvent<any>) {
 
+    this.clearFeatureSelection();
+
     let features: { feature: RenderFeature | Feature<Geometry>, layerName: LayerName }[] = [];
 
     this.olmap.forEachFeatureAtPixel(evt.pixel,
       (feature, layer) => {
-        features.push({ feature: feature, layerName: layer.get('layerName') })
+        const layerName = layer.get('layerName')
+
+        features.push({ feature: feature, layerName })
+
+        const selectedId = feature.getId()
+
+        const highLightLayer = this.olmap.getLayers().getArray().find(l => {
+          return l.get('layerName')?.includes(`${layerName}_highlight`)
+        }) as VectorLayer<any>;
+
+        if (highLightLayer) {
+
+          highLightLayer.setStyle(f => f.getId() === selectedId ?
+            mapStyles.selection :
+            null
+          );
+        }
+
       },
       {
         hitTolerance: 10,
@@ -210,16 +235,13 @@ export class MapService {
 
   removeClickInfo() {
     unByKey(this.clickEventKey);
-    // this.olmap.un('click', evt => this.handelClickInfo(evt));
-    // this.olmap.removeInteraction(this.featureSelection);
   }
 
   clearFeatureSelection() {
-    this.olmap.removeInteraction(this.featureSelection);
-    this.olmap.addInteraction(this.featureSelection);
+    this.olmap.getLayers().getArray()
+      .filter(layer => layer.get('layerName')?.includes('_highlight'))
+      .forEach((layer: VectorLayer<any>) => layer.setStyle(null));
   }
-
-
 
 
   //--------------------------------
@@ -494,12 +516,18 @@ export class MapService {
       style
     });
 
-    // if(addHighlightLayer) {
-    //   const selection = new VectorTileLayer
-    // }
-
     this.olmap.addLayer(vectorLayer);
 
+    if (addHighlightLayer) {
+
+      const highlightLayer = new VectorLayer({
+        source: vectorSource,
+        properties: { layerName: `${layerName}_highlight` },
+        style: null
+      })
+
+      this.olmap.addLayer(highlightLayer);
+    }
   }
 
   removeProjectOverlays() {
@@ -522,7 +550,7 @@ export class MapService {
     this.mapStoreService.updateMapState('loadingLayer', true);
 
     this.dawaService.fetchMatriklerWithinPolygon(extentArray).pipe(
-      tap(geojson => this.addGeoJSON(geojson, 'jordstykke', 'EPSG:4326')),
+      tap(geojson => this.addGeoJSON(geojson, 'jordstykke', 'EPSG:4326', mapStyles.default, true)),
       tap(() => this.mapStoreService.updateMapState('loadingLayer', false)),
       finalize(() => this.mapStoreService.updateMapState('loadingLayer', false))
     ).subscribe();
@@ -535,7 +563,7 @@ export class MapService {
     this.mapStoreService.updateMapState('loadingLayer', true);
 
     this.dawaService.fetchAdresserWithinPolygon(extentArray).pipe(
-      tap(geojson => this.addGeoJSON(geojson, 'adresser', 'EPSG:4326', mapStyles.addressInfo)),
+      tap(geojson => this.addGeoJSON(geojson, 'adresser', 'EPSG:4326', mapStyles.addressInfo, true)),
       finalize(() => this.mapStoreService.updateMapState('loadingLayer', false))
     ).subscribe();
 

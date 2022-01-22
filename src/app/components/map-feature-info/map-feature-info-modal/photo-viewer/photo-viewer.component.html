@@ -1,1 +1,8 @@
-<img [src]="photoUrl$ | async" alt="">
+<img *ngIf="photoUrl$ | async as photoUrl; else loading" [src]="photoUrl">
+<ng-template #loading>
+    <div class="ion-text-center ion-margin-top">
+        <ion-spinner color="primary"></ion-spinner>
+        <br>
+        <ion-text color="medium">Henter billede...</ion-text>
+    </div>
+</ng-template>

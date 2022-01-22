@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { catchError, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, first, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
@@ -46,11 +46,12 @@ export class MapEffects {
     addProjectFeaturesToMap$ = createEffect(() => this.actions$.pipe(
         ofType(mapActions.ADD_PROJECT_FEATURES_TO_MAP),
         withLatestFrom(this.store.select('project', 'selectedProject')),
+        first(),
         tap(([_, project]) => {
 
             const features = project.features.map(feature => {
-                const { geom, ...properties } = feature;
-                return { type: 'Feature', geometry: geom, properties };
+                const { id, geom, ...properties } = feature;
+                return { id, type: 'Feature', geometry: geom, properties };
             });
 
             const geojson = {
@@ -64,18 +65,19 @@ export class MapEffects {
                 features
             };
 
-            this.mapService.addGeoJSON(geojson, 'projectFeatures', 'EPSG:25832');
+            this.mapService.addGeoJSON(geojson, 'projectFeatures', 'EPSG:25832', mapStyles.default, true);
         })
     ), { dispatch: false });
 
     addProjectPhotosToMap$ = createEffect(() => this.actions$.pipe(
         ofType(mapActions.ADD_PROJECT_PHOTOS_TO_MAP),
         withLatestFrom(this.store.select('project', 'selectedProject')),
+        first(),
         tap(([_, project]) => {
 
             const features = project.images.map(feature => {
-                const { geom, ...properties } = feature;
-                return { type: 'Feature', geometry: geom, properties };
+                const { id, geom, ...properties } = feature;
+                return { id, type: 'Feature', geometry: geom, properties };
             });
 
             const geojson = {
@@ -89,7 +91,7 @@ export class MapEffects {
                 features
             };
 
-            this.mapService.addGeoJSON(geojson, 'projectPhotos', 'EPSG:25832');
+            this.mapService.addGeoJSON(geojson, 'projectPhotos', 'EPSG:25832', mapStyles.default, true);
         })
     ), { dispatch: false });
 

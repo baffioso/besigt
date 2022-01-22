@@ -4,7 +4,7 @@ import { AppState } from '@app/store/app.reducer';
 import { ModalController } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { from } from 'rxjs';
-import { filter, map, switchMap, tap } from 'rxjs/operators';
+import { filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { MapService } from 'src/app/services/map.service';
 import { MapFeatureInfoModalComponent } from './map-feature-info-modal/map-feature-info-modal.component';
 
@@ -15,6 +15,8 @@ import { MapFeatureInfoModalComponent } from './map-feature-info-modal/map-featu
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MapFeatureInfoComponent implements OnInit {
+
+  modal: HTMLIonModalElement;
 
   constructor(
     private modalController: ModalController,
@@ -29,7 +31,10 @@ export class MapFeatureInfoComponent implements OnInit {
         properties: features[0].feature.getProperties(),
         layerName: features[0].layerName
       })),
-      switchMap(props => this.showModal(props))
+      switchMap(props => this.showModal(props)),
+      mergeMap(modal => from(modal.onDidDismiss()).pipe(
+        tap(() => this.mapService.clearFeatureSelection())
+      ))
     ).subscribe()
   }
 
@@ -40,7 +45,7 @@ export class MapFeatureInfoComponent implements OnInit {
       initialBreakpoint: 0.4,
       breakpoints: [0, 0.4, 1],
     })).pipe(
-      map(modal => modal.present())
+      tap(modal => modal.present())
     )
   }
 
