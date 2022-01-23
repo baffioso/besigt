@@ -15,6 +15,7 @@ import { appReducer } from '@app/store/app.reducer';
 import { ProjectEffects } from '@app/state/project.effects';
 import { MapEffects } from './state/map.effects';
 import { PhotoEffects } from '@app/components/map-tools/photo-tool/store/photo.effects';
+import { DrawEffects } from '@app/components/map-tools/draw-tool/store/draw.effects';
 import { environment } from '../environments/environment';
 
 @NgModule({
@@ -29,6 +30,7 @@ import { environment } from '../environments/environment';
             ProjectEffects,
             MapEffects,
             PhotoEffects,
+            DrawEffects
         ]),
         StoreDevtoolsModule.instrument({
             maxAge: 25,

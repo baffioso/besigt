@@ -1,2 +1,3 @@
+<app-draw-info *ngIf="feature.layerName === 'projectFeatures'" [properties]="feature.properties"></app-draw-info>
 <app-photo-viewer *ngIf="feature.layerName === 'projectPhotos'" [properties]="feature.properties"></app-photo-viewer>
 <app-address-info *ngIf="feature.layerName === 'adresser'" [properties]="feature.properties"></app-address-info>

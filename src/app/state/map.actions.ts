@@ -32,8 +32,8 @@ export const SELECTED_FEATURES = '[Map Component] Selected Features';
 export const selectedFeatures = createAction(SELECTED_FEATURES, props<{ features: { feature: (RenderFeature | Feature<Geometry>), layerName: LayerName }[] }>())
 
 // DRAW
-export const DRAWN_FEATURE = '[MAP COMPONENT] Drawn Feature';
-export const CLEAR_DRAWN_FEATURE = '[MAP COMPONENT] Clear Drawn Feature';
+export const DRAWN_FEATURE = '[Map Component] Drawn Feature';
+export const CLEAR_DRAWN_FEATURE = '[Map Component] Clear Drawn Feature';
 
 export const drawnFeature = createAction(DRAWN_FEATURE, props<{ feature: Feature<any> }>());
 export const clearDrawnFeature = createAction(CLEAR_DRAWN_FEATURE);

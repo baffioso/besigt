@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 
 import { AppState } from '@app/store/app.reducer';
-import * as projectActions from '@app/state/project.actions';
 import * as mapToolActions from '@app/components/map-tools/store/map-tool.actions';
 import * as drawToolActions from './store/draw.actions';
 
@@ -39,7 +38,6 @@ export class DrawToolComponent implements OnInit {
   }
 
   onStartDraw(geometryType: 'Point' | 'LineString' | 'Polygon'): void {
-    console.log('ADNED')
     this.mapService.removeClickInfo();
     this.mapService.removeDrawTool();
 
@@ -85,7 +83,7 @@ export class DrawToolComponent implements OnInit {
   }
 
   onAddFeature() {
-    this.store.dispatch(projectActions.addFeature({ properties: this.featureProperties.value }));
+    this.store.dispatch(drawToolActions.addFeature({ properties: this.featureProperties.value }));
     this.showModal = false;
   }
 }

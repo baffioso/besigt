@@ -48,7 +48,6 @@ export class DawaService {
     return this.http.get<GeoJSONFeatureCollection>(url).pipe(
       map(geojson => {
         const features = geojson.features.map(feature => ({ id: feature.properties.id, ...feature }))
-        console.log(features)
         return { ...geojson, features }
       })
     );

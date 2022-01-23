@@ -50,7 +50,7 @@ export class MapEffects {
         tap(([_, project]) => {
 
             const features = project.features.map(feature => {
-                const { id, geom, ...properties } = feature;
+                const { id, geom, properties } = feature;
                 return { id, type: 'Feature', geometry: geom, properties };
             });
 

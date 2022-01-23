@@ -54,11 +54,11 @@ export const mapStyles: MapStyle = {
   selection: [
     new Style({
       stroke: new Stroke({
-        color: 'tomato',
-        width: 2,
+        color: 'orange',
+        width: 5,
       }),
       fill: new Fill({
-        color: 'rgba(0, 255, 0, 0.519)',
+        color: 'rgba(61, 183, 244, 0.843)',
       }),
     }),
     new Style({
