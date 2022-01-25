@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import { MapService } from '@app/services/map.service';
 import { UserNotificationService } from '@app/shared/userNotification.service';
 import { AppState } from '@app/store/app.reducer';
@@ -25,7 +25,7 @@ interface DawaInfo {
   styleUrls: ['./info-tool.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class InfoToolComponent {
+export class InfoToolComponent implements OnDestroy {
 
   showModal = false;
   adandon$ = new Subject();
@@ -51,5 +51,8 @@ export class InfoToolComponent {
     });
   }
 
+  ngOnDestroy(): void {
+    this.mapService.removeLayer('adresser')
+  }
 
 }

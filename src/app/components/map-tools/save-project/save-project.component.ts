@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -20,7 +20,7 @@ import { concatMap, first, map, tap } from 'rxjs/operators';
   styleUrls: ['./save-project.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SaveProjectComponent implements OnInit {
+export class SaveProjectComponent implements OnInit, OnDestroy {
 
   project: FormGroup;
 
@@ -53,7 +53,10 @@ export class SaveProjectComponent implements OnInit {
       name: ['', [Validators.required]],
       description: ['']
     });
+  }
 
+  ngOnDestroy(): void {
+    this.mapService.removeLayer('jordstykke')
   }
 
   toggleModal() {

@@ -27,17 +27,15 @@ export class GeoSearchComponent implements AfterViewInit, OnDestroy {
   ) { }
 
   ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.autocomplete = dawa.dawaAutocomplete(this.input.nativeElement, {
-        select: (res: any) => {
-          const coords: [number, number] = [res.data.x, res.data.y];
-          this.mapService.removeLayer('marker');
-          this.mapService.addMarker(coords);
-          this.mapService.flyTo(coords);
-        },
-        adgangsadresserOnly: true
-      });
-    }, 250);
+    this.autocomplete = dawa.dawaAutocomplete(this.input.nativeElement, {
+      select: (res: any) => {
+        const coords: [number, number] = [res.data.x, res.data.y];
+        this.mapService.removeLayer('marker');
+        this.mapService.addMarker(coords);
+        this.mapService.flyTo(coords);
+      },
+      adgangsadresserOnly: true
+    });
 
     setTimeout(() => { // this will make the execution after the above boolean has changed
       this.input.nativeElement.focus();

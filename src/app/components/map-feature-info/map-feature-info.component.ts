@@ -3,8 +3,9 @@ import { LayerName } from '@app/interfaces/layerNames';
 import { AppState } from '@app/store/app.reducer';
 import { ModalController } from '@ionic/angular';
 import { Store } from '@ngrx/store';
+import { features } from 'process';
 import { from } from 'rxjs';
-import { filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { filter as rxFilter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { MapService } from 'src/app/services/map.service';
 import { MapFeatureInfoModalComponent } from './map-feature-info-modal/map-feature-info-modal.component';
 
@@ -17,6 +18,7 @@ import { MapFeatureInfoModalComponent } from './map-feature-info-modal/map-featu
 export class MapFeatureInfoComponent implements OnInit {
 
   modal: HTMLIonModalElement;
+  private infoLayers: LayerName[] = ['adresser', 'projectPhotos', 'projectFeatures']
 
   constructor(
     private modalController: ModalController,
@@ -26,7 +28,8 @@ export class MapFeatureInfoComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.select('map', 'selectedFeatures').pipe(
-      filter(feature => !!feature),
+      rxFilter(features => (!!features && features.filter(feature => this.infoLayers.includes(feature.layerName)).length > 0)
+      ),
       map(features => ({
         properties: features[0].feature.getProperties(),
         layerName: features[0].layerName

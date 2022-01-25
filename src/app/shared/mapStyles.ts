@@ -1,4 +1,4 @@
-import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
+import { Circle as CircleStyle, Fill, Icon, Stroke, Style } from 'ol/style';
 
 export interface MapStyle {
   [key: string]: Style | Style[];
@@ -28,6 +28,12 @@ export const mapStyles: MapStyle = {
       }),
     }),
   ],
+  photo: new Style({
+    image: new Icon({
+      displacement: [0, 24],
+      src: 'assets/icons/camera.png',
+    }),
+  }),
   edit: [
     new Style({
       stroke: new Stroke({

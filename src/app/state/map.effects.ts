@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { catchError, first, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, distinctUntilChanged, filter, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
@@ -26,6 +26,7 @@ export class MapEffects {
     addProjectAreaToMap$ = createEffect(() => this.actions$.pipe(
         ofType(mapActions.ADD_PROJECT_AREA_TO_MAP),
         switchMap(() => this.store.select('project', 'selectedProject')),
+        filter(project => !!project),
         tap(project => {
 
             const geojson = {
@@ -45,9 +46,10 @@ export class MapEffects {
 
     addProjectFeaturesToMap$ = createEffect(() => this.actions$.pipe(
         ofType(mapActions.ADD_PROJECT_FEATURES_TO_MAP),
-        withLatestFrom(this.store.select('project', 'selectedProject')),
-        first(),
-        tap(([_, project]) => {
+        mergeMap(() => this.store.select('project', 'selectedProject')),
+        filter(project => !!project),
+        distinctUntilChanged(),
+        tap(project => {
 
             const features = project.features.map(feature => {
                 const { id, geom, properties } = feature;
@@ -71,9 +73,10 @@ export class MapEffects {
 
     addProjectPhotosToMap$ = createEffect(() => this.actions$.pipe(
         ofType(mapActions.ADD_PROJECT_PHOTOS_TO_MAP),
-        withLatestFrom(this.store.select('project', 'selectedProject')),
-        first(),
-        tap(([_, project]) => {
+        mergeMap(() => this.store.select('project', 'selectedProject')),
+        filter(project => !!project),
+        distinctUntilChanged(),
+        tap(project => {
 
             const features = project.images.map(feature => {
                 const { id, geom, ...properties } = feature;
@@ -91,7 +94,7 @@ export class MapEffects {
                 features
             };
 
-            this.mapService.addGeoJSON(geojson, 'projectPhotos', 'EPSG:25832', mapStyles.default, true);
+            this.mapService.addGeoJSON(geojson, 'projectPhotos', 'EPSG:25832', mapStyles.photo, true);
         })
     ), { dispatch: false });
 
@@ -102,7 +105,7 @@ export class MapEffects {
 
     zoomToCurrentPosition$ = createEffect(() => this.actions$.pipe(
         ofType(mapActions.ZOOM_TO_CURRENT_POSITION),
-        switchMap(() => this.geolocationService.getPosition()
+        mergeMap(() => this.geolocationService.getPosition()
             .pipe(
                 tap(position => {
                     const coords: [number, number] = [position.coords.longitude, position.coords.latitude]

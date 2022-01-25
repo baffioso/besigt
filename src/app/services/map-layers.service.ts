@@ -117,7 +117,7 @@ export class MapLayersService {
         map: new TileLayer({
           source: new TileWMS({
             projection: 'EPSG:25832',
-            url: 'https://services.kortforsyningen.dk/orto_foraar?token=44af18dc4d55df1d85ef32b8961ba0de',
+            url: 'https://api.dataforsyningen.dk/orto_foraar_DAF?token=4609b9f50c1f4123967ee0effd8e0a80',
             params: {
               layers: 'orto_foraar',
               'VERSION': '1.1.1',

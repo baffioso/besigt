@@ -37,9 +37,9 @@ import { AppState } from '@app/store/app.reducer';
 import { EventsKey } from 'ol/events';
 import { LayerName } from '@app/interfaces/layerNames';
 import RenderFeature from 'ol/render/Feature';
-import Source from 'ol/source/Source';
 
-
+proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs');
+register(proj4);
 
 @Injectable({
   providedIn: 'root'
@@ -50,14 +50,12 @@ export class MapService {
   private olmap: Map;
   private view: View;
   private geolocation: Geolocation;
-  // private featureSelection: Select;
   private draw: Draw;
   private sketch: any;
   private clickEventKey: EventsKey;
-  private clickInfoLayerNames: LayerName[] = [
+  private highlightLayerNames: LayerName[] = [
     'adresser',
     'jordstykke',
-    'projectArea',
     'projectPhotos',
     'projectFeatures'
   ]
@@ -78,9 +76,6 @@ export class MapService {
       enableRotation: false
     });
 
-    proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs');
-    register(proj4);
-
     this.olmap = new Map({
       controls: [
         new ScaleLine({
@@ -88,7 +83,7 @@ export class MapService {
         }),
       ],
       layers: [
-        this.mapLayersService.getBaseMapById('streets').map
+        this.mapLayersService.getBaseMapById('aerial').map
       ],
       target: 'ol-map',
       view: this.view,
@@ -152,7 +147,7 @@ export class MapService {
 
   removeLayer(layerName: string): void {
     this.olmap.getLayers().getArray()
-      .filter(layer => layer.get('name') === layerName)
+      .filter(layer => layer.get('layerName') === layerName || layer.get('layerName') === `${layerName}_highlight`)
       .forEach(layer => this.olmap.removeLayer(layer));
   }
 
@@ -218,7 +213,7 @@ export class MapService {
       {
         hitTolerance: 10,
         layerFilter: (layer) => {
-          return this.clickInfoLayerNames.includes(layer.get('layerName'))
+          return this.highlightLayerNames.includes(layer.get('layerName'))
         }
       }
     );
@@ -531,9 +526,9 @@ export class MapService {
   }
 
   removeProjectOverlays() {
-    this.removeLayer('photos');
-    this.removeLayer('features');
-    this.removeLayer('projectArea');
+    ['projectArea', 'projectPhotos', 'projectFeatures'].forEach(layer => {
+      this.removeLayer(layer)
+    })
   }
 
   getViewExtent(): Feature<Geometry> {

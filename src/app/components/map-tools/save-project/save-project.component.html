@@ -8,16 +8,14 @@
     <ion-icon name="checkmark-outline"></ion-icon>
   </ion-fab-button>
 </ion-fab>
-<!-- <ion-button expand="full" id="openModal">
-  I open the modal
-</ion-button> -->
+
 <ion-segment (ionChange)="selectionMethodChanged($event)" mode="md">
   <ion-segment-button [disabled]="(disableMatrikel$ | async)" value="jordstykke">
     <ion-label>Matrikel</ion-label>
   </ion-segment-button>
-  <ion-segment-button value="draw">
+  <!-- <ion-segment-button value="draw">
     <ion-label>Tegn</ion-label>
-  </ion-segment-button>
+  </ion-segment-button> -->
   <ion-segment-button value="bounds">
     <ion-label>Kortudsnit</ion-label>
   </ion-segment-button>
