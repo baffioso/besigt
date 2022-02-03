@@ -9,6 +9,11 @@ import { AppState } from '@app/store/app.reducer';
 import { EMPTY } from 'rxjs';
 import { mapStyles } from '@app/shared/mapStyles';
 import { GeolocationService } from '@app/services/geolocation.service';
+import { Feature } from '@app/interfaces/feature';
+import { Image } from '@app/interfaces/image';
+import { GeoJSONFeature, GeoJSONFeatureCollection } from 'ol/format/GeoJSON';
+import { FeatureCollection, Feature as GFeature } from 'geojson';
+import { ProjectWithRelations } from '@app/interfaces/project';
 
 @Injectable()
 export class MapEffects {
@@ -28,18 +33,7 @@ export class MapEffects {
         switchMap(() => this.store.select('project', 'selectedProject')),
         filter(project => !!project),
         tap(project => {
-
-            const geojson = {
-                type: 'FeatureCollection',
-                crs: {
-                    type: 'name',
-                    properties: {
-                        name: 'EPSG:25832',
-                    },
-                },
-                features: [project.geom]
-            };
-
+            const geojson = tableAsGeoJson([project])
             this.mapService.addGeoJSON(geojson, 'projectArea', 'EPSG:25832', mapStyles.projectArea);
         })
     ), { dispatch: false });
@@ -50,23 +44,7 @@ export class MapEffects {
         filter(project => !!project),
         distinctUntilChanged(),
         tap(project => {
-
-            const features = project.features.map(feature => {
-                const { id, geom, properties } = feature;
-                return { id, type: 'Feature', geometry: geom, properties };
-            });
-
-            const geojson = {
-                type: 'FeatureCollection',
-                crs: {
-                    type: 'name',
-                    properties: {
-                        name: 'EPSG:25832',
-                    },
-                },
-                features
-            };
-
+            const geojson = tableAsGeoJson(project.features);
             this.mapService.addGeoJSON(geojson, 'projectFeatures', 'EPSG:25832', mapStyles.default, true);
         })
     ), { dispatch: false });
@@ -77,23 +55,7 @@ export class MapEffects {
         filter(project => !!project),
         distinctUntilChanged(),
         tap(project => {
-
-            const features = project.images.map(feature => {
-                const { id, geom, ...properties } = feature;
-                return { id, type: 'Feature', geometry: geom, properties };
-            });
-
-            const geojson = {
-                type: 'FeatureCollection',
-                crs: {
-                    type: 'name',
-                    properties: {
-                        name: 'EPSG:25832',
-                    },
-                },
-                features
-            };
-
+            const geojson = tableAsGeoJson(project.images);
             this.mapService.addGeoJSON(geojson, 'projectPhotos', 'EPSG:25832', mapStyles.photo, true);
         })
     ), { dispatch: false });
@@ -127,5 +89,34 @@ export class MapEffects {
         private geolocationService: GeolocationService
     ) { }
 
+
+}
+
+type GeometryTable = Feature | Image | ProjectWithRelations
+
+const tableAsGeoJson = (geometryTable: GeometryTable[]): any => {
+
+    const features = geometryTable.map((feature: GeometryTable) => {
+
+        if ('properties' in feature) {
+            const { id, geom, properties, ...rest } = feature;
+            return { id, type: 'Feature', geometry: geom, properties } as GeoJSONFeature;
+        } else {
+            const { id, geom, ...properties } = feature;
+            return { id, type: 'Feature', geometry: geom, properties } as GeoJSONFeature;
+        }
+
+    });
+
+    return {
+        type: 'FeatureCollection',
+        crs: {
+            type: 'name',
+            properties: {
+                name: 'EPSG:25832',
+            },
+        },
+        features
+    };
 
 }

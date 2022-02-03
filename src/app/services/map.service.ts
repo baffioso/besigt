@@ -37,6 +37,7 @@ import { AppState } from '@app/store/app.reducer';
 import { EventsKey } from 'ol/events';
 import { LayerName } from '@app/interfaces/layerNames';
 import RenderFeature from 'ol/render/Feature';
+import { GeoJSONFeature, GeoJSONFeatureCollection } from 'ol/format/GeoJSON';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs');
 register(proj4);

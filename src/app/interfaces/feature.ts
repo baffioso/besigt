@@ -5,8 +5,8 @@ export interface Style {
 }
 
 export interface Properties {
+    name?: string;
     description?: string;
-    style?: Style;
 }
 
 export interface CreateFeature {
