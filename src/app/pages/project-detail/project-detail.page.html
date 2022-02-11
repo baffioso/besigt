@@ -12,11 +12,11 @@
       </ion-buttons>
     </ion-toolbar>
 
-    <ion-segment color="secondary" (ionChange)="onTabChange($event)" [(ngModel)]="selectedTab">
+    <ion-segment mode="md" color="secondary" (ionChange)="onTabChange($event)" [(ngModel)]="selectedTab">
       <ion-segment-button value="detail">
         <ion-icon name="information-circle"></ion-icon>
       </ion-segment-button>
-      <ion-segment-button value="photos">
+      <ion-segment-button value="photos" [disabled]="(photos$ | async)?.length === 0">
         <ion-icon name="camera"></ion-icon>
       </ion-segment-button>
       <!-- <ion-segment-button value="map">
@@ -40,7 +40,19 @@
     </ng-container>
 
     <ng-container *ngIf="selectedTab === 'photos' ">
-      <img *ngFor="let photo of photos$ | async" [src]="photo" />
+      <ng-container *ngIf="photos$ | async as photos; else loading">
+        <img *ngFor="let photo of photos" [src]="photo" />
+      </ng-container>
+      <ng-template #loading>
+        <div class="ion-text-center ion-margin-top">
+          <ion-spinner color="primary"></ion-spinner>
+          <br>
+          <ion-text color="medium">Henter billede...</ion-text>
+        </div>
+      </ng-template>
+      <!-- <img *ngIf="photoUrl$ | async as photoUrl; else loading" [src]="photoUrl"> -->
+
+
     </ng-container>
 
     <!-- <ng-container *ngIf="selectedTab === 'map' ">

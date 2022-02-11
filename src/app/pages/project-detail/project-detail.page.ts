@@ -25,16 +25,11 @@ export class ProjectDetailPage implements OnInit {
   project$: Observable<ProjectWithRelations>;
   photos$: Observable<SafeResourceUrl[]>;
 
-
-
-
   constructor(
-    // private projectStore: ProjectStoreService,
     private route: ActivatedRoute,
     private supabase: SupabaseService,
     private readonly domSanitizer: DomSanitizer,
     private store: Store<AppState>,
-    private notification: UserNotificationService
   ) { }
 
   ngOnInit() {

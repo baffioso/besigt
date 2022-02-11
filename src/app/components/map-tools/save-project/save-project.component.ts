@@ -13,6 +13,7 @@ import { getCenter } from 'ol/extent';
 import { WKT } from 'ol/format';
 import { Observable, of } from 'rxjs';
 import { concatMap, first, map, tap } from 'rxjs/operators';
+import { Feature } from 'geojson';
 
 @Component({
   selector: 'app-save-project',
@@ -28,9 +29,7 @@ export class SaveProjectComponent implements OnInit, OnDestroy {
 
   geomSource: 'jordstykke' | 'draw' | 'bounds';
 
-  disableMatrikel$ = this.mapStore.mapstate$.pipe(
-    map(mapState => mapState.view?.zoom < 15 ? true : false)
-  );
+  disableMatrikel$: Observable<boolean>;
 
   // selectedArea$ = this.mapStore.selectedFeature$;
   // drawnGeometry$ = this.mapStore.drawnGeometry$;
@@ -53,6 +52,10 @@ export class SaveProjectComponent implements OnInit, OnDestroy {
       name: ['', [Validators.required]],
       description: ['']
     });
+
+    this.disableMatrikel$ = this.store.select('map', 'viewParams').pipe(
+      map(view => view?.zoom < 15 ? true : false)
+    )
   }
 
   ngOnDestroy(): void {
@@ -62,29 +65,29 @@ export class SaveProjectComponent implements OnInit, OnDestroy {
   toggleModal() {
     this.showModal = !this.showModal;
 
-    let feature: Observable<string>;
+    let bounds: Observable<any>;
+
     switch (this.geomSource) {
       case 'jordstykke':
-        feature = this.mapStore.selectedFeatureAsWKT$;
+        bounds = this.store.select('map', 'selectedFeatures').pipe(
+          map(features => features[0].feature.getGeometry().getExtent())
+        );
         break;
       case 'draw':
-        feature = this.mapStore.drawnGeometry$;
+        bounds = this.mapStore.drawnGeometry$;
         break;
       case 'bounds':
-        const extent = this.mapService.getViewExtent();
-        feature = of(this.mapService.featureAsWKT(extent, 'EPSG:4326', 'EPSG:25832'));
+        // console.log(this.mapService.transform(this.mapService.getViewExtent().getGeometry().getExtent(), 'EPSG:4326', 'EPSG:3857'))
+        bounds = of(this.mapService.getViewExtent().getGeometry().getExtent());
         break;
       default:
         break;
     }
 
-    feature.pipe(
+    bounds.pipe(
       first(),
-      map(feat => {
-        const wkt = new WKT();
-        const f = wkt.readFeature(feat);
-        const extent = f.getGeometry().getExtent();
-        return this.mapService.transform(getCenter(extent), 'EPSG:25832', 'EPSG:4326');
+      map(bounds => {
+        return this.mapService.transform(getCenter(bounds) as [number, number], 'EPSG:3857', 'EPSG:4326');
       }),
       concatMap(center => this.dawaService.reverseGeocode(center[0], center[1])),
       tap(adr => this.project.patchValue({

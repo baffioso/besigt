@@ -6,6 +6,10 @@ import RenderFeature from 'ol/render/Feature';
 import { Geometry } from 'ol/geom';
 import { LayerName } from '@app/interfaces/layerNames';
 
+export type SelectedFeature = {
+    feature: (Feature<Geometry> | RenderFeature),
+    layerName: LayerName
+}
 export interface ViewParams {
     center: [number, number];
     zoom: number;
@@ -16,7 +20,7 @@ export interface MapState {
     mapLoaded: boolean;
     viewParams: ViewParams
     drawnFeature: Feature<any>;
-    selectedFeatures: { feature: (Feature<Geometry> | RenderFeature), layerName: LayerName }[]
+    selectedFeatures: SelectedFeature[]
     currentPosition?: Position
 };
 

@@ -42,6 +42,8 @@ import { GeoJSONFeature, GeoJSONFeatureCollection } from 'ol/format/GeoJSON';
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs');
 register(proj4);
 
+export type Projection = 'EPSG:3857' | 'EPSG:4326' | 'EPSG:25832'
+
 @Injectable({
   providedIn: 'root'
 })
@@ -60,6 +62,7 @@ export class MapService {
     'projectPhotos',
     'projectFeatures'
   ]
+
 
   constructor(
     private mapStoreService: MapStoreService,
@@ -473,7 +476,7 @@ export class MapService {
   }
 
   // UTILS
-  transform(geometry: number[], source: string = 'EPSG:4326', destination: string = 'EPSG:25832') {
+  transform(geometry: [number, number], source: string = 'EPSG:4326', destination: string = 'EPSG:25832') {
     return transform(geometry, source, destination);
   }
 
