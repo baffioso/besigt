@@ -117,7 +117,7 @@ export class MapLayersService {
       {
         id: 'aerial',
         name: 'Luftfoto',
-        image: '/assets/images/aerial.jpeg',
+        image: 'assets/images/aerial.jpeg',
         // image: 'https://api.dataforsyningen.dk/orto_foraar_DAF?token=4609b9f50c1f4123967ee0effd8e0a80&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fjpeg&TRANSPARENT=false&layers=orto_foraar&WIDTH=256&HEIGHT=256&SRS=EPSG%3A25832&STYLES=&BBOX=725644.2845775224%2C6176527.7825319%2C728087.5313269417%2C6178971.02928132',
         map: new TileLayer({
           source: new TileWMS({
@@ -135,7 +135,7 @@ export class MapLayersService {
       {
         id: 'streets',
         name: 'Skærmkort',
-        image: '/assets/images/streets.png',
+        image: 'assets/images/streets.png',
         map: new MapboxVector({
           styleUrl: 'mapbox://styles/mapbox/bright-v9',
           accessToken: 'pk.eyJ1IjoiYmFmZmlvc28iLCJhIjoiY2tyYjFrZDlsMTF6ZzJ6cDhkdDg2bW15cSJ9.afJAXgWRc8yRd50I5WFhAQ'
@@ -144,7 +144,7 @@ export class MapLayersService {
       {
         id: 'hillshade',
         name: 'Skyggekort (terræn)',
-        image: '/assets/images/hillshade.png',
+        image: 'assets/images/hillshade.png',
         // image: 'https://api.dataforsyningen.dk/dhm_DAF?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&layers=dhm_terraen_skyggekort&token=44af18dc4d55df1d85ef32b8961ba0de&WIDTH=256&HEIGHT=256&SRS=EPSG%3A25832&STYLES=&BBOX=725644.2845775224%2C6176527.7825319%2C728087.5313269417%2C6178971.02928132',
         map: new TileLayer({
           source: new TileWMS({
