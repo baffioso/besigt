@@ -191,14 +191,14 @@ export class MapService {
 
     this.olmap.forEachFeatureAtPixel(evt.pixel,
       (feature, layer) => {
-        const layerName = layer.get('layerName')
+        const layerName = layer.get('name')
 
-        features.push({ feature: feature, layerName })
+        features.push({ feature, layerName })
 
         const selectedId = feature.getId()
 
         const highLightLayer = this.olmap.getLayers().getArray().find(l => {
-          return l.get('layerName')?.includes(`${layerName}_highlight`)
+          return l.get('name')?.includes(`${layerName}_highlight`)
         }) as VectorLayer<any>;
 
         if (highLightLayer) {
@@ -213,7 +213,7 @@ export class MapService {
       {
         hitTolerance: 10,
         layerFilter: (layer) => {
-          return this.highlightLayerNames.includes(layer.get('layerName'))
+          return this.highlightLayerNames.includes(layer.get('name'))
         }
       }
     );
@@ -234,7 +234,7 @@ export class MapService {
 
   clearFeatureSelection() {
     this.olmap.getLayers().getArray()
-      .filter(layer => layer.get('layerName')?.includes('_highlight'))
+      .filter(layer => layer.get('name')?.includes('_highlight'))
       .forEach((layer: VectorLayer<any>) => layer.setStyle(null));
   }
 
@@ -517,7 +517,7 @@ export class MapService {
 
       const highlightLayer = new VectorLayer({
         source: vectorSource,
-        properties: { highlight: `${layerName}_highlight` },
+        properties: { name: `${layerName}_highlight` },
         style: null
       })
 
