@@ -3,7 +3,7 @@
 export interface BaseMap {
     id: string;
     name: string;
-    selected: boolean;
+    image?: string;
     map: any;
 }
 
@@ -16,8 +16,9 @@ export interface Layer {
     maxZoom?: number;
 }
 
-export interface MapOverlays {
+export interface MapOverlay {
     name: string;
+    icon?: string;
     type: 'geojson' | 'wms' | 'wfs' | 'vectortile';
     url: string;
     server?: 'geoserver' | 'mapserver';
@@ -25,6 +26,6 @@ export interface MapOverlays {
 }
 
 export interface LayersConfig {
-    overlays: MapOverlays[];
+    overlays: MapOverlay[];
     baseMaps: BaseMap[];
 }

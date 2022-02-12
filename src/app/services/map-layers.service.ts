@@ -3,11 +3,9 @@ import { Injectable } from '@angular/core';
 import { MapboxVector } from 'ol/layer';
 import TileLayer from 'ol/layer/Tile';
 import TileWMS from 'ol/source/TileWMS';
-import WMTS from 'ol/source/WMTS';
-import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, map, tap } from 'rxjs/operators';
-import { BaseMap, LayersConfig, MapOverlays } from '../interfaces/map-layer-source';
+import { map } from 'rxjs/operators';
+import { BaseMap, MapOverlay } from '../interfaces/map-layer-source';
 
 @Injectable({
   providedIn: 'root'
@@ -18,10 +16,11 @@ export class MapLayersService {
 
   // https://miljoegis.mim.dk/fagtekster/grundvand/miljoestyrelsens_udstilling_af_grundvandsdata.pdf
 
-  private _overlays$ = new BehaviorSubject<MapOverlays[]>(
+  private _overlays$ = new BehaviorSubject<MapOverlay[]>(
     [
       {
         name: 'Danmarks arealinformation',
+        icon: 'leaf-outline',
         type: 'wms',
         url: 'https://arealinformation.miljoeportal.dk/gis/services/DAIdb/MapServer/WMSServer',
         layers: [
@@ -51,6 +50,7 @@ export class MapLayersService {
       },
       {
         name: 'Grundvand',
+        icon: 'water-outline',
         type: 'wms',
         url: 'https://miljoegis.mim.dk/wms?servicename=grundvand_wms',
         layers: [
@@ -64,6 +64,7 @@ export class MapLayersService {
       },
       {
         name: 'Matrikler',
+        icon: 'home-outline',
         url: 'https://api.dataforsyningen.dk/MatrikelGaeldendeOgForeloebigWMS_DAF?token=44af18dc4d55df1d85ef32b8961ba0de&TRANSPARENT=TRUE',
         type: 'wms',
         server: 'mapserver',
@@ -74,6 +75,7 @@ export class MapLayersService {
       },
       {
         name: 'Højdemodel',
+        icon: 'stats-chart-outline',
         url: 'https://api.dataforsyningen.dk/dhm_DAF?token=44af18dc4d55df1d85ef32b8961ba0de&TRANSPARENT=TRUE',
         type: 'wms',
         server: 'mapserver',
@@ -84,6 +86,7 @@ export class MapLayersService {
       },
       {
         name: 'Nedbør',
+        icon: 'rainy-outline',
         url: 'https://api.dataforsyningen.dk/dhm?token=44af18dc4d55df1d85ef32b8961ba0de',
         type: 'wms',
         server: 'mapserver',
@@ -95,6 +98,7 @@ export class MapLayersService {
       },
       {
         name: 'Støj',
+        icon: 'ear-outline',
         url: 'https://tilecache2-miljoegis.mim.dk/gwc/service/wms?SERVICENAME=noise&ID=theme-pg-noisedataarea-b1&FORMAT=image%2Fpng&LAYERS=theme-pg-noisedataarea-b1&TRANSPARENT=TRUE&SERVICE=WMS&REQUEST=GetMap&STYLES=&SRS=EPSG%3A25832',
         type: 'wms',
         server: 'geoserver',
@@ -113,7 +117,8 @@ export class MapLayersService {
       {
         id: 'aerial',
         name: 'Luftfoto',
-        selected: true,
+        image: '/assets/images/aerial.jpeg',
+        // image: 'https://api.dataforsyningen.dk/orto_foraar_DAF?token=4609b9f50c1f4123967ee0effd8e0a80&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fjpeg&TRANSPARENT=false&layers=orto_foraar&WIDTH=256&HEIGHT=256&SRS=EPSG%3A25832&STYLES=&BBOX=725644.2845775224%2C6176527.7825319%2C728087.5313269417%2C6178971.02928132',
         map: new TileLayer({
           source: new TileWMS({
             projection: 'EPSG:25832',
@@ -130,16 +135,17 @@ export class MapLayersService {
       {
         id: 'streets',
         name: 'Skærmkort',
-        selected: false,
+        image: '/assets/images/streets.png',
         map: new MapboxVector({
           styleUrl: 'mapbox://styles/mapbox/bright-v9',
           accessToken: 'pk.eyJ1IjoiYmFmZmlvc28iLCJhIjoiY2tyYjFrZDlsMTF6ZzJ6cDhkdDg2bW15cSJ9.afJAXgWRc8yRd50I5WFhAQ'
         }),
       },
       {
-        id: 'dtm_shadow',
+        id: 'hillshade',
         name: 'Skyggekort (terræn)',
-        selected: true,
+        image: '/assets/images/hillshade.png',
+        // image: 'https://api.dataforsyningen.dk/dhm_DAF?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&layers=dhm_terraen_skyggekort&token=44af18dc4d55df1d85ef32b8961ba0de&WIDTH=256&HEIGHT=256&SRS=EPSG%3A25832&STYLES=&BBOX=725644.2845775224%2C6176527.7825319%2C728087.5313269417%2C6178971.02928132',
         map: new TileLayer({
           source: new TileWMS({
             projection: 'EPSG:25832',
@@ -160,7 +166,7 @@ export class MapLayersService {
 
   legends$: Observable<string[]> = this.overlays$.pipe(
     // eslint-disable-next-line arrow-body-style
-    map((sources: MapOverlays[]) => {
+    map((sources: MapOverlay[]) => {
       const layers = [];
       // eslint-disable-next-line arrow-body-style
       sources.forEach(source => {
@@ -195,17 +201,6 @@ export class MapLayersService {
     this._overlays$.next(overlaysUpdate);
   }
 
-  updateBaseLayerSelection(id: string) {
-    const updated = this._baseMaps$.value.map(baseMap => {
-      if (baseMap.id === id) {
-        return { ...baseMap, selected: true };
-      }
-      return { ...baseMap, selected: false };
-    });
-
-    this._baseMaps$.next(updated);
-  }
-
   getBaseMapById(id: 'aerial' | 'streets' | 'hillshade'): BaseMap {
     const baseMap = this._baseMaps$.value.find(basemap => basemap.id === id);
     return baseMap;
@@ -214,4 +209,5 @@ export class MapLayersService {
   getLegendUrl(url: string, layerName: string): any {
     return `${url}?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=10&HEIGHT=10&LAYER=${layerName}`;
   }
+
 }

@@ -10,8 +10,6 @@ import { MapBrowserEvent } from 'ol';
 import { Tile as TileLayer, Vector as VectorLayer, Layer as OlLayer } from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
 import { unByKey } from 'ol/Observable';
-import VectorTileLayer from 'ol/layer/VectorTile';
-import BaseVectorLayer from 'ol/layer/BaseVector';
 import Feature from 'ol/Feature';
 import Geolocation from 'ol/Geolocation';
 import { Draw, Modify } from 'ol/interaction';
@@ -20,7 +18,6 @@ import { LineString, Polygon, Point, Geometry } from 'ol/geom';
 import { fromExtent } from 'ol/geom/Polygon';
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 import { ScaleLine } from 'ol/control';
-import Select from 'ol/interaction/Select';
 import { transform } from 'ol/proj';
 import TileWMS from 'ol/source/TileWMS';
 import { getArea, getLength } from 'ol/sphere';
@@ -37,7 +34,6 @@ import { AppState } from '@app/store/app.reducer';
 import { EventsKey } from 'ol/events';
 import { LayerName } from '@app/interfaces/layerNames';
 import RenderFeature from 'ol/render/Feature';
-import { GeoJSONFeature, GeoJSONFeatureCollection } from 'ol/format/GeoJSON';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs');
 register(proj4);
@@ -123,7 +119,7 @@ export class MapService {
     this.olmap.updateSize();
   }
 
-  addLayer(url: string, layer: Layer): void {
+  addWMSLayer(url: string, layer: Layer): void {
 
     const wmsLayer = new TileLayer({
       properties: { name: layer.name },
@@ -151,7 +147,7 @@ export class MapService {
 
   removeLayer(layerName: string): void {
     this.olmap.getLayers().getArray()
-      .filter(layer => layer.get('layerName') === layerName || layer.get('layerName') === `${layerName}_highlight`)
+      .filter(layer => layer.get('name') === layerName || layer.get(`${layerName}_highlight`) === `${layerName}_highlight`)
       .forEach(layer => this.olmap.removeLayer(layer));
   }
 

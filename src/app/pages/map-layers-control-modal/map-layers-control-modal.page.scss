@@ -1,0 +1,30 @@
+ion-segment {
+    --background: var(--ion-color-tertiary);
+}
+
+ion-accordion.accordion-expanding ion-item[slot="header"],
+ion-accordion.accordion-expanded ion-item[slot="header"] {
+    --color: var(--ion-color-primary-contrast);
+    --background: var(--ion-color-primary);
+}
+
+ion-accordion.accordion-expanding ion-item[slot="content"],
+ion-accordion.accordion-expanded ion-item[slot="content"] {
+    --background: var(--ion-color-light-tint);
+}
+
+ion-card {
+    --background: var(--ion-color-secondary);
+
+    &.selected {
+        outline: 4px solid var(--ion-color-secondary);
+        outline-offset: 5px;
+        transition: ease-in-out 0.2s;
+    }
+}
+
+.selected {
+    color: var(--ion-color-secondary);
+    font-weight: bold;
+    transition: ease-in-out 0.2s;
+}
