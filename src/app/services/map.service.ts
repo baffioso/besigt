@@ -147,7 +147,7 @@ export class MapService {
 
   removeLayer(layerName: string): void {
     this.olmap.getLayers().getArray()
-      .filter(layer => layer.get('name') === layerName || layer.get(`${layerName}_highlight`) === `${layerName}_highlight`)
+      .filter(layer => layer.get('name') === layerName || layer.get('highlight') === `${layerName}_highlight`)
       .forEach(layer => this.olmap.removeLayer(layer));
   }
 
@@ -507,7 +507,7 @@ export class MapService {
 
     const vectorLayer = new VectorLayer({
       source: vectorSource,
-      properties: { layerName },
+      properties: { name: layerName },
       style
     });
 
@@ -517,7 +517,7 @@ export class MapService {
 
       const highlightLayer = new VectorLayer({
         source: vectorSource,
-        properties: { layerName: `${layerName}_highlight` },
+        properties: { highlight: `${layerName}_highlight` },
         style: null
       })
 
