@@ -7,9 +7,9 @@ import { TapMapPage } from './map.page';
 import { MapPageRoutingModule } from './map-routing.module';
 import { MapComponent } from '../../components/map/map.component';
 import { MapLayersControlComponent } from '../../components/map-layers-control/map-layers-control.component';
+import { MapLayersControlModalComponent } from '@app/components/map-layers-control/map-layers-control-modal/map-layers-control-modal.component';
 import { MapToolsComponent } from '../../components/map-tools/map-tools.component';
 import { MapGeolocationComponent } from '../../components/map-geolocation-fab/map-geolocation.component';
-import { MapLayersControlModalPage } from '../map-layers-control-modal/map-layers-control-modal.page';
 import { MapFeatureInfoComponent } from '@app/components/map-feature-info/map-feature-info.component';
 import { MapFeatureInfoModalComponent } from '@app/components/map-feature-info/map-feature-info-modal/map-feature-info-modal.component';
 import { AddressInfoComponent } from '@app/components/map-feature-info/map-feature-info-modal/address-info/address-info.component';
@@ -34,9 +34,9 @@ import { DrawInfoComponent } from '@app/components/map-feature-info/map-feature-
   declarations: [
     TapMapPage,
     MapComponent,
-    MapLayersControlComponent,
     MapGeolocationComponent,
-    MapLayersControlModalPage,
+    MapLayersControlComponent,
+    MapLayersControlModalComponent,
     MapFeatureInfoComponent,
     MapFeatureInfoModalComponent,
     AddressInfoComponent,

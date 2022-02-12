@@ -2,23 +2,24 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { BaseMap, Layer, MapOverlay } from 'src/app/interfaces/map-layer-source';
-import { MapLayersService } from 'src/app/services/map-layers.service';
-import { MapService } from 'src/app/services/map.service';
+
+import { MapService } from '@app/services/map.service';
+import { MapLayersService } from '@app/services/map-layers.service';
+import { BaseMap, MapOverlay, Layer, BaseMapId } from '@app/interfaces/map-layer-source';
 
 @Component({
   selector: 'app-map-layers-control-modal',
-  templateUrl: './map-layers-control-modal.page.html',
-  styleUrls: ['./map-layers-control-modal.page.scss'],
+  templateUrl: './map-layers-control-modal.component.html',
+  styleUrls: ['./map-layers-control-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MapLayersControlModalPage implements OnInit {
+export class MapLayersControlModalComponent implements OnInit {
   segment: 'overlays' | 'baselayers' = 'overlays';
-  selectedBaseMap = 'aerial';
+  // selectedBaseMap = 'aerial';
 
   overlays$: Observable<MapOverlay[]>;
   baseMaps$: Observable<BaseMap[]>;
-
+  selectedBaseMap$: Observable<BaseMapId>;
 
   constructor(public modalController: ModalController, private mapLayersService: MapLayersService, private mapService: MapService) { }
 
@@ -34,6 +35,8 @@ export class MapLayersControlModalPage implements OnInit {
         }
       })))
     )
+
+    this.selectedBaseMap$ = this.mapLayersService.selectedBaseMap$
   }
 
   onOverlayToggle(event: any, source: MapOverlay, layer: Layer) {
@@ -49,7 +52,8 @@ export class MapLayersControlModalPage implements OnInit {
   }
 
   onBaseLayerSelect(baseMap: BaseMap): void {
-    this.selectedBaseMap = baseMap.id
+    this.mapLayersService.changeSelectedBaseMap(baseMap.id)
+    // this.selectedBaseMap = baseMap.id
     this.mapService.changeBaseMap(baseMap.id as 'aerial' | 'streets' | 'hillshade');
   }
 

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { MapLayersControlModalPage } from '../../pages/map-layers-control-modal/map-layers-control-modal.page';
+import { MapLayersControlModalComponent } from './map-layers-control-modal/map-layers-control-modal.component';
 
 @Component({
   selector: 'app-map-layers-control',
@@ -16,7 +16,7 @@ export class MapLayersControlComponent implements OnInit {
 
   async onShowLayersControl() {
     const modal = await this.modalController.create({
-      component: MapLayersControlModalPage,
+      component: MapLayersControlModalComponent,
       cssClass: 'my-custom-class',
       breakpoints: [0, 0.5, 1],
       initialBreakpoint: 0.5

@@ -1,7 +1,8 @@
 // import TileLayer from "ol/layer/Tile";
+export type BaseMapId = 'aerial' | 'streets' | 'hillshade';
 
 export interface BaseMap {
-    id: string;
+    id: BaseMapId;
     name: string;
     image?: string;
     map: any;

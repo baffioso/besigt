@@ -5,7 +5,7 @@ import TileLayer from 'ol/layer/Tile';
 import TileWMS from 'ol/source/TileWMS';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { BaseMap, MapOverlay } from '../interfaces/map-layer-source';
+import { BaseMap, BaseMapId, MapOverlay } from '../interfaces/map-layer-source';
 
 @Injectable({
   providedIn: 'root'
@@ -163,6 +163,13 @@ export class MapLayersService {
     ]
   );
   baseMaps$ = this._baseMaps$.asObservable();
+
+  private _selectedBaseMap$ = new BehaviorSubject<BaseMapId>('aerial');
+  selectedBaseMap$ = this._selectedBaseMap$.asObservable();
+
+  changeSelectedBaseMap(id: BaseMapId) {
+    this._selectedBaseMap$.next(id)
+  }
 
   legends$: Observable<string[]> = this.overlays$.pipe(
     // eslint-disable-next-line arrow-body-style

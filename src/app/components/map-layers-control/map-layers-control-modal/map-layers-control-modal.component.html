@@ -37,10 +37,11 @@
       <ion-row>
         <ion-col size="4" *ngFor="let baseMap of baseMaps$ | async" class="ion-text-center">
           <div class="base-map" (click)="onBaseLayerSelect(baseMap)">
-            <ion-card [ngClass]=" {'selected': baseMap.id === selectedBaseMap}">
+            <ion-card [ngClass]=" {'selected': baseMap.id === (selectedBaseMap$ | async)}">
               <ion-img [src]="baseMap.image"></ion-img>
             </ion-card>
-            <ion-text color="medium" [ngClass]="{'selected': baseMap.id === selectedBaseMap}">{{baseMap.name}}
+            <ion-text color="medium" [ngClass]="{'selected': baseMap.id === (selectedBaseMap$ | async)}">
+              {{baseMap.name}}
             </ion-text>
           </div>
         </ion-col>
