@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1644645685162,
+  "timestamp": 1644646314060,
   "index": "/besigt/index.html",
   "assetGroups": [
     {
@@ -81,7 +81,7 @@
         "/besigt/9958.274fd941d82fdf7e.js",
         "/besigt/common.a0e8548d168d9f13.js",
         "/besigt/index.html",
-        "/besigt/main.1d5ecd8c36e4e2e7.js",
+        "/besigt/main.9d1efcebc1a37a3c.js",
         "/besigt/manifest.webmanifest",
         "/besigt/polyfills-core-js.1bb5bf77264e16cc.js",
         "/besigt/polyfills-dom.99fc3ec789772867.js",
@@ -222,8 +222,8 @@
     "/besigt/font-gis.d49b67db95dfd338.svg": "59d23b8fb7884a6630a0906c84b6d598dae9051e",
     "/besigt/font-gis.ea91ba3cf757c771.woff": "e980691e758e617f2d5e4cec752b5f7f69a0e228",
     "/besigt/font-gis.faedb381e379162d.woff2": "e8cbb2f2c25a27e9d740ec943ab12062cb88270a",
-    "/besigt/index.html": "4e784d7c5e377ed86a568d01820edffe5b332ab5",
-    "/besigt/main.1d5ecd8c36e4e2e7.js": "66e65046fc49cd8f74788196f1a313b064986bbd",
+    "/besigt/index.html": "358d2075af0d390dbe4e120305b47e6d29dd88a2",
+    "/besigt/main.9d1efcebc1a37a3c.js": "78599ee9dd3c23464af66cfc1e067c78c0ff72b6",
     "/besigt/manifest.webmanifest": "9a088b7c4339228d1082e666ce105dc889bc180c",
     "/besigt/polyfills-core-js.1bb5bf77264e16cc.js": "74f73ddfbee814abfb2702e1dd9ca4c9ddb994c5",
     "/besigt/polyfills-dom.99fc3ec789772867.js": "4dde00ede9ac211c80eb4b5ad1b49c978c87be0f",
