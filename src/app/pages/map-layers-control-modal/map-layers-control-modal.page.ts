@@ -16,7 +16,7 @@ export class MapLayersControlModalPage implements OnInit {
   segment: 'overlays' | 'baselayers' = 'overlays';
   selectedBaseMap = 'aerial';
 
-  overlays$: Observable<any>;
+  overlays$: Observable<MapOverlay[]>;
   baseMaps$: Observable<BaseMap[]>;
 
 

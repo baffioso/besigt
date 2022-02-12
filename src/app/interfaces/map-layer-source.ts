@@ -18,11 +18,15 @@ export interface Layer {
 
 export interface MapOverlay {
     name: string;
-    icon?: string;
     type: 'geojson' | 'wms' | 'wfs' | 'vectortile';
     url: string;
     server?: 'geoserver' | 'mapserver';
     layers: Layer[];
+    icon?: string;
+    layerCount?: {
+        added: number,
+        total: number
+    }
 }
 
 export interface LayersConfig {
