@@ -17,6 +17,7 @@ import { MapEffects } from './state/map.effects';
 import { PhotoEffects } from '@app/components/map-tools/photo-tool/store/photo.effects';
 import { DrawEffects } from '@app/components/map-tools/draw-tool/store/draw.effects';
 import { environment } from '../environments/environment';
+import { SaveProjectEffects } from './components/map-tools/save-project/store/save-project.effects';
 
 @NgModule({
     declarations: [AppComponent],
@@ -29,6 +30,7 @@ import { environment } from '../environments/environment';
         EffectsModule.forRoot([
             ProjectEffects,
             MapEffects,
+            SaveProjectEffects,
             PhotoEffects,
             DrawEffects
         ]),

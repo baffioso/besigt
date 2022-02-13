@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, from, Observable } from 'rxjs';
+import { BehaviorSubject, from, Observable, of, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SupabaseClient, createClient, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { environment } from '@env/environment';
@@ -101,7 +101,13 @@ export class SupabaseService {
       this.supabase.from<Project>('projects')
         .insert(newProject, { returning: 'representation' })
     ).pipe(
-      map(res => res.data)
+      map(({ error, data }) => {
+        if (error) {
+          throw new Error(error.message);
+        } else {
+          return data;
+        }
+      })
     );
 
   }

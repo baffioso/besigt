@@ -5,12 +5,14 @@ import * as fromMap from '@app/state/map.reducer';
 import * as fromMapTools from '@app/components/map-tools/store/map-tool.reducer'
 import * as fromPhotoTool from '@app/components/map-tools/photo-tool/store/photo.reducer';
 import * as fromDrawTool from '@app/components/map-tools/draw-tool/store/draw.reducer';
+import * as fromSaveProject from '@app/components/map-tools/save-project/store/save-project.reducer';
 export interface AppState {
     project: fromProject.ProjectState;
     map: fromMap.MapState;
     mapTools: fromMapTools.MapToolState;
     photoTool: fromPhotoTool.PhotoToolState;
-    drawTool: fromDrawTool.DrawToolState
+    drawTool: fromDrawTool.DrawToolState,
+    saveProject: fromSaveProject.SaveProjectState
 };
 
 export const appReducer: ActionReducerMap<AppState> = {
@@ -18,5 +20,6 @@ export const appReducer: ActionReducerMap<AppState> = {
     map: fromMap.mapReducer,
     mapTools: fromMapTools.mapToolReducer,
     photoTool: fromPhotoTool.photoReducer,
-    drawTool: fromDrawTool.drawReducer
+    drawTool: fromDrawTool.drawReducer,
+    saveProject: fromSaveProject.saveProjectReducer
 };

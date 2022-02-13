@@ -12,8 +12,10 @@ import { UiStateService } from '@app/stores/ui-state.service';
 import { getCenter } from 'ol/extent';
 import { WKT } from 'ol/format';
 import { Observable, of } from 'rxjs';
-import { concatMap, first, map, tap } from 'rxjs/operators';
+import { concatMap, filter, first, map, tap } from 'rxjs/operators';
 import { Feature } from 'geojson';
+import * as saveProjectActions from './store/save-project.actions'
+import { UserNotificationService } from '@app/shared/userNotification.service';
 
 @Component({
   selector: 'app-save-project',
@@ -39,9 +41,9 @@ export class SaveProjectComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private fb: FormBuilder,
+    private noticationService: UserNotificationService,
     private mapService: MapService,
     private mapStore: MapStoreService,
-    private projectStore: ProjectStoreService,
     private uiState: UiStateService,
     private dawaService: DawaService,
     private store: Store<AppState>
@@ -56,6 +58,17 @@ export class SaveProjectComponent implements OnInit, OnDestroy {
     this.disableMatrikel$ = this.store.select('map', 'viewParams').pipe(
       map(view => view?.zoom < 15 ? true : false)
     )
+
+    this.store.select('saveProject', 'error').pipe(
+      filter(err => !!err),
+      tap(err => this.noticationService.presentToast({
+        header: 'Noget gik galt',
+        message: err,
+        duration: 5000,
+        color: 'danger',
+        position: 'top'
+      }))
+    ).subscribe()
   }
 
   ngOnDestroy(): void {
@@ -139,9 +152,8 @@ export class SaveProjectComponent implements OnInit, OnDestroy {
 
     // Delayed navigation in order to close modal
     setTimeout(() => {
-      this
       this.uiState.removeAllMapTools();
-      this.projectStore.addProject(this.project.value, this.geomSource);
+      this.store.dispatch(saveProjectActions.saveProject({ payload: this.project.value }))
       this.router.navigateByUrl('/app/projects');
     }, 250);
   }
