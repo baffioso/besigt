@@ -22,10 +22,6 @@ const routes: Routes = [
             pathMatch: 'full'
           },
           {
-            path: 'create',
-            loadChildren: () => import('../project-create/project-create.module').then(m => m.ProjectCreatePageModule)
-          },
-          {
             path: ':id',
             loadChildren: () => import('../project-detail/project-detail.module').then(m => m.ProjectDetailPageModule)
           }

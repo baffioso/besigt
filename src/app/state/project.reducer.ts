@@ -1,7 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import * as projectActions from '@app/state/project.actions';
 import { ProjectWithRelations } from '@app/interfaces/project';
-import { CreateImage } from '@app/interfaces/image';
 
 export interface ProjectState {
     projects: ProjectWithRelations[];

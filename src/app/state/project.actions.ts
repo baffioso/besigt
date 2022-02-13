@@ -1,5 +1,7 @@
 import { CreateProject, ProjectWithRelations } from '@app/interfaces/project';
+import { ProjectBounds } from '@app/interfaces/projectBounds';
 import { createAction, props } from '@ngrx/store';
+
 
 export const LOAD_PROJECTS = '[Project Page] Load Projects';
 export const LOAD_PROJECTS_SUCCESS = '[Project Page] Load Projects Success';
@@ -18,9 +20,12 @@ export const loadProjects = createAction(LOAD_PROJECTS);
 export const loadProjectsSuccess = createAction(LOAD_PROJECTS_SUCCESS, props<{ projects: ProjectWithRelations[] }>());
 export const loadProjectsError = createAction(LOAD_PROJECTS_FAIL, props<{ error: any }>());
 
+export const addProject = createAction(ADD_PROJECT, props<{ payload: { bounds: ProjectBounds, name: string, description: string } }>())
+export const addProjectSuccess = createAction(ADD_PROJECT_SUCCESS)
+export const addProjectFail = createAction(ADD_PROJECT_FAIL)
+
 export const clearProjectState = createAction(CLEAR_PROJECT_STATE);
 
 export const selectedProject = createAction(SELECTED_PROJECT, props<{ id: string }>());
 export const clearSelectedProject = createAction(CLEAR_SELECTED_PROJECT);
 
-export const addProject = createAction(ADD_PROJECT, props<{ project: CreateProject }>());
