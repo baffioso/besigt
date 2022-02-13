@@ -33,6 +33,10 @@ export const projectReducer = createReducer(
     on(projectActions.clearSelectedProject, state => ({
         ...state,
         selectedProject: null
+    })),
+    on(projectActions.clearProjectState, state => ({
+        ...state,
+        projects: []
     }))
 );
 

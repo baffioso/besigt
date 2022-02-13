@@ -1,12 +1,10 @@
 /* eslint-disable arrow-body-style */
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
-import { ProjectStoreService } from '@app/stores/project-store.service';
+import { map, switchMap } from 'rxjs/operators';
 import { SupabaseService } from '@app/services/supabase.service';
-import { forkJoin, from, Observable, of } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { UserNotificationService } from '@app/shared/userNotification.service';
 import { AppState } from '@app/store/app.reducer';
 import { Store } from '@ngrx/store';
 import { ProjectWithRelations } from '@app/interfaces/project';

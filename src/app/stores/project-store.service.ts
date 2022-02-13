@@ -22,44 +22,6 @@ export class ProjectStoreService {
   private _currentProjectId$ = new BehaviorSubject<string>(null);
   currentProjectId$ = this._currentProjectId$.asObservable();
 
-  // currentProject$ = this.projects$.pipe(
-  //   mergeMap(projects => this.currentProjectId$.pipe(
-  //     map(id => projects.find(project => project.id === id))
-  //   ))
-  // );
-
-  // currentProjectImageGeoJSON$ = this.currentProject$.pipe(
-  //   filter(project => (
-  //     project !== undefined ||
-  //     project !== null ||
-  //     project.images.length > 0
-  //   )
-  //   ),
-  //   map((project: ProjectWithRelations) => {
-  //     try {
-  //       const features = project.images.map(image => {
-  //         const { geom, ...properties } = image;
-  //         return { type: 'Feature', geometry: geom, properties };
-  //       });
-
-  //       return {
-  //         type: 'FeatureCollection',
-  //         crs: {
-  //           type: 'name',
-  //           properties: {
-  //             name: 'EPSG:25832',
-  //           },
-  //         },
-  //         features
-  //       } as GeoJSONFeatureCollection;
-
-  //     } catch (error) {
-  //       // console.log(error);
-  //     }
-
-  //   })
-  // );
-
   constructor(
     private readonly supabase: SupabaseService,
     private mapService: MapService,
@@ -146,22 +108,6 @@ export class ProjectStoreService {
     );
 
   }
-
-  // async addFeature(properties: Properties) {
-  //   this.mapStore.drawnGeometry$.pipe(
-  //     take(1),
-  //     switchMap(geom => {
-  //       const feature: CreateFeature = {
-  //         geom,
-  //         project_id: this._currentProjectId$.value,
-  //         properties
-  //       };
-
-  //       return this.supabase.addFeature(feature);
-  //     }),
-  //     switchMap(() => this.loadProjects())
-  //   ).subscribe();
-  // }
 
   clearProjectState() {
     this._projects$.next([]);

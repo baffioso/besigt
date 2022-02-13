@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { SupabaseService } from 'src/app/services/supabase.service';
-import { ProjectStoreService } from 'src/app/stores/project-store.service';
+import { Store } from '@ngrx/store';
+import { SupabaseService } from '@app/services/supabase.service';
+import { ProjectStoreService } from '@app/stores/project-store.service';
+import { AppState } from '@app/store/app.reducer';
+import * as projectActions from '@app/state/project.actions';
 
 @Component({
   selector: 'app-settings',
@@ -13,12 +16,12 @@ export class SettingsPage {
 
   constructor(
     private supabase: SupabaseService,
-    private projectStore: ProjectStoreService
+    private store: Store<AppState>
   ) { }
 
   signOut() {
     this.supabase.signOut();
-    this.projectStore.clearProjectState();
+    this.store.dispatch(projectActions.clearProjectState());
   }
 
 }

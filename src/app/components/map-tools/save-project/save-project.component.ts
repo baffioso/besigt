@@ -7,13 +7,10 @@ import { AppState } from '@app/store/app.reducer';
 import { DawaService } from '@app/services/dawa.service';
 import { MapService } from '@app/services/map.service';
 import { MapStoreService } from '@app/stores/map-store.service';
-import { ProjectStoreService } from '@app/stores/project-store.service';
 import { UiStateService } from '@app/stores/ui-state.service';
 import { getCenter } from 'ol/extent';
-import { WKT } from 'ol/format';
 import { Observable, of } from 'rxjs';
 import { concatMap, filter, first, map, tap } from 'rxjs/operators';
-import { Feature } from 'geojson';
 import * as saveProjectActions from './store/save-project.actions'
 import { UserNotificationService } from '@app/shared/userNotification.service';
 
