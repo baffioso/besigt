@@ -7,6 +7,7 @@ import { SupabaseService } from '@app/services/supabase.service';
 import { AppState } from '@app/store/app.reducer';
 import { MapService } from '@app/services/map.service';
 import * as saveProjecActions from './save-project.actions';
+import * as projectActions from '@app/pages/tabs-projects/store/project.actions';
 import { catchError, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { Feature } from 'ol';
 import { Geometry } from 'ol/geom';
@@ -47,15 +48,17 @@ export class SaveProjectEffects {
             description: project.description,
             geom: this.mapService.featureAsWKT(project.feature as Feature<Geometry>)
         })),
-        tap(console.log),
         switchMap(project => this.supabase.addProject(project).pipe(
-            map(() => saveProjecActions.saveProjectSuccess()),
+            switchMap(() => [
+                saveProjecActions.saveProjectSuccess(),
+                projectActions.loadProjects()
+            ]),
             catchError((error: Error) => {
                 this.store.dispatch(saveProjecActions.saveProjectFail({ error: error.toString() }))
                 return EMPTY
             })
         ))
-    ), { dispatch: false })
+    ))
 
     constructor(
         private actions$: Actions,
