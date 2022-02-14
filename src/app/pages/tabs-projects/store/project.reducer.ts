@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import * as projectActions from '@app/state/project.actions';
+import * as projectActions from '@app/pages/tabs-projects/store/project.actions';
 import { ProjectWithRelations } from '@app/interfaces/project';
 
 export interface ProjectState {

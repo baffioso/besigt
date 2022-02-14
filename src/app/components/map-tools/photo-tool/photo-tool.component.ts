@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AppState } from '@app/store/app.reducer';
-import * as mapActions from '@app/state/map.actions';
+import * as mapActions from '@app/pages/tabs-map/store/map.actions';
 import * as photoActions from '@app/components/map-tools/photo-tool/store/photo.actions';
 
 

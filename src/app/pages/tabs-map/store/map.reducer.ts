@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import * as mapActions from '@app/state/map.actions';
+import * as mapActions from '@app/pages/tabs-map/store/map.actions';
 import { Position } from '@capacitor/geolocation';
 import { Feature } from 'ol';
 import RenderFeature from 'ol/render/Feature';

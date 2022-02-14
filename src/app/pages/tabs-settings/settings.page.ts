@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { SupabaseService } from '@app/services/supabase.service';
 import { AppState } from '@app/store/app.reducer';
-import * as projectActions from '@app/state/project.actions';
+import * as projectActions from '@app/pages/tabs-projects/store/project.actions';
 
 @Component({
   selector: 'app-settings',

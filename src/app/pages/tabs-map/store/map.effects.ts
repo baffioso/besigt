@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
 import { MapService } from '@app/services/map.service';
-import * as mapActions from '@app/state/map.actions';
+import * as mapActions from '@app/pages/tabs-map/store/map.actions';
 import { AppState } from '@app/store/app.reducer';
 import { EMPTY } from 'rxjs';
 import { mapStyles } from '@app/shared/mapStyles';

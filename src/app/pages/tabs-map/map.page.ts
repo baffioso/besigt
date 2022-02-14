@@ -9,8 +9,8 @@ import { ModalController } from '@ionic/angular';
 import { MapService } from 'src/app/services/map.service';
 import { MapStoreService } from 'src/app/stores/map-store.service';
 import { AppState } from '@app/store/app.reducer';
-import * as fromProject from '@app/state/project.actions';
-import * as fromMap from '@app/state/map.actions';
+import * as fromProject from '@app/pages/tabs-projects/store/project.actions';
+import * as fromMap from '@app/pages/tabs-map/store/map.actions';
 
 
 @Component({

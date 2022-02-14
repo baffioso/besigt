@@ -1,7 +1,7 @@
 import { ActionReducerMap } from '@ngrx/store';
 
-import * as fromProject from '@app/state/project.reducer';
-import * as fromMap from '@app/state/map.reducer';
+import * as fromProject from '@app/pages/tabs-projects/store/project.reducer';
+import * as fromMap from '@app/pages/tabs-map/store/map.reducer';
 import * as fromMapTools from '@app/components/map-tools/store/map-tool.reducer'
 import * as fromPhotoTool from '@app/components/map-tools/photo-tool/store/photo.reducer';
 import * as fromDrawTool from '@app/components/map-tools/draw-tool/store/draw.reducer';

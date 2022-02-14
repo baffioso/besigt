@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 
 import { AppState } from '@app/store/app.reducer';
-import * as fromProject from '@app/state/project.actions';
-import * as fromMap from '@app/state/map.actions';
+import * as fromProject from '@app/pages/tabs-projects/store/project.actions';
+import * as fromMap from '@app/pages/tabs-map/store/map.actions';
 import { ProjectWithRelations } from 'src/app/interfaces/project';
 import { MapService } from '@app/services/map.service';
 

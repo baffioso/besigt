@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 
 import { SupabaseService } from './services/supabase.service';
 
-import { loadProjects } from '@app/state/project.actions';
+import { loadProjects } from '@app/pages/tabs-projects/store/project.actions';
 import { AppState } from './store/app.reducer';
 @Component({
   selector: 'app-root',

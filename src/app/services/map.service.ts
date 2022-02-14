@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { finalize, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import * as mapActions from '@app/state/map.actions';
+import * as mapActions from '@app/pages/tabs-map/store/map.actions';
 import copy from 'fast-copy';
 
 import Map from 'ol/Map';
@@ -38,7 +38,12 @@ import RenderFeature from 'ol/render/Feature';
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs');
 register(proj4);
 
-export type Projection = 'EPSG:3857' | 'EPSG:4326' | 'EPSG:25832'
+// export type Projection = 'EPSG:3857' | 'EPSG:4326' | 'EPSG:25832'
+enum Projection {
+  'EPSG:3857' = 'EPSG:3857',
+  'EPSG:4326' = 'EPSG:4326',
+  'EPSG:25832' = 'EPSG:25832'
+}
 
 @Injectable({
   providedIn: 'root'
@@ -539,22 +544,28 @@ export class MapService {
     });
   }
 
+  private getViewExtentArray(projection: Projection) {
+    return (this.getViewExtent()
+      .getGeometry()
+      .transform(this.viewProjection, projection) as Polygon)
+      .getCoordinates();
+  }
+
   addMatrikelWithinViewExtent() {
-    const extentPolygon = this.getViewExtent() as Feature<Polygon>;
-    const extentArray = extentPolygon.getGeometry().getCoordinates();
+    const extentArray = this.getViewExtentArray(Projection['EPSG:4326'])
+
     this.mapStoreService.updateMapState('loadingLayer', true);
 
     this.dawaService.fetchMatriklerWithinPolygon(extentArray).pipe(
       tap(geojson => this.addGeoJSON(geojson, 'jordstykke', 'EPSG:4326', mapStyles.default, true)),
-      tap(() => this.mapStoreService.updateMapState('loadingLayer', false)),
       finalize(() => this.mapStoreService.updateMapState('loadingLayer', false))
     ).subscribe();
 
   }
 
   addAdresserWithinViewExtent() {
-    const extentPolygon = this.getViewExtent() as Feature<Polygon>;
-    const extentArray = extentPolygon.getGeometry().getCoordinates();
+    const extentArray = this.getViewExtentArray(Projection['EPSG:4326'])
+
     this.mapStoreService.updateMapState('loadingLayer', true);
 
     this.dawaService.fetchAdresserWithinPolygon(extentArray).pipe(

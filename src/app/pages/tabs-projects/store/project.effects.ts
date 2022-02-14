@@ -4,7 +4,7 @@ import { map, mergeMap, catchError } from 'rxjs/operators';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
 import { SupabaseService } from '@app/services/supabase.service';
-import * as projectActions from '@app/state/project.actions';
+import * as projectActions from '@app/pages/tabs-projects/store/project.actions';
 
 @Injectable()
 export class ProjectEffects {
