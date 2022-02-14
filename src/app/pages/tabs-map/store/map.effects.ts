@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { catchError, distinctUntilChanged, filter, map, mergeMap, shareReplay, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, distinctUntilChanged, filter, map, mergeMap, shareReplay, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
@@ -11,29 +11,32 @@ import { mapStyles } from '@app/shared/mapStyles';
 import { GeolocationService } from '@app/services/geolocation.service';
 import { Feature } from '@app/interfaces/feature';
 import { Image } from '@app/interfaces/image';
-import { GeoJSONFeature, GeoJSONFeatureCollection } from 'ol/format/GeoJSON';
-import { FeatureCollection, Feature as GFeature } from 'geojson';
+import { GeoJSONFeature } from 'ol/format/GeoJSON';
 import { ProjectWithRelations } from '@app/interfaces/project';
 import { SupabaseService } from '@app/services/supabase.service';
 
 @Injectable()
 export class MapEffects {
 
-    private selectedProject$ = this.store.select('project', 'selectedProject')
+    private selectedProject$ = this.store.select('project', 'selectedProject').pipe(
+        filter(project => !!project),
+    )
 
     zoomToProjectArea$ = createEffect(() => this.actions$.pipe(
         ofType(mapActions.ZOOM_TO_PROJECT_AREA),
-        switchMap(() => this.selectedProject$),
-        switchMap(project => this.supabase.getProjectExtent(project.id)),
+        withLatestFrom(this.store.select('project', 'selectedProject')),
+        map(([_, project]) => project),
+        filter(project => !!project),
+        mergeMap(project => this.supabase.getProjectExtent(project.id)),
         tap(extent => this.mapService.zoomToExtent(extent)),
         catchError(() => EMPTY)
     ), { dispatch: false });
 
     addProjectAreaToMap$ = createEffect(() => this.actions$.pipe(
         ofType(mapActions.ADD_PROJECT_AREA_TO_MAP),
-        switchMap(() => this.selectedProject$),
+        withLatestFrom(this.store.select('project', 'selectedProject')),
+        map(([_, project]) => project),
         filter(project => !!project),
-        distinctUntilChanged(),
         tap(project => {
             const geojson = tableAsGeoJson([project])
             this.mapService.addGeoJSON(geojson, 'projectArea', 'EPSG:25832', mapStyles.projectArea);
@@ -42,9 +45,9 @@ export class MapEffects {
 
     addProjectFeaturesToMap$ = createEffect(() => this.actions$.pipe(
         ofType(mapActions.ADD_PROJECT_FEATURES_TO_MAP),
-        mergeMap(() => this.selectedProject$),
+        withLatestFrom(this.store.select('project', 'selectedProject')),
+        map(([_, project]) => project),
         filter(project => !!project),
-        distinctUntilChanged(),
         tap(project => {
             const geojson = tableAsGeoJson(project.features);
             this.mapService.addGeoJSON(geojson, 'projectFeatures', 'EPSG:25832', mapStyles.default, true);
@@ -53,9 +56,9 @@ export class MapEffects {
 
     addProjectPhotosToMap$ = createEffect(() => this.actions$.pipe(
         ofType(mapActions.ADD_PROJECT_PHOTOS_TO_MAP),
-        mergeMap(() => this.selectedProject$),
+        withLatestFrom(this.store.select('project', 'selectedProject')),
+        map(([_, project]) => project),
         filter(project => !!project),
-        distinctUntilChanged(),
         tap(project => {
             const geojson = tableAsGeoJson(project.images);
             this.mapService.addGeoJSON(geojson, 'projectPhotos', 'EPSG:25832', mapStyles.photo, true);

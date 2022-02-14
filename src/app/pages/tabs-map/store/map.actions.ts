@@ -17,7 +17,7 @@ export const updateViewParams = createAction(UPDATE_VIEW_PARAMS, props<{ viewPar
 export const ZOOM_TO_PROJECT_AREA = '[Map Component] Zoom To Project Area';
 export const ADD_PROJECT_AREA_TO_MAP = '[Map Component] Add Project Area To Map';
 export const ADD_PROJECT_FEATURES_TO_MAP = '[Map Component] Add Project Features To Map';
-export const ADD_PROJECT_PHOTOS_TO_MAP = '[Map Component] Add Project Features To Map';
+export const ADD_PROJECT_PHOTOS_TO_MAP = '[Map Component] Add Project Photo To Map';
 export const REMOVE_PROJECT_MAP_OVERLAYS = '[Map Page] Remove Project Map Overlays';
 
 export const zoomToProjectArea = createAction(ZOOM_TO_PROJECT_AREA);
@@ -48,4 +48,9 @@ export const zoomToCurrentPosition = createAction(ZOOM_TO_CURRENT_POSITION)
 export const currentPositionSuccess = createAction(ZOOM_TO_CURRENT_POSITION_SUCCESS, props<{ position: Position }>())
 export const currentPositionFail = createAction(ZOOM_TO_CURRENT_POSITION_FAIL)
 export const clearCurrentPosition = createAction(CLEAR_CURRENT_POSITION);
+
+// Others
+export const LOADING_LAYER = '[Map Page] Loading Layer'
+export const LOADING_LAYER_SUCCCESS = '[Map Page] Loading Layer Success'
+export const LOADING_LAYER_FAIL = '[Map Page] Loading Layer Fail'
 
