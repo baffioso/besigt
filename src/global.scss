@@ -75,14 +75,12 @@ ion-backdrop {
 .legend-popover .popover-content {
     width: auto;
     transform: translateY(-50%) !important;
-
-    // position: relative;
-    // bottom: 130px;
-    // left: 10px;
 }
 
-.bottom-modal .modal-wrapper {
-    position: absolute;
-    bottom: 0px;
-    height: 300px;
+.layer-control-modal {
+    &::part(handle) {
+        background: var(--ion-color-primary-tint);
+        width: 100px;
+        height: 8px;
+    }
 }

@@ -17,7 +17,7 @@ export class MapLayersControlComponent implements OnInit {
   async onShowLayersControl() {
     const modal = await this.modalController.create({
       component: MapLayersControlModalComponent,
-      cssClass: 'my-custom-class',
+      cssClass: 'layer-control-modal',
       breakpoints: [0, 0.5, 1],
       initialBreakpoint: 0.5
     });

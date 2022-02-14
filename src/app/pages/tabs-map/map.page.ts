@@ -41,12 +41,6 @@ export class TapMapPage implements OnInit, OnDestroy {
 
   ngOnInit(): void {
 
-    this.mapStore.mapstate$.pipe(
-      takeUntil(this.abandon$),
-      pluck('loadingFeatureInfo'),
-    ).subscribe();
-
-
     this.route.queryParams.pipe(
       take(1),
       tap(params => {
@@ -61,8 +55,7 @@ export class TapMapPage implements OnInit, OnDestroy {
       })
     ).subscribe();
 
-    const mapNavigationParams$ = this.mapStore.mapstate$.pipe(
-      pluck('view'),
+    const mapNavigationParams$ = this.store.select('map', 'viewParams').pipe(
       map(v => ({ x: v?.center[0], y: v?.center[1], zoom: v?.zoom }))
     );
 
@@ -75,17 +68,6 @@ export class TapMapPage implements OnInit, OnDestroy {
         });
       })
     ).subscribe();
-
-    // this.mapStore.selectedImage$.pipe(
-    //   takeUntil(this.abandon$),
-    //   filter(feature => feature !== null),
-    //   tap(() => this.mapStore.updateMapState('loadingFeatureInfo', true)),
-    //   tap(feature => {
-    //     this.mapStore.updateMapState('loadingFeatureInfo', false);
-    //     this.showFeatureInfo(feature);
-    //   })
-    // ).subscribe();
-
   }
 
   ngOnDestroy(): void {
@@ -95,17 +77,6 @@ export class TapMapPage implements OnInit, OnDestroy {
   ionViewDidEnter() {
     this.mapService.resize();
   }
-
-  // async showFeatureInfo(feature) {
-  //   const modal = await this.modalController.create({
-  //     component: MapFeatureInfoModalComponent,
-  //     componentProps: {
-  //       feature
-  //     }
-  //   });
-
-  //   modal.present();
-  // }
 
   onClearProject() {
     this.store.dispatch(projectActions.clearSelectedProject());
