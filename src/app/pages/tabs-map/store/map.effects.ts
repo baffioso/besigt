@@ -47,7 +47,7 @@ export class MapEffects {
         ofType(mapActions.ADD_PROJECT_FEATURES_TO_MAP),
         withLatestFrom(this.store.select('project', 'selectedProject')),
         map(([_, project]) => project),
-        filter(project => !!project),
+        filter(project => !!project && project.features.length > 0),
         tap(project => {
             const geojson = tableAsGeoJson(project.features);
             this.mapService.addGeoJSON(geojson, 'projectFeatures', 'EPSG:25832', mapStyles.default, true);
@@ -58,7 +58,7 @@ export class MapEffects {
         ofType(mapActions.ADD_PROJECT_PHOTOS_TO_MAP),
         withLatestFrom(this.store.select('project', 'selectedProject')),
         map(([_, project]) => project),
-        filter(project => !!project),
+        filter(project => !!project && project.images.length > 0),
         tap(project => {
             const geojson = tableAsGeoJson(project.images);
             this.mapService.addGeoJSON(geojson, 'projectPhotos', 'EPSG:25832', mapStyles.photo, true);
