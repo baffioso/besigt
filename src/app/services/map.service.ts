@@ -472,8 +472,8 @@ export class MapService {
   }
 
   // UTILS
-  transform(geometry: [number, number], source: string = 'EPSG:4326', destination: string = 'EPSG:25832') {
-    return transform(geometry, source, destination);
+  transform(geometry: [number, number], source: string = 'EPSG:4326', destination: string = 'EPSG:25832'): [number, number] {
+    return transform(geometry, source, destination) as [number, number];
   }
 
   featureAsWKT(feature: Feature<Geometry>, sourceSrid: string = 'EPSG:3857', targetSrid: string = 'EPSG:25832'): string {
@@ -531,9 +531,9 @@ export class MapService {
     })
   }
 
-  getViewExtent(): Feature<Geometry> {
+  getViewExtent(): Feature<Polygon> {
     const extent = this.olmap.getView().calculateExtent(this.olmap.getSize());
-    const polygon = fromExtent(extent).transform('EPSG:3857', 'EPSG:4326') as Polygon;
+    const polygon = fromExtent(extent);
     return new Feature({
       geometry: polygon
     });

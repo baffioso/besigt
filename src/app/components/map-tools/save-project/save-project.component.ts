@@ -13,6 +13,7 @@ import { Observable, of } from 'rxjs';
 import { concatMap, filter, first, map, tap } from 'rxjs/operators';
 import * as saveProjectActions from './store/save-project.actions'
 import { UserNotificationService } from '@app/shared/userNotification.service';
+import { ProjectBounds } from '@app/interfaces/projectBounds';
 
 @Component({
   selector: 'app-save-project',
@@ -26,7 +27,8 @@ export class SaveProjectComponent implements OnInit, OnDestroy {
 
   showModal = false;
 
-  geomSource: 'jordstykke' | 'draw' | 'bounds';
+  boundsSource: ProjectBounds;
+  bounds = ProjectBounds;
 
   disableMatrikel$: Observable<boolean>;
 
@@ -77,16 +79,16 @@ export class SaveProjectComponent implements OnInit, OnDestroy {
 
     let bounds: Observable<any>;
 
-    switch (this.geomSource) {
-      case 'jordstykke':
+    switch (this.boundsSource) {
+      case ProjectBounds.Matrikel:
         bounds = this.store.select('map', 'selectedFeatures').pipe(
           map(features => features[0].feature.getGeometry().getExtent())
         );
         break;
-      case 'draw':
+      case ProjectBounds.Draw:
         bounds = this.mapStore.drawnGeometry$;
         break;
-      case 'bounds':
+      case ProjectBounds.ViewExtent:
         // console.log(this.mapService.transform(this.mapService.getViewExtent().getGeometry().getExtent(), 'EPSG:4326', 'EPSG:3857'))
         bounds = of(this.mapService.getViewExtent().getGeometry().getExtent());
         break;
@@ -109,16 +111,16 @@ export class SaveProjectComponent implements OnInit, OnDestroy {
   }
 
   selectionMethodChanged(event: Event) {
-    this.geomSource = (event as CustomEvent).detail.value;
+    this.boundsSource = (event as CustomEvent).detail.value;
 
-    switch (this.geomSource) {
-      case 'jordstykke':
+    switch (this.boundsSource) {
+      case ProjectBounds.Matrikel:
         this.mapService.removeDrawTool();
         this.mapService.removeLayer('jordstykke');
         this.mapService.addMatrikelWithinViewExtent();
         this.uiState.removeMapTool('draw');
         break;
-      case 'draw':
+      case ProjectBounds.Draw:
         this.uiState.updateDrawUiState('inEditMode', true);
         this.uiState.updateDrawUiState('showBack', false);
         this.uiState.updateDrawUiState('showSave', false);
@@ -127,7 +129,7 @@ export class SaveProjectComponent implements OnInit, OnDestroy {
         this.mapService.activateDrawTool('Polygon');
         this.uiState.addMapTool('draw');
         break;
-      case 'bounds':
+      case ProjectBounds.ViewExtent:
         this.mapService.removeLayer('jordstykke');
         this.uiState.removeMapTool('draw');
         this.mapService.removeDrawTool();
@@ -138,7 +140,7 @@ export class SaveProjectComponent implements OnInit, OnDestroy {
   }
 
   onCreateProject() {
-    if (this.geomSource === 'draw') {
+    if (this.boundsSource === ProjectBounds.Draw) {
       this.mapService.finishDrawing();
       this.uiState.removeMapTool('draw');
     }
@@ -150,7 +152,7 @@ export class SaveProjectComponent implements OnInit, OnDestroy {
     // Delayed navigation in order to close modal
     setTimeout(() => {
       this.uiState.removeAllMapTools();
-      this.store.dispatch(saveProjectActions.saveProject({ payload: this.project.value }))
+      this.store.dispatch(saveProjectActions.saveProject({ payload: { ...this.project.value, bounds: this.boundsSource } }))
       this.router.navigateByUrl('/app/projects');
     }, 250);
   }

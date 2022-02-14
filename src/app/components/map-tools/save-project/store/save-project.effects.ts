@@ -7,17 +7,47 @@ import { SupabaseService } from '@app/services/supabase.service';
 import { AppState } from '@app/store/app.reducer';
 import { MapService } from '@app/services/map.service';
 import * as saveProjecActions from './save-project.actions';
-import { catchError, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { Feature } from 'ol';
 import { Geometry } from 'ol/geom';
-import { EMPTY } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
+import { ProjectBounds } from '@app/interfaces/projectBounds';
 @Injectable()
 export class SaveProjectEffects {
 
     saveProject$ = createEffect(() => this.actions$.pipe(
         ofType(saveProjecActions.SAVE_PROJECT),
-        withLatestFrom(this.store.select('map', 'selectedFeatures')),
-        map(([project, features]) => ({ ...(project as any).payload, geom: this.mapService.featureAsWKT(features[0].feature as Feature<Geometry>) })),
+        withLatestFrom(
+            this.store.select('map', 'selectedFeatures'),
+            this.store.select('map', 'drawnFeature')
+        ),
+        map(([{ payload }, matrikel, draw]) => {
+            switch (((payload as any).bounds)) {
+                case ProjectBounds.Matrikel:
+                    return {
+                        feature: matrikel[0].feature,
+                        ...(payload as any)
+                    }
+                case ProjectBounds.Draw:
+                    return {
+                        feature: draw,
+                        ...(payload as any)
+                    }
+                case ProjectBounds.ViewExtent:
+                    return {
+                        feature: this.mapService.getViewExtent(),
+                        ...(payload as any)
+                    }
+                default:
+                    break;
+            }
+        }),
+        map((project) => ({
+            name: project.name,
+            description: project.description,
+            geom: this.mapService.featureAsWKT(project.feature as Feature<Geometry>)
+        })),
+        tap(console.log),
         switchMap(project => this.supabase.addProject(project).pipe(
             map(() => saveProjecActions.saveProjectSuccess()),
             catchError((error: Error) => {

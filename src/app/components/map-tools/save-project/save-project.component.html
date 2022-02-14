@@ -1,8 +1,8 @@
-<ion-badge *ngIf="(disableMatrikel$ | async) && geomSource === undefined">Zoom ind for at
+<ion-badge *ngIf="(disableMatrikel$ | async) && boundsSource === undefined">Zoom ind for at
   vælge matrikler</ion-badge>
-<ion-badge *ngIf="geomSource === 'draw'">Tryk på kortet for at tegne</ion-badge>
+<ion-badge *ngIf="boundsSource === bounds.Draw">Tryk på kortet for at tegne</ion-badge>
 <ion-fab
-  *ngIf="((selectedArea$ | async) && geomSource === 'jordstykke' ) || geomSource === 'draw' || (geomSource === 'bounds') "
+  *ngIf="((selectedArea$ | async) && boundsSource === bounds.Matrikel) || boundsSource === bounds.Draw || (boundsSource === bounds.ViewExtent) "
   vertical="bottom" horizontal="center" slot="fixed">
   <ion-fab-button (click)="toggleModal()">
     <ion-icon name="checkmark-outline"></ion-icon>
@@ -10,13 +10,13 @@
 </ion-fab>
 
 <ion-segment (ionChange)="selectionMethodChanged($event)" mode="md">
-  <ion-segment-button [disabled]="(disableMatrikel$ | async)" value="jordstykke">
+  <ion-segment-button [disabled]="(disableMatrikel$ | async)" [value]="bounds.Matrikel">
     <ion-label>Matrikel</ion-label>
   </ion-segment-button>
-  <!-- <ion-segment-button value="draw">
+  <!-- <ion-segment-button [value]="bounds.Draw">
     <ion-label>Tegn</ion-label>
   </ion-segment-button> -->
-  <ion-segment-button value="bounds">
+  <ion-segment-button [value]="bounds.ViewExtent">
     <ion-label>Kortudsnit</ion-label>
   </ion-segment-button>
 </ion-segment>
