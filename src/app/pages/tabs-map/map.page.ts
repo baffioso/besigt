@@ -9,8 +9,8 @@ import { ModalController } from '@ionic/angular';
 import { MapService } from 'src/app/services/map.service';
 import { MapStoreService } from 'src/app/stores/map-store.service';
 import { AppState } from '@app/store/app.reducer';
-import * as fromProject from '@app/pages/tabs-projects/store/project.actions';
-import * as fromMap from '@app/pages/tabs-map/store/map.actions';
+import * as projectActions from '@app/pages/tabs-projects/store/project.actions';
+import * as mapActions from '@app/pages/tabs-map/store/map.actions';
 
 
 @Component({
@@ -108,8 +108,8 @@ export class TapMapPage implements OnInit, OnDestroy {
   // }
 
   onClearProject() {
-    this.store.dispatch(fromProject.clearSelectedProject());
-    this.store.dispatch(fromMap.removeProjectMapOverlays());
+    this.store.dispatch(projectActions.clearSelectedProject());
+    this.store.dispatch(mapActions.removeProjectMapOverlays());
   }
 
 }

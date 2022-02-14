@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { catchError, distinctUntilChanged, filter, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, distinctUntilChanged, filter, map, mergeMap, shareReplay, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
@@ -19,9 +19,11 @@ import { SupabaseService } from '@app/services/supabase.service';
 @Injectable()
 export class MapEffects {
 
+    private selectedProject$ = this.store.select('project', 'selectedProject')
+
     zoomToProjectArea$ = createEffect(() => this.actions$.pipe(
         ofType(mapActions.ZOOM_TO_PROJECT_AREA),
-        switchMap(() => this.store.select('project', 'selectedProject')),
+        switchMap(() => this.selectedProject$),
         switchMap(project => this.supabase.getProjectExtent(project.id)),
         tap(extent => this.mapService.zoomToExtent(extent)),
         catchError(() => EMPTY)
@@ -29,8 +31,9 @@ export class MapEffects {
 
     addProjectAreaToMap$ = createEffect(() => this.actions$.pipe(
         ofType(mapActions.ADD_PROJECT_AREA_TO_MAP),
-        switchMap(() => this.store.select('project', 'selectedProject')),
+        switchMap(() => this.selectedProject$),
         filter(project => !!project),
+        distinctUntilChanged(),
         tap(project => {
             const geojson = tableAsGeoJson([project])
             this.mapService.addGeoJSON(geojson, 'projectArea', 'EPSG:25832', mapStyles.projectArea);
@@ -39,7 +42,7 @@ export class MapEffects {
 
     addProjectFeaturesToMap$ = createEffect(() => this.actions$.pipe(
         ofType(mapActions.ADD_PROJECT_FEATURES_TO_MAP),
-        mergeMap(() => this.store.select('project', 'selectedProject')),
+        mergeMap(() => this.selectedProject$),
         filter(project => !!project),
         distinctUntilChanged(),
         tap(project => {
@@ -50,7 +53,7 @@ export class MapEffects {
 
     addProjectPhotosToMap$ = createEffect(() => this.actions$.pipe(
         ofType(mapActions.ADD_PROJECT_PHOTOS_TO_MAP),
-        mergeMap(() => this.store.select('project', 'selectedProject')),
+        mergeMap(() => this.selectedProject$),
         filter(project => !!project),
         distinctUntilChanged(),
         tap(project => {
@@ -88,8 +91,6 @@ export class MapEffects {
         private supabase: SupabaseService,
         private geolocationService: GeolocationService
     ) { }
-
-
 }
 
 type GeometryTable = Feature | Image | ProjectWithRelations
