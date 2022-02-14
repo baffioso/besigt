@@ -14,17 +14,16 @@ import { Image } from '@app/interfaces/image';
 import { GeoJSONFeature, GeoJSONFeatureCollection } from 'ol/format/GeoJSON';
 import { FeatureCollection, Feature as GFeature } from 'geojson';
 import { ProjectWithRelations } from '@app/interfaces/project';
+import { SupabaseService } from '@app/services/supabase.service';
 
 @Injectable()
 export class MapEffects {
 
     zoomToProjectArea$ = createEffect(() => this.actions$.pipe(
         ofType(mapActions.ZOOM_TO_PROJECT_AREA),
-        withLatestFrom(this.store.select('project', 'selectedProject')),
-        tap((project) => {
-            const viewState = project[1].map_state[0].map_state;
-            this.mapService.flyTo(viewState.center, viewState.zoom);
-        }),
+        switchMap(() => this.store.select('project', 'selectedProject')),
+        switchMap(project => this.supabase.getProjectExtent(project.id)),
+        tap(extent => this.mapService.zoomToExtent(extent)),
         catchError(() => EMPTY)
     ), { dispatch: false });
 
@@ -86,6 +85,7 @@ export class MapEffects {
         private actions$: Actions,
         private store: Store<AppState>,
         private mapService: MapService,
+        private supabase: SupabaseService,
         private geolocationService: GeolocationService
     ) { }
 

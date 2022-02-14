@@ -192,4 +192,16 @@ export class SupabaseService {
     return from(this.supabase.storage.from('images').download(path));
   }
 
+  getProjectExtent(projectId: string) {
+    return from(this.supabase.rpc<number>('project_extent', { projectid: projectId })).pipe(
+      map(({ error, data }) => {
+        if (error) {
+          throw new Error(error.message);
+        } else {
+          return data;
+        }
+      })
+    );
+  }
+
 }

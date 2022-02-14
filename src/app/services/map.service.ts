@@ -120,6 +120,10 @@ export class MapService {
     });
   }
 
+  zoomToExtent(bounds: number[]): void {
+    this.view.fit(bounds, { padding: [15, 15, 15, 15] })
+  }
+
   resize() {
     this.olmap.updateSize();
   }
