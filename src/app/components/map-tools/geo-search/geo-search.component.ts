@@ -1,10 +1,11 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as dawa from 'dawa-autocomplete2';
 
 import { MapService } from '@app/services/map.service';
-import { Store } from '@ngrx/store';
+import { ModalController } from '@ionic/angular';
 import { AppState } from '@app/store/app.reducer';
-import { map } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { MapToolActions } from '@app/store/action-types';
 
 @Component({
   selector: 'app-geo-search',
@@ -12,18 +13,17 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./geo-search.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GeoSearchComponent implements AfterViewInit, OnDestroy {
+export class GeoSearchComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('input') input: ElementRef;
-  showModal$ = this.store.select('mapTools', 'activatedMapTools').pipe(
-    map(tools => tools.includes('geoSearch'))
-  );
   autocomplete: any;
-
 
   constructor(
     private mapService: MapService,
+    private modalCtrl: ModalController,
     private store: Store<AppState>
   ) { }
+
+  ngOnInit() { }
 
   ngAfterViewInit(): void {
     this.autocomplete = dawa.dawaAutocomplete(this.input.nativeElement, {
@@ -32,6 +32,8 @@ export class GeoSearchComponent implements AfterViewInit, OnDestroy {
         this.mapService.removeLayer('marker');
         this.mapService.addMarker(coords);
         this.mapService.flyTo(coords);
+        this.modalCtrl.dismiss();
+        this.store.dispatch(MapToolActions.removeMapTool({ tool: 'geoSearch' }))
       },
       adgangsadresserOnly: true
     });
@@ -43,6 +45,5 @@ export class GeoSearchComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.autocomplete.destroy();
-    console.log('DESTROY SEARCH')
   }
 }

@@ -6,7 +6,6 @@
         <app-map-legend-fab></app-map-legend-fab>
         <app-map-feature-info></app-map-feature-info>
         <app-map-tools>
-            <app-geo-search *ngIf="(activatedMapTools$ | async).includes('geoSearch')"></app-geo-search>
             <app-info-tool class="full-width-bottom-tool" *ngIf="(activatedMapTools$ | async).includes('addressInfo')">
             </app-info-tool>
             <app-map-geolocation *ngIf="(activatedMapTools$ | async).includes('saveProject') === false">

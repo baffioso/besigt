@@ -19,9 +19,9 @@ import { MapLegendPopoverComponent } from '@app/components/map-legend-popover/ma
 import { InfoToolComponent } from '@app/components/map-tools/info-tool/info-tool.component';
 import { DrawToolComponent } from '@app/components/map-tools/draw-tool/draw-tool.component';
 import { SaveProjectComponent } from '@app/components/map-tools/save-project/save-project.component';
-import { GeoSearchComponent } from '@app/components/map-tools/geo-search/geo-search.component';
 import { PhotoToolComponent } from '@app/components/map-tools/photo-tool/photo-tool.component';
 import { DrawInfoComponent } from '@app/components/map-feature-info/map-feature-info-modal/draw-info/draw-info.component';
+import { GeoSearchComponent } from '@app/components/map-tools/geo-search/geo-search.component';
 
 @NgModule({
   imports: [
