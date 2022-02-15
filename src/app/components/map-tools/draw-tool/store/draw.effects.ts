@@ -5,16 +5,15 @@ import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
 import { SupabaseService } from '@app/services/supabase.service';
-import * as projectActions from '@app/pages/tabs-projects/store/project.actions'
-import * as drawActions from './draw.actions';
 import { AppState } from '@app/store/app.reducer';
 import { MapService } from '@app/services/map.service';
+import { DrawActions, ProjectActions } from '@app/store/action-types';
 
 @Injectable()
 export class DrawEffects {
 
     addFeature$ = createEffect(() => this.actions$.pipe(
-        ofType(drawActions.ADD_FEATURE),
+        ofType(DrawActions.ADD_FEATURE),
         withLatestFrom(
             this.store.select('project', 'selectedProject'),
             this.store.select('map', 'drawnFeature')
@@ -26,11 +25,11 @@ export class DrawEffects {
                 properties,
                 project_id: project.id
             }).pipe(
-                map(() => drawActions.addFeatureSuccess()),
+                map(() => DrawActions.addFeatureSuccess()),
                 catchError(() => EMPTY)
             );
         }),
-        tap(() => this.store.dispatch(projectActions.loadProjects()))
+        tap(() => this.store.dispatch(ProjectActions.loadProjects()))
     ));
 
     constructor(

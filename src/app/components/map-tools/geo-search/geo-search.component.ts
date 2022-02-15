@@ -3,7 +3,6 @@ import * as dawa from 'dawa-autocomplete2';
 
 import { MapService } from '@app/services/map.service';
 import { Store } from '@ngrx/store';
-import * as mapToolActions from '@app/components/map-tools/store/map-tool.actions';
 import { AppState } from '@app/store/app.reducer';
 import { map } from 'rxjs/operators';
 
@@ -44,7 +43,6 @@ export class GeoSearchComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.autocomplete.destroy();
-    // this.store.dispatch(mapToolActions.removeMapTool({ tool: 'geoSearch' }))
     console.log('DESTROY SEARCH')
   }
 }

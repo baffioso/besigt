@@ -1,16 +1,14 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { filter, map, pluck, take, takeUntil, tap } from 'rxjs/operators';
+import { map, take, takeUntil, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { ModalController } from '@ionic/angular';
 
-// import { MapFeatureInfoModalComponent } from '@app/components/map-feature-info/map-feature-info-modal.component';
 import { MapService } from 'src/app/services/map.service';
 import { MapStoreService } from 'src/app/stores/map-store.service';
 import { AppState } from '@app/store/app.reducer';
-import * as projectActions from '@app/pages/tabs-projects/store/project.actions';
-import * as mapActions from '@app/pages/tabs-map/store/map.actions';
+import { MapActions, ProjectActions } from '@app/store/action-types';
 
 
 @Component({
@@ -79,8 +77,8 @@ export class TapMapPage implements OnInit, OnDestroy {
   }
 
   onClearProject() {
-    this.store.dispatch(projectActions.clearSelectedProject());
-    this.store.dispatch(mapActions.removeProjectMapOverlays());
+    this.store.dispatch(ProjectActions.clearSelectedProject());
+    this.store.dispatch(MapActions.removeProjectMapOverlays());
   }
 
 }

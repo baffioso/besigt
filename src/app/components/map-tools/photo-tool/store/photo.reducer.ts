@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store'
-import * as photoActions from './photo.actions';
+import { PhotoActions } from '@app/store/action-types';
 
 export interface PhotoToolState {
     photo: Blob;
@@ -15,11 +15,11 @@ export const initialState: PhotoToolState = {
 
 export const photoReducer = createReducer(
     initialState,
-    on(photoActions.photoPositionSuccess, (state, { geom }) => ({
+    on(PhotoActions.photoPositionSuccess, (state, { geom }) => ({
         ...state,
         geom
     })),
-    on(photoActions.takePhotoSuccess, (state, { photo }) => ({
+    on(PhotoActions.takePhotoSuccess, (state, { photo }) => ({
         ...state,
         photo
     }))

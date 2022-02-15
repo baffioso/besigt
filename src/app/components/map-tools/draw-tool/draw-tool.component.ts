@@ -3,12 +3,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 
 import { AppState } from '@app/store/app.reducer';
-import * as mapToolActions from '@app/components/map-tools/store/map-tool.actions';
-import * as drawToolActions from './store/draw.actions';
-
-
 import { MapService } from '@app/services/map.service';
 import { mapStyles } from '@app/shared/mapStyles';
+import { DrawActions, MapToolActions } from '@app/store/action-types';
 
 @Component({
   selector: 'app-map-draw-tool',
@@ -29,7 +26,7 @@ export class DrawToolComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.store.dispatch(drawToolActions.resetDrawTool());
+    this.store.dispatch(DrawActions.resetDrawTool());
 
     this.featureProperties = this.fb.group({
       name: ['', [Validators.required]],
@@ -45,7 +42,7 @@ export class DrawToolComponent implements OnInit {
     this.mapService.activateDrawTool(geometryType);
 
 
-    this.store.dispatch(drawToolActions.changeDrawEditMode({
+    this.store.dispatch(DrawActions.changeDrawEditMode({
       change: {
         prop: 'inEditMode', value: true
       }
@@ -53,13 +50,13 @@ export class DrawToolComponent implements OnInit {
   }
 
   onEndDraw(): void {
-    this.store.dispatch(mapToolActions.removeMapTool({ tool: 'draw' }))
+    this.store.dispatch(MapToolActions.removeMapTool({ tool: 'draw' }))
     this.mapService.removeDrawTool();
     this.mapService.addClickInfo();
   }
 
   onDisableEditMode(): void {
-    this.store.dispatch(drawToolActions.changeDrawEditMode({
+    this.store.dispatch(DrawActions.changeDrawEditMode({
       change: {
         prop: 'inEditMode', value: false
       }
@@ -83,7 +80,7 @@ export class DrawToolComponent implements OnInit {
   }
 
   onAddFeature() {
-    this.store.dispatch(drawToolActions.addFeature({ properties: this.featureProperties.value }));
+    this.store.dispatch(DrawActions.addFeature({ properties: this.featureProperties.value }));
     this.showModal = false;
   }
 }

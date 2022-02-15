@@ -1,5 +1,5 @@
 import { createReducer, on } from "@ngrx/store";
-import * as drawActions from './draw.actions';
+import { DrawActions } from "@app/store/action-types";
 
 export interface DrawToolState {
     inEditMode: boolean;
@@ -19,9 +19,9 @@ export const initialState: DrawToolState = {
 
 export const drawReducer = createReducer(
     initialState,
-    on(drawActions.changeDrawEditMode, (state, { change }) => ({
+    on(DrawActions.changeDrawEditMode, (state, { change }) => ({
         ...state,
         [change.prop]: change.value
     })),
-    on(drawActions.resetDrawTool, () => initialState)
+    on(DrawActions.resetDrawTool, () => initialState)
 )

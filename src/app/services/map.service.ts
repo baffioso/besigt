@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { finalize, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import * as mapActions from '@app/pages/tabs-map/store/map.actions';
 import copy from 'fast-copy';
-
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { MapBrowserEvent } from 'ol';
@@ -22,23 +20,23 @@ import { transform } from 'ol/proj';
 import TileWMS from 'ol/source/TileWMS';
 import { getArea, getLength } from 'ol/sphere';
 import { register } from 'ol/proj/proj4';
+import RenderFeature from 'ol/render/Feature';
+import { EventsKey } from 'ol/events';
 import proj4 from 'proj4';
 
-import { ViewState } from '../interfaces/map-state';
+import { ViewState } from '@app/interfaces/map-state';
 import { MapStoreService } from '../stores/map-store.service';
-import { MapLayersService } from './map-layers.service';
-import { DawaService } from './dawa.service';
-import { Layer } from '../interfaces/map-layer-source';
+import { MapLayersService } from '@app/services/map-layers.service';
+import { DawaService } from '@app/services/dawa.service';
+import { Layer } from '@app/interfaces/map-layer-source';
 import { mapStyles } from '@app/shared/mapStyles';
 import { AppState } from '@app/store/app.reducer';
-import { EventsKey } from 'ol/events';
 import { LayerName } from '@app/interfaces/layerNames';
-import RenderFeature from 'ol/render/Feature';
+import { MapActions } from '@app/store/action-types';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs');
 register(proj4);
 
-// export type Projection = 'EPSG:3857' | 'EPSG:4326' | 'EPSG:25832'
 enum Projection {
   'EPSG:3857' = 'EPSG:3857',
   'EPSG:4326' = 'EPSG:4326',
@@ -99,7 +97,7 @@ export class MapService {
     });
 
     this.olmap.once('postrender', () => {
-      this.store.dispatch(mapActions.mapLoaded());
+      this.store.dispatch(MapActions.mapLoaded());
     });
 
     this.addClickInfo();
@@ -228,8 +226,8 @@ export class MapService {
     );
 
     features.length === 0 ?
-      this.store.dispatch(mapActions.selectedFeatures(null)) :
-      this.store.dispatch(mapActions.selectedFeatures({ features }))
+      this.store.dispatch(MapActions.selectedFeatures(null)) :
+      this.store.dispatch(MapActions.selectedFeatures({ features }))
 
   }
 
@@ -344,7 +342,7 @@ export class MapService {
     this.draw.on('drawend', (e) => {
       // NGRX needs deep clone of feature https://stackoverflow.com/a/60885787
       const feature = copy(e.feature);;
-      this.store.dispatch(mapActions.drawnFeature({ feature }));
+      this.store.dispatch(MapActions.drawnFeature({ feature }));
     });
   }
 
@@ -476,7 +474,7 @@ export class MapService {
     const rotation = this.view.getRotation();
     const extent = this.view.calculateExtent(); // in EPSG:3857
 
-    this.store.dispatch(mapActions.updateViewParams({ viewParams: { center, zoom, rotation, extent } }))
+    this.store.dispatch(MapActions.updateViewParams({ viewParams: { center, zoom, rotation, extent } }))
     this.mapStoreService.updateMapState('view', { center, zoom, rotation, extent });
   }
 

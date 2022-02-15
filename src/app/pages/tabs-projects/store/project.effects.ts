@@ -4,15 +4,15 @@ import { map, mergeMap, catchError } from 'rxjs/operators';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
 import { SupabaseService } from '@app/services/supabase.service';
-import * as projectActions from '@app/pages/tabs-projects/store/project.actions';
+import { ProjectActions } from '@app/store/action-types';
 
 @Injectable()
 export class ProjectEffects {
     loadProjects$ = createEffect(() => this.actions$.pipe(
-        ofType(projectActions.LOAD_PROJECTS),
+        ofType(ProjectActions.LOAD_PROJECTS),
         mergeMap(() => this.supabase.loadProjects()
             .pipe(
-                map(projects => projectActions.loadProjectsSuccess({ projects })),
+                map(projects => ProjectActions.loadProjectsSuccess({ projects })),
                 catchError(() => EMPTY)
             )
         )

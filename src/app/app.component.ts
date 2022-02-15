@@ -3,8 +3,8 @@ import { Store } from '@ngrx/store';
 
 import { SupabaseService } from './services/supabase.service';
 
-import { loadProjects } from '@app/pages/tabs-projects/store/project.actions';
 import { AppState } from './store/app.reducer';
+import { ProjectActions } from './store/action-types';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -22,12 +22,12 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.store.dispatch(loadProjects());
+    this.store.dispatch(ProjectActions.loadProjects());
 
 
     this.supabase.authChanges((event, session) => {
       if (event === 'SIGNED_IN') {
-        this.store.dispatch(loadProjects());
+        this.store.dispatch(ProjectActions.loadProjects());
       }
     });
 

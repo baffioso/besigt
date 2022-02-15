@@ -1,21 +1,19 @@
-
 import { Injectable } from '@angular/core';
-import { EMPTY } from 'rxjs';
-import { map, mergeMap, catchError, withLatestFrom, switchMap, pluck, tap, first } from 'rxjs/operators';
+import { map, withLatestFrom, switchMap, pluck, tap, first } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
 import { SupabaseService } from '@app/services/supabase.service';
-import * as photoActions from './photo.actions';
 import { AppState } from '@app/store/app.reducer';
 import { MapService } from '@app/services/map.service';
 import { PhotoService } from '@app/services/photo.service';
+import { PhotoActions } from '@app/store/action-types';
 
 @Injectable()
 export class PhotoEffects {
 
     photoPosition$ = createEffect(() => this.actions$.pipe(
-        ofType(photoActions.PHOTO_POSITION),
+        ofType(PhotoActions.PHOTO_POSITION),
         switchMap(() => {
             return this.store.select('map', 'viewParams').pipe(
                 pluck('center'),
@@ -24,20 +22,22 @@ export class PhotoEffects {
         }),
         map(center => {
             const geom = `POINT(${this.mapService.transform(center).join(' ')})`
-            return photoActions.photoPositionSuccess({ geom })
+            return PhotoActions.photoPositionSuccess({ geom })
         })
     ))
 
     takePhoto$ = createEffect(() => this.actions$.pipe(
-        ofType(photoActions.TAKE_PHOTO),
+        ofType(PhotoActions.TAKE_PHOTO),
         switchMap(() => this.photoService.takePhoto()),
         switchMap(photo => this.photoService.photoToBlob(photo)),
-        map(blob => photoActions.takePhotoSuccess({ photo: blob }))
+        switchMap(blob => [
+            PhotoActions.takePhotoSuccess({ photo: blob }),
+            PhotoActions.addPhoto()
+        ])
     ))
 
-
     addPhoto$ = createEffect(() => this.actions$.pipe(
-        ofType(photoActions.TAKE_PHOTO_SUCCESS),
+        ofType(PhotoActions.ADD_PHOTO),
         withLatestFrom(
             this.store.select('photoTool', 'photo'),
             this.store.select('photoTool', 'geom'),
@@ -56,8 +56,9 @@ export class PhotoEffects {
                 }))
             )
         }),
-        switchMap(photoDetail => this.supabase.addImageInfo(photoDetail))
-    ), { dispatch: false })
+        switchMap(photoDetail => this.supabase.addImageInfo(photoDetail)),
+        map(() => PhotoActions.addPhotoSuccess())
+    ))
 
     constructor(
         private actions$: Actions,

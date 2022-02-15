@@ -11,9 +11,9 @@ import { UiStateService } from '@app/stores/ui-state.service';
 import { getCenter } from 'ol/extent';
 import { Observable, of } from 'rxjs';
 import { concatMap, filter, first, map, tap } from 'rxjs/operators';
-import * as saveProjectActions from './store/save-project.actions'
 import { UserNotificationService } from '@app/shared/userNotification.service';
 import { ProjectBounds } from '@app/interfaces/projectBounds';
+import { SaveProjectActions } from '@app/store/action-types';
 
 @Component({
   selector: 'app-save-project',
@@ -152,7 +152,7 @@ export class SaveProjectComponent implements OnInit, OnDestroy {
     // Delayed navigation in order to close modal
     setTimeout(() => {
       this.uiState.removeAllMapTools();
-      this.store.dispatch(saveProjectActions.saveProject({ payload: { ...this.project.value, bounds: this.boundsSource } }))
+      this.store.dispatch(SaveProjectActions.saveProject({ payload: { ...this.project.value, bounds: this.boundsSource } }))
       this.router.navigateByUrl('/app/projects');
     }, 250);
   }

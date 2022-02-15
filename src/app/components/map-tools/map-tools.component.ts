@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 
 import { AppState } from '@app/store/app.reducer';
-import * as mapToolActions from '@app/components/map-tools/store/map-tool.actions';
+import { MapToolActions } from '@app/store/action-types';
 import { MapTool } from '@app/components/map-tools/store/map-tool.reducer';
 
 @Component({
@@ -21,7 +21,7 @@ export class MapToolsComponent {
   ) { }
 
   activateTool(tool: MapTool) {
-    this.store.dispatch(mapToolActions.toggleMapTool({ tool }))
+    this.store.dispatch(MapToolActions.toggleMapTool({ tool }))
   }
 
 }

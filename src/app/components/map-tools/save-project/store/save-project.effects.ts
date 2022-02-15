@@ -1,23 +1,22 @@
 
 import { Injectable } from '@angular/core';
+import { EMPTY } from 'rxjs';
+import { catchError, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-
-import { SupabaseService } from '@app/services/supabase.service';
-import { AppState } from '@app/store/app.reducer';
-import { MapService } from '@app/services/map.service';
-import * as saveProjecActions from './save-project.actions';
-import * as projectActions from '@app/pages/tabs-projects/store/project.actions';
-import { catchError, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { Feature } from 'ol';
 import { Geometry } from 'ol/geom';
-import { EMPTY, of } from 'rxjs';
+
+import { SupabaseService } from '@app/services/supabase.service';
+import { MapService } from '@app/services/map.service';
+import { AppState } from '@app/store/app.reducer';
+import { ProjectActions, SaveProjectActions } from '@app/store/action-types';
 import { ProjectBounds } from '@app/interfaces/projectBounds';
 @Injectable()
 export class SaveProjectEffects {
 
     saveProject$ = createEffect(() => this.actions$.pipe(
-        ofType(saveProjecActions.SAVE_PROJECT),
+        ofType(SaveProjectActions.SAVE_PROJECT),
         withLatestFrom(
             this.store.select('map', 'selectedFeatures'),
             this.store.select('map', 'drawnFeature')
@@ -50,11 +49,11 @@ export class SaveProjectEffects {
         })),
         switchMap(project => this.supabase.addProject(project).pipe(
             switchMap(() => [
-                saveProjecActions.saveProjectSuccess(),
-                projectActions.loadProjects()
+                SaveProjectActions.saveProjectSuccess(),
+                ProjectActions.loadProjects()
             ]),
             catchError((error: Error) => {
-                this.store.dispatch(saveProjecActions.saveProjectFail({ error: error.toString() }))
+                this.store.dispatch(SaveProjectActions.saveProjectFail({ error: error.toString() }))
                 return EMPTY
             })
         ))

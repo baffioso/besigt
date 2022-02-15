@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store'
-import * as saveProjctActions from './save-project.actions';
+import { SaveProjectActions } from '@app/store/action-types';
 
 export interface SaveProjectState {
     error: string
@@ -11,5 +11,5 @@ export const initialState: SaveProjectState = {
 
 export const saveProjectReducer = createReducer(
     initialState,
-    on(saveProjctActions.saveProjectFail, (state, { error }) => ({ ...state, error }))
+    on(SaveProjectActions.saveProjectFail, (state, { error }) => ({ ...state, error }))
 )

@@ -3,8 +3,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 
 import { AppState } from '@app/store/app.reducer';
-import * as projectActions from '@app/pages/tabs-projects/store/project.actions';
-import * as mapActions from '@app/pages/tabs-map/store/map.actions';
+import { MapActions, ProjectActions } from '@app/store/action-types';
 import { ProjectWithRelations } from 'src/app/interfaces/project';
 
 @Component({
@@ -25,13 +24,13 @@ export class ProjectsPage {
 
   goToProject(project: ProjectWithRelations) {
 
-    this.store.dispatch(mapActions.removeProjectMapOverlays());
+    this.store.dispatch(MapActions.removeProjectMapOverlays());
 
-    this.store.dispatch(projectActions.selectedProject({ id: project.id }));
-    this.store.dispatch(mapActions.zoomToProjectArea());
-    this.store.dispatch(mapActions.addProjectAreaToMap());
-    this.store.dispatch(mapActions.addProjectFeaturesToMap());
-    this.store.dispatch(mapActions.addProjectPhotosToMap());
+    this.store.dispatch(ProjectActions.selectedProject({ id: project.id }));
+    this.store.dispatch(MapActions.zoomToProjectArea());
+    this.store.dispatch(MapActions.addProjectAreaToMap());
+    this.store.dispatch(MapActions.addProjectFeaturesToMap());
+    this.store.dispatch(MapActions.addProjectPhotosToMap());
 
     this.router.navigate(['app', 'map']);
   }

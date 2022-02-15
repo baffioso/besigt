@@ -1,19 +1,19 @@
 import { Injectable } from '@angular/core';
-import { catchError, distinctUntilChanged, filter, map, mergeMap, shareReplay, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { EMPTY } from 'rxjs';
+import { catchError, filter, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { GeoJSONFeature } from 'ol/format/GeoJSON';
 
 import { MapService } from '@app/services/map.service';
-import * as mapActions from '@app/pages/tabs-map/store/map.actions';
 import { AppState } from '@app/store/app.reducer';
-import { EMPTY } from 'rxjs';
 import { mapStyles } from '@app/shared/mapStyles';
 import { GeolocationService } from '@app/services/geolocation.service';
 import { Feature } from '@app/interfaces/feature';
 import { Image } from '@app/interfaces/image';
-import { GeoJSONFeature } from 'ol/format/GeoJSON';
 import { ProjectWithRelations } from '@app/interfaces/project';
 import { SupabaseService } from '@app/services/supabase.service';
+import { MapActions } from '@app/store/action-types';
 
 @Injectable()
 export class MapEffects {
@@ -23,7 +23,7 @@ export class MapEffects {
     )
 
     zoomToProjectArea$ = createEffect(() => this.actions$.pipe(
-        ofType(mapActions.ZOOM_TO_PROJECT_AREA),
+        ofType(MapActions.ZOOM_TO_PROJECT_AREA),
         withLatestFrom(this.store.select('project', 'selectedProject')),
         map(([_, project]) => project),
         filter(project => !!project),
@@ -33,7 +33,7 @@ export class MapEffects {
     ), { dispatch: false });
 
     addProjectAreaToMap$ = createEffect(() => this.actions$.pipe(
-        ofType(mapActions.ADD_PROJECT_AREA_TO_MAP),
+        ofType(MapActions.ADD_PROJECT_AREA_TO_MAP),
         withLatestFrom(this.store.select('project', 'selectedProject')),
         map(([_, project]) => project),
         filter(project => !!project),
@@ -44,7 +44,7 @@ export class MapEffects {
     ), { dispatch: false });
 
     addProjectFeaturesToMap$ = createEffect(() => this.actions$.pipe(
-        ofType(mapActions.ADD_PROJECT_FEATURES_TO_MAP),
+        ofType(MapActions.ADD_PROJECT_FEATURES_TO_MAP),
         withLatestFrom(this.store.select('project', 'selectedProject')),
         map(([_, project]) => project),
         filter(project => !!project && project.features.length > 0),
@@ -55,7 +55,7 @@ export class MapEffects {
     ), { dispatch: false });
 
     addProjectPhotosToMap$ = createEffect(() => this.actions$.pipe(
-        ofType(mapActions.ADD_PROJECT_PHOTOS_TO_MAP),
+        ofType(MapActions.ADD_PROJECT_PHOTOS_TO_MAP),
         withLatestFrom(this.store.select('project', 'selectedProject')),
         map(([_, project]) => project),
         filter(project => !!project && project.images.length > 0),
@@ -66,26 +66,22 @@ export class MapEffects {
     ), { dispatch: false });
 
     removeProjectMapOverlays$ = createEffect(() => this.actions$.pipe(
-        ofType(mapActions.REMOVE_PROJECT_MAP_OVERLAYS),
+        ofType(MapActions.REMOVE_PROJECT_MAP_OVERLAYS),
         tap(() => this.mapService.removeProjectOverlays())
     ), { dispatch: false });
 
     zoomToCurrentPosition$ = createEffect(() => this.actions$.pipe(
-        ofType(mapActions.ZOOM_TO_CURRENT_POSITION),
+        ofType(MapActions.ZOOM_TO_CURRENT_POSITION),
         mergeMap(() => this.geolocationService.getPosition()
             .pipe(
                 tap(position => {
                     const coords: [number, number] = [position.coords.longitude, position.coords.latitude]
                     this.mapService.flyTo(coords);
                 }),
-                map(position => mapActions.currentPositionSuccess({ position })),
+                map(position => MapActions.currentPositionSuccess({ position })),
                 catchError(() => EMPTY)
             ))
     ));
-
-    selectedFeature$ = createEffect(() => this.actions$.pipe(
-        ofType(mapActions.SELECTED_FEATURES),
-    ), { dispatch: false })
 
     constructor(
         private actions$: Actions,

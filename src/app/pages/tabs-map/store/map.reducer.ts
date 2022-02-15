@@ -1,10 +1,11 @@
 import { createReducer, on } from '@ngrx/store';
-import * as mapActions from '@app/pages/tabs-map/store/map.actions';
 import { Position } from '@capacitor/geolocation';
 import { Feature } from 'ol';
 import RenderFeature from 'ol/render/Feature';
 import { Geometry } from 'ol/geom';
+
 import { LayerName } from '@app/interfaces/layerNames';
+import { MapActions } from '@app/store/action-types';
 
 export type SelectedFeature = {
     feature: (Feature<Geometry> | RenderFeature),
@@ -34,31 +35,31 @@ const initialState: MapState = {
 
 export const mapReducer = createReducer(
     initialState,
-    on(mapActions.mapLoaded, state => ({
+    on(MapActions.mapLoaded, state => ({
         ...state,
         mapLoaded: true
     })),
-    on(mapActions.drawnFeature, (state, { feature }) => ({
+    on(MapActions.drawnFeature, (state, { feature }) => ({
         ...state,
         drawnFeature: feature
     })),
-    on(mapActions.clearDrawnFeature, state => ({
+    on(MapActions.clearDrawnFeature, state => ({
         ...state,
         drawnFeature: null
     })),
-    on(mapActions.selectedFeatures, (state, { features }) => ({
+    on(MapActions.selectedFeatures, (state, { features }) => ({
         ...state,
         selectedFeatures: features
     })),
-    on(mapActions.currentPositionSuccess, (state, { position }) => ({
+    on(MapActions.currentPositionSuccess, (state, { position }) => ({
         ...state,
         currentPosition: position
     })),
-    on(mapActions.clearCurrentPosition, state => ({
+    on(MapActions.clearCurrentPosition, state => ({
         ...state,
         currentPosition: null
     })),
-    on(mapActions.updateViewParams, (state, { viewParams }) => ({
+    on(MapActions.updateViewParams, (state, { viewParams }) => ({
         ...state,
         viewParams
     }))

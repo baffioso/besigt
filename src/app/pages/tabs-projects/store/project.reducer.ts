@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import * as projectActions from '@app/pages/tabs-projects/store/project.actions';
+import { ProjectActions } from '@app/store/action-types';
 import { ProjectWithRelations } from '@app/interfaces/project';
 
 export interface ProjectState {
@@ -20,25 +20,21 @@ export const initialState: ProjectState = {
 
 export const projectReducer = createReducer(
     initialState,
-    on(projectActions.loadProjects, (state) => state),
-    on(projectActions.loadProjectsSuccess, (state, { projects }) => ({
+    on(ProjectActions.loadProjects, (state) => state),
+    on(ProjectActions.loadProjectsSuccess, (state, { projects }) => ({
         ...state,
         projects
     })),
-    on(projectActions.selectedProject, (state, { id }) => ({
+    on(ProjectActions.selectedProject, (state, { id }) => ({
         ...state,
         selectedProject: state.projects.find(project => project.id === id)
     })),
-    on(projectActions.clearSelectedProject, state => ({
+    on(ProjectActions.clearSelectedProject, state => ({
         ...state,
         selectedProject: null
     })),
-    on(projectActions.clearProjectState, state => ({
+    on(ProjectActions.clearProjectState, state => ({
         ...state,
         projects: []
     }))
 );
-
-// export function projectReducer(state, action) {
-//     return _projectReducer(state, action);
-// }
