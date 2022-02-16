@@ -1,4 +1,21 @@
-<img *ngIf="photoUrl$ | async as photoUrl; else loading" [src]="photoUrl">
+<ng-container *ngIf="photoUrl$ | async as photoUrl; else loading">
+    <img [src]="photoUrl">
+    <ion-fab horizontal="end" vertical="top" slot="fixed">
+        <ion-fab-button size="small" color="light">
+            <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-list>
+            <ion-fab-button color="light" (click)="onDownloadPhoto()">
+                <ion-icon name="download-outline"></ion-icon>
+            </ion-fab-button>
+            <ion-fab-button color="light" (click)="onDeletePhoto()">
+                <ion-icon name="trash-outline"></ion-icon>
+            </ion-fab-button>
+        </ion-fab-list>
+    </ion-fab>
+</ng-container>
+
+
 <ng-template #loading>
     <div class="ion-text-center ion-margin-top">
         <ion-spinner color="primary"></ion-spinner>

@@ -100,10 +100,10 @@ const tableAsGeoJson = (geometryTable: GeometryTable[]): any => {
 
         if ('properties' in feature) {
             const { id, geom, properties, ...rest } = feature;
-            return { id, type: 'Feature', geometry: geom, properties } as GeoJSONFeature;
+            return { id, type: 'Feature', geometry: geom, properties: { ...properties, id } } as GeoJSONFeature;
         } else {
             const { id, geom, ...properties } = feature;
-            return { id, type: 'Feature', geometry: geom, properties } as GeoJSONFeature;
+            return { id, type: 'Feature', geometry: geom, properties: { ...properties, id } } as GeoJSONFeature;
         }
 
     });

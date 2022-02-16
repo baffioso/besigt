@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators';
 import { SupabaseClient, createClient, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { environment } from '@env/environment';
 import { Credentials } from '@app/interfaces/credentials';
-import { CreateImage } from '@app/interfaces/image';
+import { CreateImage, Image } from '@app/interfaces/image';
 import { ViewState } from '@app/interfaces/map-state';
 import { CreateProject, Project, ProjectWithRelations } from '@app/interfaces/project';
 import { CreateFeature, Feature } from '@app/interfaces/feature';
@@ -98,7 +98,8 @@ export class SupabaseService {
     };
     // You could check for error, minlegth of task is 3 chars!
     return from(
-      this.supabase.from<Project>('projects')
+      this.supabase
+        .from<Project>('projects')
         .insert(newProject, { returning: 'representation' })
     ).pipe(
       map(({ error, data }) => {
@@ -148,11 +149,12 @@ export class SupabaseService {
       map_state: viewState
     };
 
-    return from(this.supabase
-      .from('map_state')
-      .insert(newViewState, { returning: 'representation' })).pipe(
-        map(res => res.data)
-      );
+    return from(
+      this.supabase
+        .from('map_state')
+        .insert(newViewState, { returning: 'representation' })).pipe(
+          map(res => res.data)
+        );
   }
 
   addImageInfo(image: CreateImage) {
@@ -178,19 +180,53 @@ export class SupabaseService {
     };
 
     return from(
-      this.supabase.from('features').insert(newFeature, { returning: 'representation' })
+      this.supabase
+        .from('features')
+        .insert(newFeature, { returning: 'representation' })
     ).pipe(
       map(res => res.data)
     )
   }
 
-  uploadImage(filePath: string, file: Blob) {
-    return from(this.supabase.storage.from('images').upload(filePath, file));
+  removeFeature(id: string) {
+
   }
 
-  downloadImage(path: string) {
-    return from(this.supabase.storage.from('images').download(path));
+  uploadImage(filePath: string, file: Blob) {
+    return from(
+      this.supabase.storage
+        .from('images')
+        .upload(filePath, file)
+    );
   }
+
+  downloadImage(filePath: string) {
+    return from(
+      this.supabase.storage
+        .from('images')
+        .download(filePath)
+    );
+  }
+
+  deleteImage(filePath: string) {
+    return from(
+      this.supabase.storage
+        .from('images')
+        .remove([filePath])
+    );
+  }
+
+  deleteImageFeature(id: string) {
+    console.log(id)
+    return from(
+      this.supabase
+        .from<Image>('images')
+        .delete()
+        .match({ id })
+    );
+  }
+
+
 
   getProjectExtent(projectId: string) {
     return from(this.supabase.rpc<number>('project_extent', { projectid: projectId })).pipe(

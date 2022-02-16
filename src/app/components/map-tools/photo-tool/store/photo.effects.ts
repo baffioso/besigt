@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { map, withLatestFrom, switchMap, pluck, tap, first } from 'rxjs/operators';
+import { map, withLatestFrom, switchMap, pluck, first } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
@@ -7,7 +7,7 @@ import { SupabaseService } from '@app/services/supabase.service';
 import { AppState } from '@app/store/app.reducer';
 import { MapService } from '@app/services/map.service';
 import { PhotoService } from '@app/services/photo.service';
-import { PhotoActions } from '@app/store/action-types';
+import { MapActions, PhotoActions, ProjectActions } from '@app/store/action-types';
 
 @Injectable()
 export class PhotoEffects {
@@ -57,7 +57,10 @@ export class PhotoEffects {
             )
         }),
         switchMap(photoDetail => this.supabase.addImageInfo(photoDetail)),
-        map(() => PhotoActions.addPhotoSuccess())
+        switchMap(() => [
+            PhotoActions.addPhotoSuccess(),
+            ProjectActions.loadProjects()
+        ])
     ))
 
     constructor(

@@ -24,13 +24,8 @@ export class ProjectsPage {
 
   goToProject(project: ProjectWithRelations) {
 
-    this.store.dispatch(MapActions.removeProjectMapOverlays());
-
     this.store.dispatch(ProjectActions.selectedProject({ id: project.id }));
     this.store.dispatch(MapActions.zoomToProjectArea());
-    this.store.dispatch(MapActions.addProjectAreaToMap());
-    this.store.dispatch(MapActions.addProjectFeaturesToMap());
-    this.store.dispatch(MapActions.addProjectPhotosToMap());
 
     this.router.navigate(['app', 'map']);
   }

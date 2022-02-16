@@ -6,7 +6,7 @@
 
   <ion-fab-list>
     <!-- GEOSEARCH -->
-    <ion-fab-button color="light" [color]="(activatedMapTools$ | async).includes('geoSearch') ? 'secondary' : 'light'"
+    <ion-fab-button [color]="(activatedMapTools$ | async).includes('geoSearch') ? 'secondary' : 'light'"
       (click)="activateTool('geoSearch')">
       <ion-icon name="search"></ion-icon>
     </ion-fab-button>
