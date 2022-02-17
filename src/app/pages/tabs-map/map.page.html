@@ -1,5 +1,6 @@
 <ion-content>
-    <ion-progress-bar *ngIf="loading$ | async" type="indeterminate" color="tertiary"></ion-progress-bar>
+    <ion-progress-bar *ngIf="(loading$ | async) || (loadingImage$ | async)" type="indeterminate" color="tertiary">
+    </ion-progress-bar>
 
     <app-map>
         <app-map-layers-control></app-map-layers-control>

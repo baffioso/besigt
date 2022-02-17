@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { map, withLatestFrom, switchMap, pluck, first } from 'rxjs/operators';
+import { map, withLatestFrom, switchMap, pluck, first, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 
@@ -7,7 +7,8 @@ import { SupabaseService } from '@app/services/supabase.service';
 import { AppState } from '@app/store/app.reducer';
 import { MapService } from '@app/services/map.service';
 import { PhotoService } from '@app/services/photo.service';
-import { MapActions, PhotoActions, ProjectActions } from '@app/store/action-types';
+import { PhotoActions, ProjectActions } from '@app/store/action-types';
+import { UserNotificationService } from '@app/shared/userNotification.service';
 
 @Injectable()
 export class PhotoEffects {
@@ -63,11 +64,22 @@ export class PhotoEffects {
         ])
     ))
 
+    addPhotoSucces$ = createEffect(() => this.actions$.pipe(
+        ofType(PhotoActions.ADD_PHOTO_SUCCESS),
+        tap(() => this.notification.presentToast({
+            header: 'Billedet er gemt',
+            color: 'success',
+            duration: 3000,
+            position: 'top'
+        }))
+    ), { dispatch: false })
+
     constructor(
         private actions$: Actions,
         private store: Store<AppState>,
         private photoService: PhotoService,
         private mapService: MapService,
-        private supabase: SupabaseService
+        private supabase: SupabaseService,
+        private notification: UserNotificationService
     ) { }
 }

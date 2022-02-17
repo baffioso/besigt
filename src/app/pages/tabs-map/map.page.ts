@@ -24,6 +24,7 @@ export class TapMapPage implements OnInit, OnDestroy {
     map(({ loadingFeatureInfo, loadingLayer }) => ({ loadingFeatureInfo, loadingLayer })),
     map(isLoading => Object.values(isLoading).some((val: boolean) => val))
   );
+  loadingImage$ = this.store.select('photoTool', 'loading')
 
   activatedMapTools$ = this.store.select('mapTools', 'activatedMapTools');
   selectedProject$ = this.store.select('project', 'selectedProject');
