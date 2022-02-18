@@ -1,5 +1,7 @@
 import { Point, LineString, Polygon } from 'geojson';
 
+export type PostGISGeometryType = 'POINT' | 'LINESTRING' | 'POLYGON'
+
 export interface Style {
     fillColor?: string;
 }
@@ -22,4 +24,6 @@ export interface Feature {
     project_id: string;
     user_id: string;
     inserted_at: Date;
+    geom_type: PostGISGeometryType;
+    geom_measure: number;
 }

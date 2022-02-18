@@ -14,4 +14,15 @@
       <h3>{{ properties.description }}</h3>
     </ion-label>
   </ion-item>
+
+  <ion-item *ngIf="properties.geom_measure">
+    <i slot="start" *ngIf="properties.geom_type === 'POLYGON'" class="fg-measure-area"></i>
+    <i slot="start" *ngIf="properties.geom_type === 'LINESTRING'" class="fg-measure-line"></i>
+    <ion-label class="ion-text-wrap">
+      <p>{{properties.geom_type === 'POLYGON' ? 'Areal' : 'Længde'}}</p>
+      <h3>
+        {{ properties.geom_measure }} {{ properties.geom_type === 'POLYGON' ? 'm2' : 'm' }}
+      </h3>
+    </ion-label>
+  </ion-item>
 </ion-list>

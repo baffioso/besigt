@@ -1,0 +1,5 @@
+.fg-measure-area,
+.fg-measure-line {
+    color: var(--ion-color-medium);
+    font-size: x-large;
+}

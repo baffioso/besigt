@@ -132,7 +132,9 @@ export class SupabaseService {
         features (
           id,
           geom,
-          properties
+          properties,
+          geom_type,
+          geom_measure
         )
       `)
         .order('inserted_at', { ascending: false })
